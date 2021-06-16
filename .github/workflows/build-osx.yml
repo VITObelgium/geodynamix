@@ -1,0 +1,22 @@
+name: CI-osx
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Install nasm
+      run: brew install nasm
+    - name: Bootstrap the ports
+      run: python3 bootstrap.py --triplet x64-osx --clean-after-build
+    - name: Build the code
+      run: python3 build.py --triplet x64-osx --run-tests

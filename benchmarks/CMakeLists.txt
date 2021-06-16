@@ -1,0 +1,11 @@
+if (GDX_ENABLE_SIMD)
+    macro(add_benchmark name source)
+        add_executable(${name} ${source})
+        target_link_libraries(${name} PRIVATE Gdx::gdxcore Gdx::gdxalgo benchmark::benchmark)
+    endmacro()
+
+    add_benchmark(gdxiterbench iterbench.cpp)
+    add_benchmark(gdxtransformbench transformbench.cpp)
+    add_benchmark(rasterbench rasterbench.cpp)
+    add_benchmark(sumbench sumbench.cpp)
+endif ()

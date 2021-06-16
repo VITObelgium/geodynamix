@@ -1,0 +1,29 @@
+name: Anaconda build
+on: [push]
+    
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GIT_HASH: ${{ github.sha }}
+      GDX_VERSION: 0.11.8
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        activate-environment: build
+        python-version: 3.8
+    - name: create meta.yaml
+      run: python 
+    - name: Install build requirement
+      run: conda install conda-build jinja2
+    - name: Generate package metadata
+      run: python ./conda/metagen.py
+    - name: Build conda package
+      run: conda build ./conda

@@ -1,0 +1,42 @@
+build:
+  number: 0
+
+requirements:
+  build:
+    - {{ '{{' }} compiler('cxx') {{ '}}' }}
+    - cmake >=3.18
+    - ninja
+  host:
+    - python {{ '{{' }} python {{ '}}' }}
+    - numpy >=1.15
+    - libgdal {{ '{{' }} libgdal {{ '}}' }}
+    - pybind11 >=2.5
+    - eigen >=3.3
+  run:
+    - python {{ '{{' }} python {{ '}}' }}
+    - numpy
+    - libgdal
+
+test:
+  imports:
+    - gdx
+  source_files:
+    - python/test/testgdx.py
+  commands:
+    - python python/test/testgdx.py
+
+about:
+  home: https://geodynamix.eu
+  license: MIT
+  license_family: MIT
+  license_file: LICENSE
+  summary: geodynamix raster library
+  description: library for working with raster data
+
+package:
+  name: gdx
+  version: {{ gdx_version }}
+
+source:
+  git_url: https://github.com/VITObelgium/geodynamix.git
+  git_rev: {{ git_hash }}

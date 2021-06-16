@@ -1,0 +1,14 @@
+benchmark
+zlib
+tiff[lzw]
+fmt
+spdlog
+eigen3
+gdal[gif,png,expat,pcraster,netcdf]
+gsl
+pybind11
+lyra
+date
+trompeloeil
+doctest
+vc

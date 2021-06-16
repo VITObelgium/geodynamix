@@ -1,0 +1,28 @@
+{
+    "configurations": [
+        {
+            "name": "x64-Debug",
+            "generator": "Ninja",
+            "inheritEnvironments": [ "msvc_x64" ],
+            "configurationType": "Debug",
+            "buildRoot": "${workspaceRoot}/build/${name}",
+            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "x64-Release",
+            "generator": "Ninja",
+            "inheritEnvironments": [ "msvc_x64" ],
+            "configurationType": "Release",
+            "buildRoot": "${workspaceRoot}/build/${name}",
+            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
+            "name": "x64-RelWithDebInfo",
+            "generator": "Ninja",
+            "inheritEnvironments": [ "msvc_x64" ],
+            "configurationType": "RelWithDebInfo",
+            "buildRoot": "${workspaceRoot}/build/${name}",
+            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        }
+    ]
+}

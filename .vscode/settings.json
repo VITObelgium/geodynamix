@@ -1,0 +1,34 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "cmake.configureSettings": {
+        "GDX_ENABLE_TESTS": "ON",
+        "GDX_PYTHON_BINDINGS": "ON",
+        "GDX_ENABLE_BENCHMARKS": "ON",
+        "GDX_ENABLE_SIMD": "ON",
+        "GDX_AVX2": "ON",
+        "INFRA_EMBED_GDAL_DATA": "ON"
+    },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.clangd": true,
+        "**/.DS_Store": true,
+        "**/deps/vcpkg/buildtrees": true,
+        "**/deps/vcpkg/packages": true
+    },
+    "python.autoComplete.extraPaths": [
+        "${workspaceRoot}/build/gdx/Release"
+    ],
+    "python.linting.pylintArgs": [
+        "--init-hook='import sys; sys.path.append(\"${workspaceRoot}/build/gdx/Release\")'"
+    ],
+    "C_Cpp.autocomplete": "Disabled",
+    "C_Cpp.formatting": "Disabled",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.intelliSenseEngineFallback": "Disabled",
+    "cmake.configureOnOpen": true,
+    "editor.formatOnSave": true,
+    "cmake.buildDirectory": "${workspaceRoot}/build/vscode",
+    "python.formatting.provider": "black",
+    "cmake.copyCompileCommands": "${workspaceRoot}/compile_commands.json"
+}

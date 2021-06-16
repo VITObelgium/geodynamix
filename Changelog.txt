@@ -1,0 +1,45 @@
+Release 0.11.7
+--------------
+Bug fixes:
+- Fixed cluster_id_with_obstacles cell values in obstacle cells
+
+Release 0.11.6
+--------------
+Changes:
+- Add turn_value_into_nodata method to raster class in python bindings
+
+Release 0.11.5
+--------------
+Changes:
+- Don't require table_row values and categories to be of the same type
+
+Release 0.11.4
+--------------
+Bug fixes:
+- Fixed crash on gdal log interception
+
+Release 0.11.3
+--------------
+Bug fixes:
+- Fixed FiLo overflow error
+
+Release 0.11.2
+--------------
+Changes:
+- Support square buffer type for sum_in_buffer
+- Support obstacles argument for distance function
+
+Release 0.11.1
+--------------
+
+Bug fixes:
+- Fixed fuzzy_cluster_id_with_obstacles
+
+Release 0.11.0
+--------------
+
+Changes:
+- Support pybind11 version < 2.6
+- Additional logical_and logical_or overloads
+- cluster_sum function added
+- fuzzy_cluster_id_with_obstacles function added
