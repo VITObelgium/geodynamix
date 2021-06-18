@@ -1,6 +1,6 @@
 import os
 import unittest
-import gdx
+import geodynamix as gdx
 import numpy as np
 
 

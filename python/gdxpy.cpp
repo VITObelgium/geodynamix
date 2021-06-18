@@ -31,12 +31,12 @@ static_assert(false, "pybind11 did not detect c++17 support");
 namespace py = pybind11;
 using namespace py::literals;
 
-PYBIND11_MODULE(gdx, mod)
+PYBIND11_MODULE(geodynamix, mod)
 {
     using namespace gdx;
 
     Log::add_custom_sink(std::make_shared<gdx::python::LogSinkMt>());
-    Log::initialize("gdx");
+    Log::initialize("geodynamix");
     inf::gdal::RegistrationConfig cfg;
     cfg.setLogHandler = false;
 

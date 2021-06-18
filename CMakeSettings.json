@@ -1,28 +1,37 @@
 {
+    "environments": [
+        {
+            "generator": "Ninja",
+            "buildRoot": "${workspaceRoot}/../builds/geodynamix",
+            "cmakeToolchain": "${workspaceRoot}/../vcpkg-ports/scripts/buildsystems/vcpkg.cmake",
+            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static-vs2019 -DVCPKG_APPLOCAL_DEPS=OFF -DGDX_ENABLE_TESTS=ON -DGDX_PYTHON_BINDINGS=ON"
+        }
+    ],
     "configurations": [
         {
-            "name": "x64-Debug",
+            "name": "GDX [DBG]",
             "generator": "Ninja",
-            "inheritEnvironments": [ "msvc_x64" ],
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
             "configurationType": "Debug",
-            "buildRoot": "${workspaceRoot}/build/${name}",
-            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static-vs2019 -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/../vcpkg-ports/scripts/buildsystems/vcpkg.cmake"
+            "buildRoot": "${env.buildRoot}/${name}",
+            "cmakeToolchain": "${env.cmakeToolchain}",
+            "cmakeCommandArgs": "${env.cmakeCommandArgs}",
+            "variables": []
         },
         {
-            "name": "x64-Release",
+            "name": "GDX [REL]",
             "generator": "Ninja",
-            "inheritEnvironments": [ "msvc_x64" ],
+            "inheritEnvironments": [
+                "msvc_x64_x64"
+            ],
             "configurationType": "Release",
-            "buildRoot": "${workspaceRoot}/build/${name}",
-            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static-vs2019 -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/../vcpkg-ports/scripts/buildsystems/vcpkg.cmake"
-        },
-        {
-            "name": "x64-RelWithDebInfo",
-            "generator": "Ninja",
-            "inheritEnvironments": [ "msvc_x64" ],
-            "configurationType": "RelWithDebInfo",
-            "buildRoot": "${workspaceRoot}/build/${name}",
-            "cmakeCommandArgs": "-DVCPKG_TARGET_TRIPLET=x64-windows-static-vs2019 -DCMAKE_TOOLCHAIN_FILE=${workspaceRoot}/../vcpkg-ports/scripts/buildsystems/vcpkg.cmake"
+            "buildRoot": "${env.buildRoot}/${name}",
+            "cmakeToolchain": "${env.cmakeToolchain}",
+            "cmakeCommandArgs": "${env.cmakeCommandArgs}",
+            "variables": []
         }
     ]
 }
+
