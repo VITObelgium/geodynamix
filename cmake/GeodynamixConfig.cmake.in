@@ -1,7 +1,7 @@
-get_filename_component(GDX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(GEODYNAMIX_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
 
-list(APPEND CMAKE_MODULE_PATH ${GDX_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH ${GEODYNAMIX_CMAKE_DIR})
 
 find_dependency(infra CONFIG REQUIRED)
 find_dependency(Eigen3 REQUIRED)
@@ -15,6 +15,6 @@ endif()
 
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
-if(NOT TARGET Gdx::core)
-    include("${GDX_CMAKE_DIR}/GdxTargets.cmake")
+if(NOT TARGET geodynamix::gdxcore)
+    include("${GEODYNAMIX_CMAKE_DIR}/GeodynamixTargets.cmake")
 endif()

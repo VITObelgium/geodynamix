@@ -11,7 +11,7 @@ add_library(gdxtestutil
     testbase.cpp
 )
 
-add_library(Gdx::gdxtestutil ALIAS gdxtestutil)
+add_library(geodynamix::gdxtestutil ALIAS gdxtestutil)
 
 set_target_properties(gdxtestutil PROPERTIES
     PUBLIC_HEADER "${GDX_TESTUTIL_PUBLIC_HEADERS}"
@@ -21,10 +21,10 @@ target_include_directories(gdxtestutil PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_link_libraries(gdxtestutil PUBLIC Gdx::gdxcore Infra::infratestutil doctest::doctest)
+target_link_libraries(gdxtestutil PUBLIC geodynamix::gdxcore Infra::infratestutil doctest::doctest)
 
 if (GDX_INSTALL_DEVELOPMENT_FILES)
-    install(TARGETS gdxtestutil EXPORT gdx-targets
+    install(TARGETS gdxtestutil EXPORT geodynamix-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx/test

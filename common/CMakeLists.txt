@@ -12,7 +12,7 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
     set_target_properties(gdxcommon PROPERTIES PUBLIC_HEADER "${GDXCOMMON_PUBLIC_HEADERS}")
 endif ()
 
-add_library(Gdx::gdxcommon ALIAS gdxcommon)
+add_library(geodynamix::gdxcommon ALIAS gdxcommon)
 
 if(MSVC)
     # make sure visual studio creates a project with the sources
@@ -25,7 +25,7 @@ target_include_directories(gdxcommon
 )
 
 if (GDX_INSTALL_DEVELOPMENT_FILES)
-    install(TARGETS gdxcommon EXPORT gdx-targets
+    install(TARGETS gdxcommon EXPORT geodynamix-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx

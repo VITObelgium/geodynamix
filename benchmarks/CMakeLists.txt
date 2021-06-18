@@ -1,7 +1,7 @@
 if (GDX_ENABLE_SIMD)
     macro(add_benchmark name source)
         add_executable(${name} ${source})
-        target_link_libraries(${name} PRIVATE Gdx::gdxcore Gdx::gdxalgo benchmark::benchmark)
+        target_link_libraries(${name} PRIVATE geodynamix::gdxcore geodynamix::gdxalgo benchmark::benchmark)
     endmacro()
 
     add_benchmark(gdxiterbench iterbench.cpp)

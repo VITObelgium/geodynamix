@@ -15,7 +15,7 @@ include(CMakePackageConfigHelpers)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/gdx)
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
@@ -96,20 +96,20 @@ if (GDX_IS_TOPLEVEL)
         set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
     endif ()
 
-    write_basic_package_version_file("GdxConfigVersion.cmake"
+    write_basic_package_version_file("GeodynamixConfigVersion.cmake"
         VERSION ${GDX_VERSION}
         COMPATIBILITY SameMajorVersion
     )
 
-    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GdxConfig.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/GdxConfig.cmake
+    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GeodynamixConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/GeodynamixConfig.cmake
         INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
     )
 
     if (GDX_INSTALL_DEVELOPMENT_FILES)
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/GdxConfig.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/GdxConfigVersion.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/GeodynamixConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/GeodynamixConfigVersion.cmake
             DESTINATION ${INSTALL_CONFIGDIR}
         )
     endif ()
@@ -201,9 +201,9 @@ if (GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx
     )
 
-    install(EXPORT gdx-targets
-        FILE GdxTargets.cmake
-        NAMESPACE Gdx::
+    install(EXPORT geodynamix-targets
+        FILE GeodynamixTargets.cmake
+        NAMESPACE geodynamix::
         DESTINATION ${INSTALL_CONFIGDIR}
     )
 endif ()

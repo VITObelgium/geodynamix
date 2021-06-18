@@ -113,7 +113,7 @@ add_library(gdxcore
     raster.cpp
 )
 
-add_library(Gdx::gdxcore ALIAS gdxcore)
+add_library(geodynamix::gdxcore ALIAS gdxcore)
 
 target_include_directories(gdxcore
     PUBLIC
@@ -126,8 +126,8 @@ target_include_directories(gdxcore
 
 target_link_libraries(gdxcore PUBLIC
     Infra::infra
-    Gdx::gdxcommon
-    Gdx::gdxalgo
+    geodynamix::gdxcommon
+    geodynamix::gdxalgo
     Eigen3::Eigen
     $<TARGET_NAME_IF_EXISTS:Vc::Vc>
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
@@ -139,7 +139,7 @@ if (TARGET OpenMP::OpenMP_CXX)
 endif ()
 
 if (GDX_INSTALL_DEVELOPMENT_FILES)
-    install(TARGETS gdxcore EXPORT gdx-targets
+    install(TARGETS gdxcore EXPORT geodynamix-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx

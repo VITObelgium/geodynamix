@@ -61,7 +61,7 @@ add_library(gdxalgo
     categoryio.cpp
 )
 
-add_library(Gdx::gdxalgo ALIAS gdxalgo)
+add_library(geodynamix::gdxalgo ALIAS gdxalgo)
 
 target_include_directories(gdxalgo PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -70,14 +70,14 @@ target_include_directories(gdxalgo PUBLIC
 )
 
 target_link_libraries(gdxalgo PUBLIC
-    Gdx::gdxcommon
+    geodynamix::gdxcommon
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
 )
 set_target_properties(gdxalgo PROPERTIES PUBLIC_HEADER "${GDXALGO_PUBLIC_HEADERS}")
 
 
 if (GDX_INSTALL_DEVELOPMENT_FILES)
-    install(TARGETS gdxalgo EXPORT gdx-targets
+    install(TARGETS gdxalgo EXPORT geodynamix-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx/algo
