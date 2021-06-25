@@ -14,7 +14,7 @@ TEST_CASE_TEMPLATE("Majority filter", TypeParam, RasterTypes)
     if (!typeSupported<T>()) return;
 
     RasterMetadata meta(6, 6, -9999);
-    meta.cellSize = 100.0;
+    meta.set_cell_size(100.0);
 
     SUBCASE("MajorityFilter")
     {
@@ -70,7 +70,7 @@ TEST_CASE("Majority filter float")
         0.f, 0.f, 0.f, 5.f, 2.f, -9999.f};
 
     RasterMetadata meta(6, 6, -9999);
-    meta.cellSize = 100.0;
+    meta.set_cell_size(100.0);
 
     MaskedRaster<float> raster(meta, inputData);
     MaskedRaster<float> expected(meta, expectedData);

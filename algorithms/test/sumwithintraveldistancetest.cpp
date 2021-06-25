@@ -10,7 +10,7 @@ TEST_CASE_TEMPLATE("SumWithinTravelDistance", TypeParam, UnspecializedRasterType
 
     constexpr auto nan = std::numeric_limits<float>::quiet_NaN();
     RasterMetadata meta(5, 4, nan);
-    meta.cellSize = 100;
+    meta.set_cell_size(100.0);
 
     SUBCASE("sumWithinTravelDistance")
     {
@@ -154,8 +154,8 @@ TEST_CASE_TEMPLATE("SumWithinTravelDistance", TypeParam, UnspecializedRasterType
 
     SUBCASE("sumWithinTravelDistancePytest0")
     {
-        meta          = RasterMetadata(5, 10, nan);
-        meta.cellSize = 100;
+        meta = RasterMetadata(5, 10, nan);
+        meta.set_cell_size(100.0);
 
         ByteRaster mask(meta, std::vector<uint8_t>{
                                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

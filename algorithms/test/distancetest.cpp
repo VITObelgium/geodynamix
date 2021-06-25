@@ -10,7 +10,7 @@ TEST_CASE_TEMPLATE("distance", TypeParam, UnspecializedRasterTypes)
 
     constexpr auto nan = std::numeric_limits<float>::quiet_NaN();
     RasterMetadata meta(5, 10, nan);
-    meta.cellSize = 100;
+    meta.set_cell_size(100.0);
 
     SUBCASE("distance")
     {

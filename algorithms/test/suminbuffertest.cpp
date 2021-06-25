@@ -8,7 +8,7 @@ TEST_CASE_TEMPLATE("Sum in buffer", TypeParam, RasterTypes)
     constexpr auto nan = std::numeric_limits<float>::quiet_NaN();
 
     RasterMetadata meta(5, 4, nan);
-    meta.cellSize = 5;
+    meta.set_cell_size(5.0);
 
     MaskedRaster<float> raster(meta, std::vector<float>{
                                          2.f, nan, 4.f, 4.f,
