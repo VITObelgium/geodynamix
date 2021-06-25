@@ -7,7 +7,7 @@ void compareMetaData(const RasterMetadata& expected, const RasterMetadata& actua
     CHECK(expected.rows == actual.rows);
     CHECK(expected.cols == actual.cols);
     CHECK(expected.nodata == actual.nodata);
-    CHECK(expected.cellSize == Approx(actual.cellSize));
+    CHECK(expected.cellSize == actual.cellSize);
     CHECK(expected.xll == Approx(actual.xll));
     CHECK(expected.yll == Approx(actual.yll));
 }

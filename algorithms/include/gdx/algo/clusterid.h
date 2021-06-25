@@ -82,7 +82,7 @@ RasterType<int32_t> fuzzy_cluster_id(const RasterType<T>& ras, float radiusInMet
     const auto rows = ras.rows();
     const auto cols = ras.cols();
 
-    float radius             = radiusInMeter / static_cast<float>(ras.metadata().cellSize);
+    float radius             = radiusInMeter / static_cast<float>(ras.metadata().cellSize.x);
     const auto radiusInCells = static_cast<int>(radius);
     const auto radius2       = static_cast<int32_t>(radius * radius);
 
@@ -397,7 +397,7 @@ RasterType<int32_t> fuzzy_cluster_id_with_obstacles(const RasterType<int32_t>& i
     const auto rows    = items.rows();
     const auto cols    = items.cols();
     auto resultMeta    = items.metadata();
-    const float radius = radiusInMeter / static_cast<float>(resultMeta.cellSize);
+    const float radius = radiusInMeter / static_cast<float>(resultMeta.cellSize.x);
     // use -9999 as nodata as it cannot clash with a cluster id
     int32_t nodata = -9999;
     if (resultMeta.nodata.has_value()) {

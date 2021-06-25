@@ -45,7 +45,7 @@ TEST_CASE_TEMPLATE("cluster_id", TypeParam, UnspecializedRasterTypes)
     SUBCASE("fuzzy_cluster_id")
     {
         RasterMetadata meta(10, 10);
-        meta.cellSize = 100;
+        meta.set_cell_size(100.0);
 
         const FloatRaster ras(meta, std::vector<float>{
                                         1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
@@ -71,7 +71,7 @@ TEST_CASE_TEMPLATE("cluster_id", TypeParam, UnspecializedRasterTypes)
                                                      5, 0, 6, 0, 7, 0, 8, 0, 0, 0,
                                                      0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
-        CHECK_RASTER_EQ(expected, fuzzy_cluster_id(ras, 1.42f * static_cast<float>(meta.cellSize)));
+        CHECK_RASTER_EQ(expected, fuzzy_cluster_id(ras, 1.42f * static_cast<float>(meta.cellSize.x)));
     }
 
     SUBCASE("cluster_id_with_obstacles")

@@ -57,14 +57,14 @@ std::optional<T> compute_majority(const Cell cell, const RasterType<T>& oldValue
 template <template <typename> typename RasterType, typename T>
 RasterType<T> majority_filter(const RasterType<T>& ras, float radiusInMeter)
 {
-    if (ras.metadata().cellSize == 0) {
+    if (ras.metadata().cellSize.x == 0) {
         throw RuntimeError("Radius is undefined when the cell size is 0");
     }
 
     const auto rows           = ras.rows();
     const auto cols           = ras.cols();
     auto resultMeta           = ras.metadata();
-    float radiusInCellsFloat  = static_cast<float>(radiusInMeter / ras.metadata().cellSize);
+    float radiusInCellsFloat  = static_cast<float>(radiusInMeter / ras.metadata().cellSize.x);
     const auto radiusInCells  = static_cast<int32_t>(radiusInCellsFloat);
     const auto radiusInCells2 = static_cast<int32_t>(radiusInCellsFloat * radiusInCellsFloat);
     RasterType<T> result(resultMeta);
