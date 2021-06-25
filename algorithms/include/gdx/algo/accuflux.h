@@ -338,7 +338,7 @@ double calculateSlopeLength(const int row, const int col,
 
         if (neighbourDestR == row && neighbourDestC == col) {
             auto neighBourLength = detail::calculateSlopeLength(neighbourR, neighbourC, calcMap, lddMap, frictionMap, result);
-            auto distance        = meta.cellSize;
+            auto distance        = meta.cellSize.x;
             if (neighbourDir == 1 || neighbourDir == 3 || neighbourDir == 7 || neighbourDir == 9) {
                 distance *= sqrt(2.0);
             }
@@ -785,7 +785,7 @@ RasterType<float> ldd_dist(
                 }
 
                 const float point = pointsMap[destCell];
-                double distance   = meta.cellSize;
+                double distance   = meta.cellSize.x;
                 if (cell.r != destCell.r && cell.c != destCell.c) {
                     // diagonal direction
                     distance *= sqrt(2.0);
@@ -901,7 +901,7 @@ RasterType<float> max_upstream_dist(const RasterType<uint8_t>& ldd, std::functio
 
     const int rows           = ldd.rows();
     const int cols           = ldd.cols();
-    const float cellSize     = inf::truncate<float>(meta.cellSize);
+    const float cellSize     = inf::truncate<float>(meta.cellSize.x);
     const float cellSizeDiag = cellSize * std::sqrt(2.f);
 
     RasterType<float> result(meta, 0.f);

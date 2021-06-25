@@ -216,12 +216,12 @@ TEST_CASE("AccufluxTest.LddDist")
     constexpr auto nan = std::numeric_limits<float>::quiet_NaN();
 
     RasterMetadata floatMeta(5, 5);
-    floatMeta.nodata   = nan;
-    floatMeta.cellSize = 2;
+    floatMeta.nodata = nan;
+    floatMeta.set_cell_size(2.0);
 
     RasterMetadata meta(5, 5);
-    meta.nodata   = 0;
-    meta.cellSize = 2;
+    meta.nodata = 0;
+    meta.set_cell_size(2.0);
 
     // reference data from
     // http://pcraster.geo.uu.nl/pcraster/4.1.0/doc/manual/op_ldddist.html
@@ -262,12 +262,12 @@ TEST_CASE("AccufluxTest.LddDistConstantFriction")
     constexpr auto nan = std::numeric_limits<float>::quiet_NaN();
 
     RasterMetadata floatMeta(5, 5);
-    floatMeta.nodata   = nan;
-    floatMeta.cellSize = 2;
+    floatMeta.nodata = nan;
+    floatMeta.set_cell_size(2.0);
 
     RasterMetadata meta(5, 5);
-    meta.nodata   = 0;
-    meta.cellSize = 2;
+    meta.nodata = 0;
+    meta.set_cell_size(2.0);
 
     // reference data from
     // http://pcraster.geo.uu.nl/pcraster/4.1.0/doc/manual/op_ldddist.html
@@ -452,8 +452,8 @@ TEST_CASE("AccufluxTest.Catchment")
 TEST_CASE("AccufluxTest.MaxUpstreamDist")
 {
     RasterMetadata meta(5, 5);
-    meta.nodata   = 0;
-    meta.cellSize = 1;
+    meta.nodata = 0;
+    meta.set_cell_size(1.0);
 
     MaskedRaster<uint8_t> lddMap(meta, std::vector<uint8_t>({2, 2, 2, 1, 1,
                                            2, 2, 1, 1, 1,

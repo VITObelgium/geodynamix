@@ -216,7 +216,7 @@ RasterType<float> distances_up_to(const RasterType<uint8_t>& target, const float
         });
     }
 
-    distanceToTarget *= static_cast<float>(target.metadata().cellSize);
+    distanceToTarget *= static_cast<float>(target.metadata().cellSize.x);
     return distanceToTarget;
 }
 
@@ -270,7 +270,7 @@ RasterType<float> distance(const RasterType<uint8_t>& target, const RasterType<u
         });
     }
 
-    distanceToTarget *= static_cast<float>(target.metadata().cellSize);
+    distanceToTarget *= static_cast<float>(target.metadata().cellSize.x);
 
     return distanceToTarget;
 }
