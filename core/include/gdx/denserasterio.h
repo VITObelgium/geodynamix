@@ -122,7 +122,7 @@ void write_raster(DenseRaster<T>&& raster, const fs::path& filename, std::span<c
 }
 
 template <typename T>
-DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs)
+DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::gdal::ResampleAlgorithm algo = inf::gdal::ResampleAlgorithm::NearestNeighbour)
 {
     auto srcMeta  = raster.metadata();
     auto destMeta = inf::gdal::warp_metadata(raster.metadata(), destCrs);
@@ -134,7 +134,7 @@ DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs)
     }
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(*destMeta.nodata));
-    inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata());
+    inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
     return result;
 }
 
@@ -145,8 +145,10 @@ DenseRaster<T> resample_raster(const DenseRaster<T>& raster, const RasterMetadat
 
     auto destMeta   = meta;
     destMeta.nodata = srcMeta.nodata;
-    if (auto epsg = srcMeta.projected_epsg(); epsg.has_value()) {
-        destMeta.set_projection_from_epsg(*epsg);
+    if (!destMeta.projected_epsg().has_value()) {
+        if (auto epsg = srcMeta.projected_epsg(); epsg.has_value()) {
+            destMeta.set_projection_from_epsg(*epsg);
+        }
     }
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(destMeta.nodata.value_or(0.0)));
