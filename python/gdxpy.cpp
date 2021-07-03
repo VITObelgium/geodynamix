@@ -31,12 +31,12 @@ static_assert(false, "pybind11 did not detect c++17 support");
 namespace py = pybind11;
 using namespace py::literals;
 
-PYBIND11_MODULE(gdx, mod)
+PYBIND11_MODULE(geodynamix, mod)
 {
     using namespace gdx;
 
     Log::add_custom_sink(std::make_shared<gdx::python::LogSinkMt>());
-    Log::initialize("gdx");
+    Log::initialize("geodynamix");
     inf::gdal::RegistrationConfig cfg;
     cfg.setLogHandler = false;
 
@@ -109,7 +109,9 @@ PYBIND11_MODULE(gdx, mod)
         .def_property_readonly("bounds", [](const gdx::RasterMetadata& self) { return rasterBounds(self, true); })
         .def_readwrite("rows", &gdx::RasterMetadata::rows)
         .def_readwrite("cols", &gdx::RasterMetadata::cols)
-        .def_readwrite("cell_size", &gdx::RasterMetadata::cellSize)
+        .def_property("cell_size", &gdx::RasterMetadata::cell_size_x, &gdx::RasterMetadata::set_cell_size)
+        .def_property_readonly("cell_size_x", &gdx::RasterMetadata::cell_size_x)
+        .def_property_readonly("cell_size_y", &gdx::RasterMetadata::cell_size_y)
         .def_readwrite("xll", &gdx::RasterMetadata::xll)
         .def_readwrite("yll", &gdx::RasterMetadata::yll)
         .def_readwrite("nodata", &gdx::RasterMetadata::nodata)

@@ -1,15 +1,12 @@
-if (MSVC AND PYTHON2 AND NOT "${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-    set (PYTHON_EXECUTABLE c:/Python27_32bit/python.exe)
-else ()
-    find_package(PythonInterp REQUIRED)
-endif ()
+find_package(PythonInterp REQUIRED)
+get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 macro(add_integration_test _NAME _TEST_FILE)
     add_test(NAME ${_NAME}
         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST_FILE}
     )
 
-    if (MSVC)
+    if (IS_MULTI_CONFIG)
         set (ENV_VARS
             GDAL_DATA=${CMAKE_PREFIX_PATH}/data
             PYTHONPATH=${LIBRARY_OUTPUT_PATH}/$<CONFIG>

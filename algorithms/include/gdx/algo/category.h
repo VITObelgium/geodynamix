@@ -268,7 +268,7 @@ RasterType<T> category_sum_in_buffer(const RasterType<int32_t>& clusters, const 
 
     const auto rows           = mapToSum.rows();
     const auto cols           = mapToSum.cols();
-    const float radiusInCells = static_cast<float>(radiusInMeter / mapToSum.metadata().cellSize);
+    const float radiusInCells = static_cast<float>(radiusInMeter / mapToSum.metadata().cellSize.x);
     auto resultMeta           = mapToSum.metadata();
 
     RasterType<T> result(resultMeta);

@@ -122,7 +122,7 @@ static void rasterize_segment_anti_aliased_impl(
     const gdx::RasterMetadata& meta,
     std::vector<std::pair<Cell, float /*brightness[0-1]*/>>& out)
 {
-    const TReal cellSize = static_cast<TReal>(meta.cellSize);
+    const TReal cellSize = static_cast<TReal>(meta.cellSize.x);
     const TReal llx      = static_cast<TReal>(meta.xll);
     const TReal lly      = static_cast<TReal>(meta.yll);
 

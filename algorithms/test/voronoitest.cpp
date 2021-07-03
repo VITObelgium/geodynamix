@@ -14,9 +14,9 @@ TEST_CASE_TEMPLATE("Voronoi", TypeParam, RasterTypes)
     {
         // 10 by 10 raster with cell size = 1 and lower left corner at(0, 0)
         gdx::RasterMetadata meta(10, 10);
-        meta.cellSize = 1;
-        meta.xll      = 0;
-        meta.yll      = 0;
+        meta.set_cell_size(1.0);
+        meta.xll = 0;
+        meta.yll = 0;
 
         std::vector<gdx::Cell> locations =
             {

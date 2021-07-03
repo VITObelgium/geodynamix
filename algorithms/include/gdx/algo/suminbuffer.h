@@ -156,7 +156,7 @@ RasterType<T> sum_in_buffer(const RasterType<T>& ras, float radiusInMeter, Buffe
     auto src = ras.copy();
     replace_nodata_in_place(src, 0);
 
-    float radiusInCells = radiusInMeter / static_cast<float>(ras.metadata().cellSize);
+    float radiusInCells = radiusInMeter / static_cast<float>(ras.metadata().cellSize.x);
     int32_t radius      = int32_t(radiusInCells);
     if (bufferStyle == BufferStyle::Square) {
         // pi r^2 = (R+1+R)^2,  The R+1+R construct is because we want R=0 mean the cell itself, R=1 with one cell around it, etc.
@@ -230,7 +230,7 @@ inline auto compute_d2(const T arow, const T acol, const T brow, const T bcol) -
 template <template <typename> typename RasterType, typename T>
 RasterType<T> max_in_buffer(const RasterType<T>& ras, float radiusInMeter)
 {
-    float radiusInCells            = radiusInMeter / static_cast<float>(ras.metadata().cellSize);
+    float radiusInCells            = radiusInMeter / static_cast<float>(ras.metadata().cellSize.x);
     const long long radius2InCells = (long long)(ceil(radiusInCells * radiusInCells));
     const auto rows                = ras.metadata().rows;
     const auto cols                = ras.metadata().cols;

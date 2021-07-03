@@ -59,7 +59,7 @@ message(STATUS "Python extension: ${PYTHON_MODULE_EXTENSION}")
 
 set_target_properties(gdxpy PROPERTIES
     DEBUG_POSTFIX ""
-    OUTPUT_NAME gdx
+    OUTPUT_NAME geodynamix
     PREFIX "${PYTHON_MODULE_PREFIX}"
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )

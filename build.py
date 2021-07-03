@@ -51,6 +51,7 @@ if __name__ == "__main__":
                 triplet=triplet,
                 cmake_args=cmake_args,
                 build_name=build_dir,
+                run_tests_after_build=args.run_tests,
             )
         else:
             vcpkg.build_project(
@@ -58,6 +59,7 @@ if __name__ == "__main__":
                 triplet=triplet,
                 cmake_args=cmake_args,
                 build_name=build_dir,
+                run_tests_after_build=args.run_tests,
             )
     except KeyboardInterrupt:
         print("\nInterrupted")

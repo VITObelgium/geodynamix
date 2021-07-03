@@ -1,5 +1,5 @@
 import os
-import gdx
+import geodynamix as gdx
 import unittest
 import numpy as np
 

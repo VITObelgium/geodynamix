@@ -102,14 +102,15 @@ RasterType<ValueType> deflate_equal_sum(
     if (inmap.metadata().cols % deflate_factor != 0) {
         throw InvalidArgument("deflate_equal_sum: inmap cols should be multiple of deflate factor");
     }
-    if (inmap.metadata().cellSize <= 0) {
+    if (inmap.metadata().cellSize.x <= 0) {
         throw InvalidArgument("deflate_equal_sum: inmap should have a cellSize");
     }
 
     RasterMetadata meta(inmap.metadata());
     meta.rows /= deflate_factor;
     meta.cols /= deflate_factor;
-    meta.cellSize *= deflate_factor;
+    meta.cellSize.x *= deflate_factor;
+    meta.cellSize.y *= deflate_factor;
     meta.nodata = std::numeric_limits<double>::quiet_NaN();
     RasterType<ValueType> result(meta, std::numeric_limits<ValueType>::quiet_NaN());
 

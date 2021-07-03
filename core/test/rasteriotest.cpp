@@ -65,7 +65,7 @@ TEST_CASE("read metadata")
     CHECK(meta.cols == 5);
     CHECK(meta.nodata.has_value());
     CHECK(*meta.nodata == Approx(-1.0));
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(1.0));
     CHECK(meta.yll == Approx(-10.0));
 }
@@ -86,16 +86,16 @@ TEST_CASE("read metadata with projection")
 TEST_CASE("read raster as int with extent which is contained")
 {
     RasterMetadata extent(2, 2);
-    extent.xll      = 9.0;
-    extent.yll      = -10.0;
-    extent.cellSize = 4.0;
+    extent.xll = 9.0;
+    extent.yll = -10.0;
+    extent.set_cell_size(4.0);
 
     auto ras = read_masked_raster<int32_t>(TEST_DATA_DIR "/testraster.asc", extent);
 
     CHECK(ras.metadata().rows == 2);
     CHECK(ras.metadata().cols == 2);
     CHECK_FALSE(ras.metadata().nodata.has_value());
-    CHECK(ras.metadata().cellSize == Approx(4.0));
+    CHECK(ras.metadata().cellSize.x == Approx(4.0));
     CHECK(ras.metadata().xll == Approx(9.0));
     CHECK(ras.metadata().yll == Approx(-10.0));
 
@@ -107,9 +107,9 @@ TEST_CASE("read raster as int with extent which is contained")
 TEST_CASE("read raster as int with extent which is not contained bottom left")
 {
     RasterMetadata extent(3, 4);
-    extent.xll      = -3.0;
-    extent.yll      = -14.0;
-    extent.cellSize = 4.0;
+    extent.xll = -3.0;
+    extent.yll = -14.0;
+    extent.set_cell_size(4.0);
 
     MaskedRaster<int32_t> ras;
     auto meta = read_raster(TEST_DATA_DIR "/testraster.asc", extent, ras);
@@ -118,7 +118,7 @@ TEST_CASE("read raster as int with extent which is not contained bottom left")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 4);
     CHECK(meta.nodata.has_value());
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(-3.0));
     CHECK(meta.yll == Approx(-14.0));
 
@@ -133,9 +133,9 @@ TEST_CASE("read raster as int with extent which is not contained bottom left")
 TEST_CASE("read raster as int with extent which is not contained top left")
 {
     RasterMetadata extent(3, 4);
-    extent.xll      = -3.0;
-    extent.yll      = -6.0;
-    extent.cellSize = 4.0;
+    extent.xll = -3.0;
+    extent.yll = -6.0;
+    extent.set_cell_size(4.0);
 
     MaskedRaster<int32_t> ras;
     auto meta = read_raster(TEST_DATA_DIR "/testraster.asc", extent, ras);
@@ -143,7 +143,7 @@ TEST_CASE("read raster as int with extent which is not contained top left")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 4);
     CHECK(meta.nodata.has_value());
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(-3.0));
     CHECK(meta.yll == Approx(-6.0));
 
@@ -158,9 +158,9 @@ TEST_CASE("read raster as int with extent which is not contained top left")
 TEST_CASE("read raster as int with extent which is not contained top right")
 {
     RasterMetadata extent(3, 4);
-    extent.xll      = 13.0;
-    extent.yll      = -6.0;
-    extent.cellSize = 4.0;
+    extent.xll = 13.0;
+    extent.yll = -6.0;
+    extent.set_cell_size(4.0);
 
     MaskedRaster<int32_t> ras;
     auto meta = read_raster(TEST_DATA_DIR "/testraster.asc", extent, ras);
@@ -168,7 +168,7 @@ TEST_CASE("read raster as int with extent which is not contained top right")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 4);
     CHECK(meta.nodata.has_value());
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(13.0));
     CHECK(meta.yll == Approx(-6.0));
 
@@ -183,9 +183,9 @@ TEST_CASE("read raster as int with extent which is not contained top right")
 TEST_CASE("read_raster as int with extent which is not contained bottom right")
 {
     RasterMetadata extent(3, 4);
-    extent.xll      = 9.0;
-    extent.yll      = -18.0;
-    extent.cellSize = 4.0;
+    extent.xll = 9.0;
+    extent.yll = -18.0;
+    extent.set_cell_size(4.0);
 
     MaskedRaster<int32_t> ras;
     auto meta = read_raster(TEST_DATA_DIR "/testraster.asc", extent, ras);
@@ -193,7 +193,7 @@ TEST_CASE("read_raster as int with extent which is not contained bottom right")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 4);
     CHECK(meta.nodata.has_value());
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(9.0));
     CHECK(meta.yll == Approx(-18.0));
 
@@ -213,7 +213,7 @@ TEST_CASE("read float raster as byte")
     CHECK(meta.rows == 40);
     CHECK(meta.cols == 49);
     CHECK(meta.nodata == 255);
-    CHECK(meta.cellSize == 100);
+    CHECK(meta.cellSize.x == 100);
     CHECK(meta.xll == 209400);
     CHECK(meta.yll == 217000);
 
@@ -314,7 +314,7 @@ TEST_CASE("read raster with nodata")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 5);
     CHECK(meta.nodata.value() == Approx(-1.0));
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(1.0));
     CHECK(meta.yll == Approx(-10.0));
 
@@ -335,7 +335,7 @@ TEST_CASE("read raster with nodata as int")
     CHECK(meta.rows == 3);
     CHECK(meta.cols == 5);
     CHECK(meta.nodata.value() == Approx(-1.0));
-    CHECK(meta.cellSize == Approx(4.0));
+    CHECK(meta.cellSize.x == Approx(4.0));
     CHECK(meta.xll == Approx(1.0));
     CHECK(meta.yll == Approx(-10.0));
 
@@ -406,9 +406,9 @@ TEST_CASE_TEMPLATE("raster io", RasterType, RasterIOTypes)
         auto meta = read_raster(TEST_DATA_DIR "/testraster.asc", raster);
 
         RasterMetadata expectedMeta(3, 5);
-        expectedMeta.cellSize = 4.0;
-        expectedMeta.xll      = 1.0;
-        expectedMeta.yll      = -10.0;
+        expectedMeta.set_cell_size(4.0);
+        expectedMeta.xll = 1.0;
+        expectedMeta.yll = -10.0;
         compareMetaData(expectedMeta, meta);
 
         std::vector<float> expectedData = {
@@ -427,7 +427,7 @@ TEST_CASE_TEMPLATE("raster io", RasterType, RasterIOTypes)
         CHECK(meta.rows == 3);
         CHECK(meta.cols == 5);
         CHECK_FALSE(meta.nodata.has_value());
-        CHECK(meta.cellSize == Approx(4.0));
+        CHECK(meta.cellSize.x == Approx(4.0));
         CHECK(meta.xll == Approx(1.0));
         CHECK(meta.yll == Approx(-10.0));
 
@@ -467,7 +467,7 @@ TEST_CASE_TEMPLATE("contiguous raster io", RasterType, ContiguousRasterTypes)
     {
         // clang-format off
         RasterMetadata meta(3, 2, 0);
-        meta.cellSize = 100;
+        meta.set_cell_size(100.0);
         meta.set_projection_from_epsg(crs::epsg::BelgianLambert72);
 
         RasterType ras(meta, std::vector<T>({
@@ -478,7 +478,7 @@ TEST_CASE_TEMPLATE("contiguous raster io", RasterType, ContiguousRasterTypes)
 
         meta.rows = 6;
         meta.cols = 4;
-        meta.cellSize = 50.0;
+        meta.set_cell_size(50.0);
         const RasterType expected(meta, std::vector<T>({
             1, 1, 2, 2,
             1, 1, 2, 2,
@@ -496,7 +496,7 @@ TEST_CASE_TEMPLATE("contiguous raster io", RasterType, ContiguousRasterTypes)
     {
         // clang-format off
         RasterMetadata meta(6, 4);
-        meta.cellSize = 50.0;
+        meta.set_cell_size(50);
         meta.set_projection_from_epsg(crs::epsg::BelgianLambert72);
 
         RasterType ras(meta, std::vector<T>({
@@ -510,7 +510,7 @@ TEST_CASE_TEMPLATE("contiguous raster io", RasterType, ContiguousRasterTypes)
 
         meta.rows = 3;
         meta.cols = 2;
-        meta.cellSize = 100.0;
+        meta.set_cell_size(100.0);
         const RasterType expectedNearest(meta, std::vector<T>({
             6, 3,
             9, 10,
@@ -549,7 +549,7 @@ TEST_CASE("store double dense raster as float, nodata needs adjustment")
 {
     // This nodata value does not fit in a float
     RasterMetadata meta(3, 3, -1.7976931348623157e+308);
-    meta.cellSize = 50;
+    meta.set_cell_size(50);
 
     gdx::DenseRaster<double> ras(meta, std::vector<double>({-1.7976931348623157e+308, 1.0, -1.7976931348623157e+308,
                                            1.0, 1.0, 1.0,
@@ -575,7 +575,7 @@ TEST_CASE("store double masked raster as float, nodata needs adjustment")
 {
     // This nodata value does not fit in a float
     RasterMetadata meta(3, 3, -1.7976931348623157e+308);
-    meta.cellSize = 50;
+    meta.set_cell_size(50.0);
 
     gdx::MaskedRaster<double> ras(meta, std::vector<double>({-1.7976931348623157e+308, 1.0, -1.7976931348623157e+308,
                                             1.0, 1.0, 1.0,
@@ -600,9 +600,9 @@ TEST_CASE("store double masked raster as float, nodata needs adjustment")
 TEST_CASE("Write raster with different data type")
 {
     RasterMetadata extent(2, 2);
-    extent.xll      = 9.0;
-    extent.yll      = -10.0;
-    extent.cellSize = 4.0;
+    extent.xll = 9.0;
+    extent.yll = -10.0;
+    extent.set_cell_size(4.0);
 
     auto path = fs::temp_directory_path() / "rasterio" / "int32.tif";
 

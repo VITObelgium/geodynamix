@@ -8,9 +8,9 @@ namespace gdx::test {
 TEST_CASE_TEMPLATE("Clip raster", TypeParam, UnspecializedRasterTypes)
 {
     RasterMetadata meta(4, 4, -1.0);
-    meta.xll      = 0.0;
-    meta.yll      = 0.0;
-    meta.cellSize = 100.0;
+    meta.xll = 0.0;
+    meta.yll = 0.0;
+    meta.set_cell_size(100.0);
     meta.set_projection_from_epsg(inf::crs::epsg::BelgianLambert72);
 
     SUBCASE("clip edges")

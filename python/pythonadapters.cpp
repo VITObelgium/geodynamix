@@ -135,50 +135,36 @@ using value_type = typename std::remove_cv_t<std::remove_reference_t<T>>::value_
 
 std::tuple<double, double> rowColCenterToXY(const gdx::RasterMetadata& meta, const std::tuple<int32_t, int32_t>& cell)
 {
-    auto height        = meta.rows * meta.cellSize;
+    auto height        = meta.rows * std::abs(meta.cellSize.y);
     auto minX          = meta.xll;
     auto minY          = meta.yll;
     auto maxY          = minY + height;
     auto topLeftCorner = Point<double>(minX, maxY);
 
-    auto point = gdx::Point<double>(topLeftCorner.x + ((std::get<1>(cell) + 0.5) * meta.cellSize) /*col*/,
-        topLeftCorner.y - ((std::get<0>(cell) + 0.5) * meta.cellSize) /*row*/);
+    auto point = gdx::Point<double>(topLeftCorner.x + ((std::get<1>(cell) + 0.5) * meta.cellSize.x) /*col*/,
+        topLeftCorner.y - ((std::get<0>(cell) + 0.5) * std::abs(meta.cellSize.y)) /*row*/);
     return std::make_tuple(point.x, point.y);
 }
 
 std::tuple<int32_t, int32_t> xYToRowCol(const gdx::RasterMetadata& meta, const std::tuple<double, double>& point)
 {
-    auto yTopLeft = meta.yll + meta.rows * meta.cellSize;
-    auto x        = std::get<0>(point);
-    auto y        = std::get<1>(point);
-    int32_t col   = int32_t((x - meta.xll) / meta.cellSize);
-    int32_t row   = int32_t((yTopLeft - y) / meta.cellSize);
-    return std::make_tuple(row, col);
+    const auto cell = meta.convert_xy_to_cell(std::get<0>(point), std::get<1>(point));
+    return std::make_tuple(cell.r, cell.c);
 }
 
 bool isRowColOnRaster(const gdx::RasterMetadata& meta, const std::tuple<int32_t, int32_t>& cell)
 {
-    auto row = std::get<0>(cell);
-    auto col = std::get<1>(cell);
-    return 0 <= row && row < meta.rows && 0 <= col && col < meta.cols;
+    return meta.is_on_map(Cell(std::get<0>(cell), std::get<1>(cell)));
 }
 
 py::list rasterBounds(const RasterMetadata& meta, bool projected)
 {
-    auto width  = meta.cols * meta.cellSize;
-    auto height = meta.rows * meta.cellSize;
-
-    auto minX = meta.xll;
-    auto maxX = minX + width;
-    auto minY = meta.yll;
-    auto maxY = minY + height;
-
-    auto topLeftCorner     = Point<double>(minX, maxY);
-    auto bottomRightCorner = Point<double>(maxX, minY);
+    auto topLeftCorner     = meta.top_left();
+    auto bottomRightCorner = meta.bottom_right();
 
     if (meta.projection.empty()) {
-        topLeftCorner     = Point<double>(0.0, meta.rows / meta.cellSize);
-        bottomRightCorner = Point<double>(meta.cols / meta.cellSize, 0.0);
+        topLeftCorner     = Point<double>(0.0, meta.rows / std::abs(meta.cellSize.y));
+        bottomRightCorner = Point<double>(meta.cols / meta.cellSize.x, 0.0);
     } else if (!projected) {
         auto sourceEpsg = meta.projected_epsg();
         if (!sourceEpsg.has_value()) {
@@ -337,7 +323,7 @@ pybind11::str showMetadata(const RasterMetadata& meta)
 
     ss << "<table>";
     row(ss, "Dimensions", fmt::format("{}x{}", meta.cols, meta.rows));
-    row(ss, "Cell size", meta.cellSize);
+    row(ss, "Cell size", fmt::format("x: {} y: {}", meta.cellSize.x, meta.cellSize.y));
     row(ss, "Xll", meta.xll);
     row(ss, "Yll", meta.yll);
 
