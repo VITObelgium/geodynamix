@@ -35,7 +35,7 @@ if (GDX_IS_TOPLEVEL)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
     
     project(GeoDynamiX
-        VERSION 0.12.0
+        VERSION 0.13.0
         LANGUAGES C CXX
     )
     set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
