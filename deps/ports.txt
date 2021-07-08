@@ -4,7 +4,7 @@ tiff[lzw]
 fmt
 spdlog
 eigen3
-gdal[gif,png,expat,pcraster,netcdf]
+gdal[gif,png,expat,pcraster,netcdf,geos]
 gsl
 pybind11
 lyra
