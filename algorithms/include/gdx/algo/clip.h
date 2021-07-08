@@ -10,7 +10,7 @@
 namespace gdx {
 
 template <typename RasterType>
-void clip_raster(RasterType& ras, inf::gdal::Polygon& polygon)
+void clip_raster(RasterType& ras, inf::gdal::PolygonCRef polygon)
 {
     const auto& meta = ras.metadata();
 
@@ -43,7 +43,7 @@ void clip_raster(RasterType& ras, std::span<const inf::Coordinate> polygon, int3
     geom.addRing(&linearRing);
     geom.assignSpatialReference(srcCrs.get());
 
-    inf::gdal::Polygon poly(&geom);
+    inf::gdal::PolygonRef poly(&geom);
 
     return clip_raster<RasterType>(ras, poly);
 }

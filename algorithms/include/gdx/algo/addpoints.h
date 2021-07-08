@@ -9,7 +9,6 @@
 #include "infra/cast.h"
 #include "infra/span.h"
 
-
 namespace gdx {
 
 /*! Add values to the raster.  Can be used with point, lines of polygon shapes.
@@ -34,11 +33,11 @@ RasterType<ResultType> add_points(
     auto fieldIndex = pointsLayer.layer_definition().required_field_index(fieldName);
     RasterType<ResultType> result(resultMeta, inf::truncate<ResultType>(resultMeta.nodata.value()));
 
-    for (auto& feature : pointsLayer) {
+    for (const auto& feature : pointsLayer) {
         if (feature.has_geometry()) {
             auto geom = feature.geometry();
             if (geom.type() == inf::gdal::Geometry::Type::Point) {
-                auto cell = resultMeta.convert_point_to_cell(geom.as<inf::gdal::PointGeometry>().point());
+                auto cell = resultMeta.convert_point_to_cell(geom.as<inf::gdal::PointCRef>().point());
                 if (meta.is_on_map(cell)) {
                     result.add_to_cell(cell, feature.field_as<ResultType>(fieldIndex));
                 }

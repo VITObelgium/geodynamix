@@ -36,11 +36,13 @@ if (GDX_IS_TOPLEVEL)
     
     project(GeoDynamiX
         VERSION 0.12.0
-        LANGUAGES CXX
+        LANGUAGES C CXX
     )
     set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
     include(GNUInstallDirs)
+
+    set (LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
     message(STATUS "Gdx version: ${GDX_VERSION} (${PACKAGE_VERSION_COMMITHASH})")
     message(STATUS "Unit tests: ${GDX_ENABLE_TESTS}")
@@ -121,14 +123,6 @@ endif ()
 
 if (MINGW)
     add_definitions("-DMINGW_HAS_SECURE_API")
-endif ()
-
-if (MSVC)
-    set (LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-    set (EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-else ()
-    set (LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-    set (EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
 endif ()
 
 find_package(Gsl REQUIRED)
