@@ -68,7 +68,7 @@ static TReal computeLength(const std::vector<std::vector<Point<TReal>>>& multi_l
 }
 
 template <typename TReal>
-void process_points_from_line(const inf::gdal::Line& line, std::vector<Point<TReal>>& endPoints)
+void process_points_from_line(inf::gdal::LineCRef line, std::vector<Point<TReal>>& endPoints)
 {
     endPoints.clear();
     for (auto iter = begin(line); iter != end(line); ++iter) {
@@ -86,7 +86,7 @@ static std::vector<std::pair<std::vector<std::vector<Point<TReal>>>, float>> ext
     std::vector<std::vector<Point<TReal>>> endPoints;
     int fieldIndex = (fieldname != "" ? linesLayer.field_index(fieldname) : -1);
 
-    for (auto& feature : linesLayer) {
+    for (const auto& feature : linesLayer) {
         float value = (fieldname != "" ? feature.field_as<float>(fieldIndex) : 1.0f);
 
         if (!feature.has_geometry()) {
@@ -97,11 +97,11 @@ static std::vector<std::pair<std::vector<std::vector<Point<TReal>>>, float>> ext
         switch (geometry.type()) {
         case inf::gdal::Geometry::Type::Line:
             endPoints.resize(1);
-            process_points_from_line(geometry.as<inf::gdal::Line>(), endPoints[0]);
+            process_points_from_line(geometry.as<inf::gdal::LineCRef>(), endPoints[0]);
             result.push_back(std::pair(endPoints, value));
             break;
         case inf::gdal::Geometry::Type::MultiLine: {
-            auto multiLine = geometry.as<inf::gdal::MultiLine>();
+            auto multiLine = geometry.as<inf::gdal::MultiLineCRef>();
             endPoints.resize(multiLine.size());
             for (int i = 0; i < multiLine.size(); ++i) {
                 process_points_from_line(multiLine.line_at(i), endPoints[i]);

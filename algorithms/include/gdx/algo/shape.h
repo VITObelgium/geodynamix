@@ -134,9 +134,9 @@ struct LineWithValue
 
 namespace details {
 template <typename T>
-void process_points_from_line(const inf::gdal::Line& line, std::vector<Point<T>>& endPoints)
+void process_points_from_line(inf::gdal::LineCRef line, std::vector<Point<T>>& endPoints)
 {
-    for (auto& point : line) {
+    for (const auto& point : line) {
         endPoints.emplace_back(inf::truncate<T>(point.x), inf::truncate<T>(point.y));
     }
 }
