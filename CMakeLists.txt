@@ -7,6 +7,10 @@ else ()
     set(GDX_DEV_BUILD 0)
 endif ()
 
+if(POLICY CMP0063)
+    cmake_policy(SET CMP0063 NEW) # symbol visibility
+endif()
+
 enable_testing()
 
 include(CTestUseLaunchers)
