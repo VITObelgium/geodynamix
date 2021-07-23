@@ -38,7 +38,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.cache/vcpkg
-          key: ${{ runner.os }}-${{ runner.triplet }}-${{ hashFiles('vcpkg.json') }}
+          key: ${{ runner.os }}-${{ matrix.cfg.triplet }}-${{ hashFiles('vcpkg.json') }}
       - name: Bootstrap the ports
         run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
       - name: Build the code
