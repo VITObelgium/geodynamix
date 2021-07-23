@@ -38,6 +38,13 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install nasm openssl ninja-build
 
+      - name: Cache vcpkg packages
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/vcpkg
+          key: ${{ runner.os }}-x64-linux-${{ hashFiles('vcpkg.json', '.git/modules/deps/vcpkg/shallow') }}
+
       - name: Bootstrap
         run: python bootstrap.py --triplet x64-linux --clean-after-build
 
