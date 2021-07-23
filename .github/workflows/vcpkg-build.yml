@@ -15,25 +15,31 @@ jobs:
           - { os: macos-latest, triplet: x64-osx }
 
     steps:
-    - name: Clone repository
-      uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-    - name: Install pip dependencies
-      run: |
+      - name: Clone repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+      - name: Install pip dependencies
+        run: |
           python -m pip install --upgrade pip
           pip install numpy
-    - name: Install linux dependencies
-      if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
-      run: sudo apt-get install nasm openssl ninja-build
-    - name: Install osx dependencies
-      if: ${{ matrix.cfg.os == 'macos-latest' }}
-      run: brew install nasm ninja
-    - name: Bootstrap the ports
-      run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
-    - name: Build the code
-      run: python build.py --triplet ${{ matrix.cfg.triplet }} --no-avx2 --run-tests
+      - name: Install linux dependencies
+        if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
+        run: sudo apt-get install nasm openssl ninja-build
+      - name: Install osx dependencies
+        if: ${{ matrix.cfg.os == 'macos-latest' }}
+        run: brew install nasm ninja
+      - name: Cache vcpkg packages
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/vcpkg
+          key: ${{ runner.os }}-${{ runner.triplet }}-${{ hashFiles('vcpkg.json') }}
+      - name: Bootstrap the ports
+        run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
+      - name: Build the code
+        run: python build.py --triplet ${{ matrix.cfg.triplet }} --no-avx2 --run-tests
