@@ -6,14 +6,15 @@
         "GDX_ENABLE_BENCHMARKS": "ON",
         "GDX_ENABLE_SIMD": "ON",
         "GDX_AVX2": "ON",
-        "INFRA_EMBED_GDAL_DATA": "ON"
+        "INFRA_EMBED_GDAL_DATA": "ON",
+        "VCPKG_INSTALLED_DIR": "${workspaceRoot}/vcpkg_installed",
     },
     "files.exclude": {
         "**/.git": true,
         "**/.clangd": true,
         "**/.DS_Store": true,
         "**/deps/vcpkg/buildtrees": true,
-        "**/deps/vcpkg/packages": true
+        "**/deps/vcpkg/packages": true,
     },
     "python.autoComplete.extraPaths": [
         "${workspaceRoot}/build/gdx/Release"
