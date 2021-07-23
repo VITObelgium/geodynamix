@@ -13,7 +13,10 @@ if __name__ == "__main__":
             description="Build gdx.", parents=[vcpkg.build_argparser()]
         )
         parser.add_argument(
-            "--no-avx2", dest="no_avx2", action="store_true", help="build with avx2 instructions"
+            "--no-avx2",
+            dest="no_avx2",
+            action="store_true",
+            help="build with avx2 instructions",
         )
 
         args = parser.parse_args()
@@ -35,7 +38,7 @@ if __name__ == "__main__":
             "-DGDX_ENABLE_SIMD=ON",
         ]
 
-        if not args.no_avx2:
+        if not args.no_avx2 and not "arm" in sys_platform:
             cmake_args.append("-DGDX_AVX2=ON")
 
         build_dir = "gdx"
