@@ -31,5 +31,8 @@
     "editor.formatOnSave": true,
     "cmake.buildDirectory": "${workspaceRoot}/build/vscode",
     "python.formatting.provider": "black",
-    "cmake.copyCompileCommands": "${workspaceRoot}/compile_commands.json"
+    "cmake.copyCompileCommands": "${workspaceRoot}/compile_commands.json",
+    "clangd.arguments": [
+        "-header-insertion=never"
+    ]
 }
