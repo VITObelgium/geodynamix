@@ -38,6 +38,15 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install nasm openssl ninja-build
 
+      - name: Cache vcpkg binary
+        id: cache-vcpkg-bin
+        uses: actions/cache@v2
+        with:
+          path: |
+            deps/vcpkg/vcpkg
+            deps/vcpkg/vcpkg.exe
+          key: ${{ runner.os }}-${{ hashFiles('deps/vcpkg/bootstrap.cmake') }}
+
       - name: Cache vcpkg packages
         id: cache-vcpkg
         uses: actions/cache@v2
