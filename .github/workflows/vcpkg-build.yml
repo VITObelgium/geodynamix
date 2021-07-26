@@ -45,7 +45,9 @@ jobs:
         id: cache-vcpkg
         uses: actions/cache@v2
         with:
-          path: ~/.cache/vcpkg
+          path: |
+            ~/.cache/vcpkg
+            ~/AppData/Local/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.cfg.triplet }}-${{ hashFiles('vcpkg.json', '.git/modules/deps/vcpkg/shallow') }}
       - name: Bootstrap the ports
         run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
