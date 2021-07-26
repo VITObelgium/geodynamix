@@ -1,0 +1,89 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 15,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "vcpkg-base",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build/vcpkg",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "GDX_ENABLE_TESTS": "ON",
+                "GDX_PYTHON_BINDINGS": "ON",
+                "GDX_ENABLE_BENCHMARKS": "ON",
+                "GDX_ENABLE_SIMD": "ON",
+                "INFRA_EMBED_GDAL_DATA": "ON",
+                "VCPKG_APPLOCAL_DEPS": "OFF",
+                "VCPKG_INSTALLED_DIR": "${sourceDir}/vcpkg_installed"
+            }
+        },
+        {
+            "name": "osx-base",
+            "inherits": "vcpkg-base",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "11.3",
+                "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/deps/vcpkg/triplets/toolchain-osx-appleclang.cmake",
+                "VCPKG_CXX_FLAGS": "-fvisibility=hidden -fvisibility-inlines-hidden"
+            }
+        },
+        {
+            "name": "arm64-osx",
+            "inherits": "osx-base",
+            "displayName": "OSX arm64",
+            "description": "Vcpkg build for arm64 on mac",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "arm64-osx",
+                "CMAKE_OSX_ARCHITECTURES": "arm64"
+            }
+        },
+        {
+            "name": "x64-osx",
+            "inherits": "osx-base",
+            "displayName": "OSX x64",
+            "description": "Vcpkg build for x64 on mac",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "x64-osx",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64"
+            }
+        },
+        {
+            "name": "x64-windows-static-vs2019",
+            "displayName": "Windows x64",
+            "description": "Vcpkg build for x64 on windows",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "x64-windows-static-vs2019",
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "VCPKG_TARGET_ARCHITECTURE": "x64",
+                "VCPKG_CRT_LINKAGE": "static",
+                "VCPKG_LIBRARY_LINKAGE": "static",
+                "VCPKG_PLATFORM_TOOLSET": "v142",
+                "VCPKG_SET_CHARSET_FLAG": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
+        }
+    ]
+}

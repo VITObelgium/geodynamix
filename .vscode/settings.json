@@ -1,14 +1,5 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "cmake.configureSettings": {
-        "GDX_ENABLE_TESTS": "ON",
-        "GDX_PYTHON_BINDINGS": "ON",
-        "GDX_ENABLE_BENCHMARKS": "ON",
-        "GDX_ENABLE_SIMD": "ON",
-        "GDX_AVX2": "ON",
-        "INFRA_EMBED_GDAL_DATA": "ON",
-        "VCPKG_INSTALLED_DIR": "${workspaceRoot}/vcpkg_installed",
-    },
     "files.exclude": {
         "**/.git": true,
         "**/.clangd": true,
@@ -34,5 +25,8 @@
     "cmake.copyCompileCommands": "${workspaceRoot}/compile_commands.json",
     "clangd.arguments": [
         "-header-insertion=never"
+    ],
+    "python.analysis.extraPaths": [
+        "${workspaceRoot}/build/gdx/Release"
     ]
 }

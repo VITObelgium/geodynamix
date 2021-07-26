@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.19)
 
 set(PACKAGE_VERSION_COMMITHASH "dev" CACHE STRING "git commit hash")
 if (PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
@@ -6,10 +6,6 @@ if (PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
 else ()
     set(GDX_DEV_BUILD 0)
 endif ()
-
-if(POLICY CMP0063)
-    cmake_policy(SET CMP0063 NEW) # symbol visibility
-endif()
 
 enable_testing()
 
@@ -147,12 +143,12 @@ endif ()
 if (GDX_IS_TOPLEVEL)
     if (GDX_INSOURCE_DEPS)
         # gdx is the toplevel project so include the infra dependency
-        set(INFRA_LOGGING ON CACHE BOOL "" FORCE)
-        set(INFRA_GDAL ON CACHE BOOL "" FORCE)
-        set(INFRA_EMBED_GDAL_DATA ON CACHE BOOL "")
-        set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS} CACHE BOOL "" FORCE)
-        set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS} CACHE BOOL "" FORCE)
-        set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES} CACHE BOOL "" FORCE)
+        set(INFRA_LOGGING ON)
+        set(INFRA_GDAL ON)
+        set(INFRA_EMBED_GDAL_DATA ON)
+        set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS})
+        set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS})
+        set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES})
         add_subdirectory(deps/infra)
     else ()
         find_package(Infra CONFIG REQUIRED)
