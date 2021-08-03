@@ -145,7 +145,7 @@ if (GDX_IS_TOPLEVEL)
         # gdx is the toplevel project so include the infra dependency
         set(INFRA_LOGGING ON)
         set(INFRA_GDAL ON)
-        set(INFRA_EMBED_GDAL_DATA ON)
+        set(INFRA_EMBED_GDAL_DATA ON CACHE BOOL "")
         set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS})
         set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS})
         set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES})
