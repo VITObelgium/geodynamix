@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.19)
-
 set(PACKAGE_VERSION_COMMITHASH "dev" CACHE STRING "git commit hash")
 if (PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
     set(GDX_DEV_BUILD 1)
@@ -12,10 +10,6 @@ enable_testing()
 include(CTestUseLaunchers)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
@@ -33,7 +27,12 @@ option(GDX_INSTALL_DEVELOPMENT_FILES "Install the gdx development files (headers
 if (GDX_IS_TOPLEVEL)
     option(ENABLE_ADDRESS_SANITIZER "Enable the address sanitizer" OFF)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
-    
+
+    cmake_minimum_required(VERSION 3.19)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
+
     project(GeoDynamiX
         VERSION 0.13.0
         LANGUAGES C CXX
