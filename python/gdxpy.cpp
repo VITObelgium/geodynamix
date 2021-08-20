@@ -214,7 +214,10 @@ PYBIND11_MODULE(geodynamix, mod)
         .def(py::self <= double())
         .def(py::self > double())
         .def(py::self >= double())
+        .def(py::self | py::self)
+        .def(py::self & py::self)
         .def(-py::self)
+        .def(~py::self)
         .def("__bool__", &Raster::operator bool)
         .def("__copy__", [](const Raster& ras) {
             return ras.copy();

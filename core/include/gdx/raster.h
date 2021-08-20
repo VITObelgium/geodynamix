@@ -107,8 +107,11 @@ public:
     Raster operator/(double value) const;
 
     Raster operator!() const;
+    Raster operator~() const;
     Raster operator&&(const Raster& other) const;
+    Raster operator&(const Raster& other) const;
     Raster operator||(const Raster& other) const;
+    Raster operator|(const Raster& other) const;
     Raster operator>(const Raster& other) const;
     Raster operator>(double threshold) const;
     Raster operator>=(const Raster& other) const;

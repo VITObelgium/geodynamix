@@ -414,6 +414,11 @@ Raster Raster::operator!() const
         _raster);
 }
 
+Raster Raster::operator~() const
+{
+    return !(*this);
+}
+
 Raster Raster::operator&&(const Raster& other) const
 {
     return std::visit([](auto&& raster1, auto&& raster2) {
@@ -422,12 +427,22 @@ Raster Raster::operator&&(const Raster& other) const
         _raster, other._raster);
 }
 
+Raster Raster::operator&(const Raster& other) const
+{
+    return *this && other;
+}
+
 Raster Raster::operator||(const Raster& other) const
 {
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 || raster2);
     },
         _raster, other._raster);
+}
+
+Raster Raster::operator|(const Raster& other) const
+{
+    return *this || other;
 }
 
 Raster Raster::operator>(const Raster& other) const

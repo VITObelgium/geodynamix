@@ -303,41 +303,61 @@ class TestGdx(unittest.TestCase):
         self.assertTrue(np.allclose(array, result.array))
 
     def test_operators_int_raster(self):
-        array = np.array(
+        array1 = np.array(
             [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]],
+            dtype="i",
+        )
+
+        array2 = np.array(
+            [[1, 1, 1, 1, 1], [0, 1, 0, 1, 0], [0, 0, 0, 0, 1], [1, 1, 1, 1, 1]],
+            dtype="i",
+        )
+
+        array3 = np.array(
+            [[0, 0, 0, 0, 0], [0, 1, 0, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 0]],
             dtype="i",
         )
 
         # no need to check the values, already tested in c++
         # just check if the binding works
-        ras = gdx.raster_from_ndarray(array, gdx.raster_metadata(rows=4, cols=5))
-        self.assertEqual(array.dtype, ras.dtype)
+        ras1 = gdx.raster_from_ndarray(array1, gdx.raster_metadata(rows=4, cols=5))
+        ras2 = gdx.raster_from_ndarray(array2, gdx.raster_metadata(rows=4, cols=5))
+        ras3 = gdx.raster_from_ndarray(array3, gdx.raster_metadata(rows=4, cols=5))
+        self.assertEqual(array1.dtype, ras1.dtype)
 
-        self.assertEqual((ras * 1).dtype, ras.dtype)
-        self.assertEqual((ras + 1).dtype, ras.dtype)
-        self.assertEqual((ras / 1).dtype, ras.dtype)
-        self.assertEqual((ras - 1).dtype, ras.dtype)
+        self.assertEqual((ras1 * 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 + 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 / 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 - 1).dtype, ras1.dtype)
 
-        self.assertEqual((1 * ras).dtype, ras.dtype)
-        self.assertEqual((1 + ras).dtype, ras.dtype)
-        self.assertEqual((1 / ras).dtype, np.dtype("float32"))
-        self.assertEqual((1 - ras).dtype, ras.dtype)
+        self.assertEqual((1 * ras1).dtype, ras1.dtype)
+        self.assertEqual((1 + ras1).dtype, ras1.dtype)
+        self.assertEqual((1 / ras1).dtype, np.dtype("float32"))
+        self.assertEqual((1 - ras1).dtype, ras1.dtype)
 
-        self.assertEqual(gdx.logical_not(ras).dtype, np.dtype("B"))
-        self.assertEqual(gdx.logical_and(ras, ras).dtype, np.dtype("B"))
-        self.assertEqual(gdx.logical_or(ras, ras).dtype, np.dtype("B"))
+        self.assertEqual(gdx.logical_not(ras1).dtype, np.dtype("B"))
+        self.assertEqual(gdx.logical_and(ras1, ras2).dtype, np.dtype("B"))
+        self.assertEqual(gdx.logical_or(ras1, ras2).dtype, np.dtype("B"))
+
+        self.assertEqual((ras1 & ras2).dtype, np.dtype("B"))
+        self.assertEqual((ras1 | ras2).dtype, np.dtype("B"))
+
+        np.testing.assert_array_equal(gdx.logical_and(ras1, ras2).array, (ras1 & ras2).array)
+        np.testing.assert_array_equal(gdx.logical_and(ras1, ras2, ras3).array, (ras1 & ras2 & ras3).array)
+        np.testing.assert_array_equal(gdx.logical_or(ras1, ras2).array, (ras1 | ras2).array)
+        np.testing.assert_array_equal(gdx.logical_or(ras1, ras2, ras3).array, (ras1 | ras2 | ras3).array)
 
         with self.assertRaises(ValueError):
-            ras * 1.0
+            ras1 * 1.0
 
         with self.assertRaises(ValueError):
-            ras + 1.0
+            ras1 + 1.0
 
         with self.assertRaises(ValueError):
-            ras / 1.0
+            ras1 / 1.0
 
         with self.assertRaises(ValueError):
-            ras - 1.0
+            ras1 - 1.0
 
     def test_operators_int_raster_divide_by_zero(self):
         array = np.array(
