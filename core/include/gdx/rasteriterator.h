@@ -711,8 +711,8 @@ private:
     }
 
     Cell _current;
-    const int32_t _rows = 0;
-    const int32_t _cols = 0;
+    int32_t _rows = 0;
+    int32_t _cols = 0;
 };
 
 class RasterCells

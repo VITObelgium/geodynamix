@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+    "name": "my-application",
+    "version": "0.13.0",
+    "dependencies": [
+        "benchmark",
+        "zlib",
+        "fmt",
+        "spdlog",
+        "eigen3",
+        {
+            "name": "gdal",
+            "features": [
+                "gif",
+                "png",
+                "expat",
+                "pcraster",
+                "netcdf",
+                "geos"
+            ]
+        },
+        "gsl",
+        "pybind11",
+        "lyra",
+        "date",
+        "trompeloeil",
+        "doctest",
+        "vc"
+    ]
+}

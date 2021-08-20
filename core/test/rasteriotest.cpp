@@ -545,6 +545,7 @@ TEST_CASE_TEMPLATE("contiguous raster io", RasterType, ContiguousRasterTypes)
     }
 }
 
+#ifdef GDX_ENABLE_SIMD
 TEST_CASE("store double dense raster as float, nodata needs adjustment")
 {
     // This nodata value does not fit in a float
@@ -570,6 +571,7 @@ TEST_CASE("store double dense raster as float, nodata needs adjustment")
         CHECK(resultRas.is_nodata(0, 0));
     }
 }
+#endif
 
 TEST_CASE("store double masked raster as float, nodata needs adjustment")
 {

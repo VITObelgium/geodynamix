@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.12)
-
 set(PACKAGE_VERSION_COMMITHASH "dev" CACHE STRING "git commit hash")
 if (PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
     set(GDX_DEV_BUILD 1)
@@ -12,10 +10,6 @@ enable_testing()
 include(CTestUseLaunchers)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
@@ -33,7 +27,12 @@ option(GDX_INSTALL_DEVELOPMENT_FILES "Install the gdx development files (headers
 if (GDX_IS_TOPLEVEL)
     option(ENABLE_ADDRESS_SANITIZER "Enable the address sanitizer" OFF)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
-    
+
+    cmake_minimum_required(VERSION 3.19)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+    set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
+
     project(GeoDynamiX
         VERSION 0.13.0
         LANGUAGES C CXX
@@ -143,12 +142,12 @@ endif ()
 if (GDX_IS_TOPLEVEL)
     if (GDX_INSOURCE_DEPS)
         # gdx is the toplevel project so include the infra dependency
-        set(INFRA_LOGGING ON CACHE BOOL "" FORCE)
-        set(INFRA_GDAL ON CACHE BOOL "" FORCE)
+        set(INFRA_LOGGING ON)
+        set(INFRA_GDAL ON)
         set(INFRA_EMBED_GDAL_DATA ON CACHE BOOL "")
-        set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS} CACHE BOOL "" FORCE)
-        set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS} CACHE BOOL "" FORCE)
-        set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES} CACHE BOOL "" FORCE)
+        set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS})
+        set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS})
+        set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES})
         add_subdirectory(deps/infra)
     else ()
         find_package(Infra CONFIG REQUIRED)

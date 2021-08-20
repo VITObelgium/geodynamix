@@ -25,6 +25,10 @@ if (GDX_ENABLE_SIMD)
         Vc_LIBRARY_DEBUG
     )
 
+    if (NOT Vc_FOUND)
+        message(FATAL_ERROR "Failed to detect the Vc simd library")
+    endif ()
+
     if(Vc_FOUND AND NOT TARGET Vc::Vc)
         add_library(Vc::Vc STATIC IMPORTED)
         set_target_properties(Vc::Vc PROPERTIES
