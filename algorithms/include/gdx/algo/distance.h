@@ -42,28 +42,6 @@ void handle_cell_closest_target(float deltaD, const Cell& cell, const Cell& newC
 }
 
 template <template <typename> typename RasterType, typename T>
-void handle_time_cell(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    const RasterType<T>& travelTime,
-    FiLo<Cell>& border)
-{
-    if (distanceToTarget.is_nodata(cell) || distanceToTarget.is_nodata(newCell)) {
-        return;
-    }
-    const float alternativeDist = static_cast<float>(distanceToTarget[cell] + deltaD * travelTime[newCell]);
-    float& d                    = distanceToTarget[newCell];
-    if (d > alternativeDist) {
-        d          = alternativeDist;
-        uint8_t& m = mark[newCell];
-        if (m != s_markBorder) {
-            m = s_markBorder;
-            border.push_back(newCell);
-        }
-    }
-}
-
-template <template <typename> typename RasterType, typename T>
 void handle_sum_le_time_distance_cell(float deltaD, const Cell& cell, const Cell& newCell,
     RasterType<float>& distanceToTarget,
     RasterType<uint8_t>& mark,

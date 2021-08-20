@@ -10,9 +10,9 @@
 
 namespace gdx {
 
-static const uint8_t s_markTodo(0);
-static const uint8_t s_markBorder(1);
-static const uint8_t s_markDone(2);
+static constexpr uint8_t s_markTodo(0);
+static constexpr uint8_t s_markBorder(1);
+static constexpr uint8_t s_markDone(2);
 
 enum class ClusterDiagonals
 {
@@ -102,6 +102,33 @@ void handle_cell(const Cell cell,
     if (raster[cell] == clusterValue && mark[cell] == s_markTodo) {
         insert_cell(cell, clusterCells, mark, border);
     }
+}
+
+namespace internal {
+
+template <template <typename> typename RasterType, typename T>
+void handle_time_cell(float deltaD, const Cell& cell, const Cell& newCell,
+    RasterType<float>& distanceToTarget,
+    RasterType<uint8_t>& mark,
+    const RasterType<T>& travelTime,
+    FiLo<Cell>& border)
+{
+    if (distanceToTarget.is_nodata(cell) || distanceToTarget.is_nodata(newCell)) {
+        return;
+    }
+
+    const float alternativeDist = static_cast<float>(distanceToTarget[cell] + deltaD * travelTime[newCell]);
+    float& d                    = distanceToTarget[newCell];
+    if (d > alternativeDist) {
+        d          = alternativeDist;
+        uint8_t& m = mark[newCell];
+        if (m != s_markBorder) {
+            m = s_markBorder;
+            border.push_back(newCell);
+        }
+    }
+}
+
 }
 
 template <typename Callable>

@@ -48,6 +48,7 @@ Raster closestTarget(pybind11::object rasterArg);
 Raster valueAtClosestTarget(pybind11::object rasterArg, pybind11::object valuesArg);
 Raster valueAtClosestTravelTarget(pybind11::object rasterArg, pybind11::object travelTimeArg, pybind11::object valuesArg);
 Raster valueAtClosestLessThenTravelTarget(pybind11::object rasterArg, pybind11::object travelTimeArg, double maxTravelTime, pybind11::object valuesArg);
+Raster nodeValueDistanceDecay(pybind11::object targetArg, pybind11::object travelTimeArg, double maxTravelTime, double a, double b);
 
 Raster categorySum(pybind11::object clusterArg, pybind11::object valuesArg);
 Raster categoryMin(pybind11::object clusterArg, pybind11::object valuesArg);

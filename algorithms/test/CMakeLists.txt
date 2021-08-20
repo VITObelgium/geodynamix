@@ -9,6 +9,7 @@ add_executable(gdxalgotest
     clustersizetest.cpp
     conditionalstest.cpp
     distancetest.cpp
+    distancedecaytest.cpp
     distributetest.cpp
     filtertest.cpp
     logicaltest.cpp

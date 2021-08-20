@@ -22,6 +22,7 @@ set(GDXALGO_PUBLIC_HEADERS
     include/gdx/algo/dasmaplineairdistribution.h
     include/gdx/algo/dasmapmultiresolution.h
     include/gdx/algo/distance.h
+    include/gdx/algo/distancedecay.h
     include/gdx/algo/distribute.h
     include/gdx/algo/filter.h
     include/gdx/algo/logical.h

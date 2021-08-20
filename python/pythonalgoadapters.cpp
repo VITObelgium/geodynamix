@@ -1,4 +1,5 @@
 #include "pythonalgoadapters.h"
+#include "infra/cast.h"
 #include "maskedrasteralgo.h"
 #include "pythonutils.h"
 #include "rasterargument.h"
@@ -11,6 +12,7 @@
 #include "gdx/algo/clustersize.h"
 #include "gdx/algo/conditionals.h"
 #include "gdx/algo/distance.h"
+#include "gdx/algo/distancedecay.h"
 #include "gdx/algo/logical.h"
 #include "gdx/algo/majorityfilter.h"
 #include "gdx/algo/mathoperations.h"
@@ -424,6 +426,15 @@ Raster valueAtClosestLessThenTravelTarget(py::object rasterTargetsArg, py::objec
         return Raster(gdx::value_at_closest_less_then_travel_target(target, travelTimes, static_cast<float>(maxTravelTime), values));
     },
         RasterArgument(rasterTargetsArg).variant(), RasterArgument(travelTimeArg).variant(), RasterArgument(valuesArg).variant());
+}
+
+Raster nodeValueDistanceDecay(pybind11::object targetArg, pybind11::object travelTimeArg, double maxTravelTime, double a, double b)
+{
+    return std::visit([maxTravelTime, a, b](auto&& target, auto&& travelTimes) {
+        using TTravelTime = value_type<decltype(travelTimes)>;
+        return Raster(gdx::node_value_distance_decay(target, travelTimes, truncate<TTravelTime>(maxTravelTime), truncate<float>(a), truncate<float>(b)));
+    },
+        RasterArgument(targetArg).variant(), RasterArgument(travelTimeArg).variant());
 }
 
 Raster categorySum(py::object clusterArg, py::object valuesArg)

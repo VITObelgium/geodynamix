@@ -370,6 +370,15 @@ PYBIND11_MODULE(geodynamix, mod)
         "values"_a,
         "Calculate the values at the nearest target, nearer than max_traveltime, given the travel times");
 
+    mod.def("node_value_distance_decay",
+        &pyalgo::nodeValueDistanceDecay,
+        "targets"_a,
+        "traveltimes"_a,
+        "max_traveltime"_a,
+        "a_param_s_curve"_a,
+        "b_param_s_curve"_a,
+        "Calculate the distance decay of the node values");
+
     mod.def("csum",
         &pyalgo::categorySum,
         "clusters"_a,
