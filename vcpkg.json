@@ -5,12 +5,6 @@
     "dependencies": [
         "benchmark",
         "zlib",
-        {
-            "name": "tiff",
-            "features": [
-                "lzw"
-            ]
-        },
         "fmt",
         "spdlog",
         "eigen3",
