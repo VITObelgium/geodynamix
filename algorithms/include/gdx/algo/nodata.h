@@ -1,10 +1,39 @@
 #pragma once
 
 #include "gdx/algo/algorithm.h"
+#include "infra/cast.h"
 
 #include <cmath>
+#include <optional>
+#include <limits>
 
 namespace gdx {
+
+/*! Make sure the nodata value fits in the output data type
+ * if it does not fix the max value of the resulting datatype is used 
+ */
+
+template <typename T>
+T nodata_cast(double nodata)
+{
+    if ((std::isnan(nodata) && !std::numeric_limits<T>::has_quiet_NaN) ||
+        !inf::fits_in_type<T>(nodata)) {
+        return std::numeric_limits<T>::max();
+    }
+    
+    return inf::truncate<T>(nodata);
+}
+
+template <typename T>
+std::optional<double> nodata_cast(std::optional<double> nodata)
+{
+    std::optional<double> result;
+    if (nodata.has_value()) {
+        result = nodata_cast<T>(*nodata);
+    }
+    
+    return result;
+}
 
 template <typename InputRaster, typename OutputRaster>
 void is_nodata(const InputRaster& input, OutputRaster& result)
