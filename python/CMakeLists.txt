@@ -10,7 +10,6 @@ find_package(pybind11 CONFIG REQUIRED)
 
 add_library(gdxpy MODULE
     gdxpy.cpp
-    maskedrasteralgo.h
     pythonadapters.h
     pythonadapters.cpp
     rasterargument.h

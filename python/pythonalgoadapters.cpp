@@ -1,6 +1,5 @@
 #include "pythonalgoadapters.h"
 #include "infra/cast.h"
-#include "maskedrasteralgo.h"
 #include "pythonutils.h"
 #include "rasterargument.h"
 
@@ -230,7 +229,7 @@ Raster pow(py::object rasterArg1, py::object rasterArg2)
 Raster normalise(pybind11::object rasterArg)
 {
     return std::visit([&](auto&& raster) {
-        return Raster(gdx::normalise<float>(raster));
+        return Raster(gdx::normalise_min_max<float>(raster, 0.f, 1.f));
     },
         RasterArgument(rasterArg).variant());
 }
@@ -238,7 +237,7 @@ Raster normalise(pybind11::object rasterArg)
 Raster normaliseToByte(pybind11::object rasterArg)
 {
     return std::visit([&](auto&& raster) {
-        return Raster(gdx::normalise<uint8_t>(raster));
+        return Raster(gdx::normalise_min_max<uint8_t>(raster, 0, 254));
     },
         RasterArgument(rasterArg).variant());
 }

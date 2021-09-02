@@ -3,6 +3,7 @@
 #include "gdx/exception.h"
 
 #include "gdx/algo/algorithm.h"
+#include "gdx/algo/cast.h"
 #include "gdx/algo/maximum.h"
 #include "gdx/algo/minimum.h"
 #include "gdx/algo/nodata.h"
@@ -12,7 +13,7 @@ namespace gdx {
 template <typename TResult, typename T>
 TResult remap_to_float(T value, T min, T max, TResult mapStart, TResult mapEnd)
 {
-    static_assert(std::is_floating_point_v<T>, "Floating point input type required");
+    static_assert(std::is_floating_point_v<TResult>, "Floating point output type required");
     assert(min < max);
 
     const auto rangeWidth  = static_cast<double>(max - min);
@@ -57,7 +58,11 @@ void normalise(const InputRasterType& input, OutputRasterType& output, TInput mi
     if constexpr (std::is_floating_point_v<TOutput>) {
         if (minOut == TOutput(0) && minIn == TInput(0)) {
             // when we map to a range from 0, this is more precise
-            output = input * (maxOut / maxIn);
+            if constexpr (std::is_same_v<TInput, TOutput>) {
+                output = input * (maxOut / maxIn);
+            } else {
+                output = raster_cast<TOutput>(input * static_cast<TInput>(maxOut / maxIn));
+            }
         } else {
             gdx::transform(input, output, [=](TInput value) {
                 return remap_to_float<TOutput>(value, minIn, maxIn, minOut, maxOut);
@@ -93,6 +98,21 @@ RasterType<TOutput> normalise_min_max(const RasterType<TInput>& input, TOutput m
     }
 
     return result;
+}
+
+template <
+    typename InputRasterType,
+    typename OutputRasterType,
+    typename TOutput = typename OutputRasterType::value_type>
+void normalise_min_max(const InputRasterType& input, OutputRasterType& output, TOutput mapStart, TOutput mapEnd)
+{
+    try {
+        auto [min, max] = gdx::minmax(input);
+        normalise(input, output, min, max, mapStart, mapEnd);
+    } catch (const InvalidArgument&) {
+        // only nodata values are present
+        make_nodata(output);
+    }
 }
 
 /*! rescale the range of values to the range in [0, 1]

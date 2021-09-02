@@ -393,7 +393,7 @@ void writeAsPng(const RasterType& ras, const RasterMetadata& meta, const fs::pat
                 normMeta.nodata = std::numeric_limits<uint8_t>::max();
             }
             MaskedRaster<uint8_t> normalisedData(normMeta);
-            normalise(ras, normalisedData);
+            normalise_min_max(ras, normalisedData, 0, 254);
             gdx::write_raster(normalisedData, filename);
         } else if constexpr (!(std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t>)) {
             std::vector<uint8_t> clippedData(ras.size());
@@ -410,7 +410,7 @@ void writeAsPng(const RasterType& ras, const RasterMetadata& meta, const fs::pat
                 normMeta.nodata = std::numeric_limits<uint8_t>::max();
             }
             MaskedRaster<uint8_t> normalisedData(normMeta);
-            normalise(ras, normalisedData);
+            normalise_min_max(ras, normalisedData, 0, 254);
             gdx::write_rasterColorMapped(normalisedData, filename, cmap);
         } else if constexpr (!(std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t>)) {
             std::vector<uint8_t> clippedData(ras.size());
