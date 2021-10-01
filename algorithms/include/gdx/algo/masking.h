@@ -11,7 +11,7 @@
 namespace gdx {
 
 template <typename RasterType, typename MaskType>
-void applyMask(RasterType& ras, const MaskType& mask)
+void apply_mask(RasterType& ras, const MaskType& mask)
 {
     gdx::for_each_optional_value(ras, mask, [&](auto& rasterValue, auto& maskValue) {
         if (maskValue.is_nodata()) {
@@ -21,7 +21,7 @@ void applyMask(RasterType& ras, const MaskType& mask)
 }
 
 template <typename RasterType, typename MaskType>
-void eraseOutsideMask(RasterType& ras, const MaskType& mask)
+void erase_outside_mask(RasterType& ras, const MaskType& mask)
 {
     int size = int(mask.size());
     if (size != ras.size()) {
