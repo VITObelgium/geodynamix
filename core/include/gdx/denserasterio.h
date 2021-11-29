@@ -124,14 +124,15 @@ void write_raster(DenseRaster<T>&& raster, const fs::path& filename, std::span<c
 template <typename T>
 DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::gdal::ResampleAlgorithm algo = inf::gdal::ResampleAlgorithm::NearestNeighbour)
 {
-    auto srcMeta  = raster.metadata();
-    auto destMeta = inf::gdal::warp_metadata(raster.metadata(), destCrs);
+    auto srcMeta = raster.metadata();
 
     if (DenseRaster<T>::raster_type_has_nan) {
         // Set set source nodata to nan to avoid having to collapse the data
         // since the nodata values for floats are nan and not the actual nodata value
         srcMeta.nodata = DenseRaster<T>::NaN;
     }
+
+    auto destMeta = inf::gdal::warp_metadata(srcMeta, destCrs);
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(*destMeta.nodata));
     inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
