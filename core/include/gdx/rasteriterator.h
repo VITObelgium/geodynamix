@@ -659,6 +659,9 @@ public:
     , _rows(rows)
     , _cols(cols)
     {
+        if (rows == 0 || cols == 0) {
+            _current = {};
+        }
     }
 
     constexpr bool operator==(const CellIterator& iter) const noexcept
