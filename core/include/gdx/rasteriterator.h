@@ -23,6 +23,23 @@ Cell raster_pointer_to_cell(const T* rasterTopLeft, const T* ptr, int32_t cols)
 }
 
 template <typename T>
+class NoFilterPolicy
+{
+public:
+    NoFilterPolicy() = default;
+
+    constexpr bool exclude(const T& /*data*/) const noexcept
+    {
+        return false;
+    }
+
+    std::optional<T> proxy_construction_arg() const noexcept
+    {
+        return {};
+    }
+};
+
+template <typename T>
 class NodataValueFilterPolicy
 {
 public:

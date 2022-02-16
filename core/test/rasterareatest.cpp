@@ -6,6 +6,57 @@
 
 namespace gdx::test {
 
+#ifdef GDX_ENABLE_SIMD
+TEST_CASE("raster areas no filter")
+{
+    SUBCASE("raster subarea")
+    {
+        // clang-format off
+        auto data = std::vector<double>{{
+            -1,  1,  2,  3,  4,
+             5,  6,  7,  8, -1,
+            10, -1, -1, -1, 14,
+            15, -1, -1, -1, 19,
+        }};
+        // clang-format on
+
+        constexpr const auto nan = std::numeric_limits<double>::quiet_NaN();
+        gdx::DenseRaster<double> raster(RasterMetadata(4, 5, -1), data);
+
+        std::vector<double> result;
+        // Center area
+        auto area = sub_area(raster, Cell(1, 1), 2, 3);
+        std::copy(area.begin(), area.end(), std::back_inserter(result));
+        CHECK_CONTAINER_EQ(std::vector<double>({6, 7, 8, nan, nan, nan}), result);
+        result.clear();
+
+        // Full area
+        area = sub_area(raster, Cell(0, 0), 4, 5);
+        std::copy(area.begin(), area.end(), std::back_inserter(result));
+        CHECK_CONTAINER_EQ(std::vector<double>({nan, 1, 2, 3, 4, 5, 6, 7, 8, nan, 10, nan, nan, nan, 14, 15, nan, nan, nan, 19}), result);
+        result.clear();
+
+        // Top left area
+        area = sub_area(raster, Cell(0, 0), 3, 2);
+        std::copy(area.begin(), area.end(), std::back_inserter(result));
+        CHECK_CONTAINER_EQ(std::vector<double>({nan, 1, 5, 6, 10, nan}), result);
+        result.clear();
+
+        // Bottom right area, too large
+        area = sub_area(raster, Cell(2, 3), 4, 4);
+        std::copy(area.begin(), area.end(), std::back_inserter(result));
+        CHECK_CONTAINER_EQ(std::vector<double>({nan, 14, nan, 19}), result);
+        result.clear();
+
+        // Single cell
+        area = sub_area(raster, Cell(1, 2), 1, 1);
+        std::copy(area.begin(), area.end(), std::back_inserter(result));
+        CHECK_CONTAINER_EQ(std::vector<double>({7}), result);
+        result.clear();
+    }
+}
+#endif
+
 TEST_CASE_TEMPLATE("raster areas", TypeParam, RasterTypes)
 {
     using T      = typename TypeParam::value_type;
@@ -233,31 +284,31 @@ TEST_CASE_TEMPLATE("raster areas", TypeParam, RasterTypes)
 
         std::vector<T> result;
         // Center area
-        auto area = sub_area(raster, Cell(1, 1), 2, 3);
+        auto area = sub_area_values(raster, Cell(1, 1), 2, 3);
         std::copy(area.begin(), area.end(), std::back_inserter(result));
         CHECK_CONTAINER_EQ(std::vector<T>({6, 7, 8}), result);
         result.clear();
 
         // Full area
-        area = sub_area(raster, Cell(0, 0), 4, 5);
+        area = sub_area_values(raster, Cell(0, 0), 4, 5);
         std::copy(area.begin(), area.end(), std::back_inserter(result));
         CHECK_CONTAINER_EQ(std::vector<T>({1, 2, 3, 4, 5, 6, 7, 8, 10, 14, 15, 19}), result);
         result.clear();
 
         // Top left area
-        area = sub_area(raster, Cell(0, 0), 3, 2);
+        area = sub_area_values(raster, Cell(0, 0), 3, 2);
         std::copy(area.begin(), area.end(), std::back_inserter(result));
         CHECK_CONTAINER_EQ(std::vector<T>({1, 5, 6, 10}), result);
         result.clear();
 
         // Bottom right area, too large
-        area = sub_area(raster, Cell(2, 3), 4, 4);
+        area = sub_area_values(raster, Cell(2, 3), 4, 4);
         std::copy(area.begin(), area.end(), std::back_inserter(result));
         CHECK_CONTAINER_EQ(std::vector<T>({14, 19}), result);
         result.clear();
 
         // Single cell
-        area = sub_area(raster, Cell(1, 2), 1, 1);
+        area = sub_area_values(raster, Cell(1, 2), 1, 1);
         std::copy(area.begin(), area.end(), std::back_inserter(result));
         CHECK_CONTAINER_EQ(std::vector<T>({7}), result);
         result.clear();
@@ -285,7 +336,7 @@ TEST_CASE_TEMPLATE("raster areas", TypeParam, RasterTypes)
 
         std::vector<T> result;
 
-        auto area = sub_area(raster, Cell(1, 1), 2, 3);
+        auto area = sub_area_values(raster, Cell(1, 1), 2, 3);
         std::fill(area.begin(), area.end(), T(0));
         CHECK_RASTER_EQ(expected, raster);
     }

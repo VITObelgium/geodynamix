@@ -19,6 +19,7 @@
                 "GDX_ENABLE_SIMD": "ON",
                 "INFRA_EMBED_GDAL_DATA": "ON",
                 "VCPKG_APPLOCAL_DEPS": "OFF",
+                "VCPKG_MANIFEST_MODE": "OFF",
                 "VCPKG_INSTALLED_DIR": "${sourceDir}/vcpkg_installed"
             }
         },

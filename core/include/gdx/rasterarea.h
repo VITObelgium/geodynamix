@@ -350,6 +350,25 @@ auto sub_area(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
     constexpr bool isConst = std::is_const_v<std::remove_reference_t<Container>>;
 
     auto areaInfo = detail::clip_area_to_raster(raster, topLeft, rows, cols);
+    return RasterArea<T, isConst, NoFilterPolicy<T>, AllLocationsFilterPolicy, ValueProxy<T, isConst>>(
+        raster.data(),
+        areaInfo.topLeftPtr,
+        areaInfo.rows,
+        areaInfo.cols,
+        raster.cols(),
+        NoFilterPolicy<T>(),
+        AllLocationsFilterPolicy());
+}
+
+template <
+    typename Container,
+    typename std::enable_if_t<std::decay_t<Container>::with_nodata, int>* = nullptr>
+auto sub_area_values(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
+{
+    using T                = typename std::decay_t<Container>::value_type;
+    constexpr bool isConst = std::is_const_v<std::remove_reference_t<Container>>;
+
+    auto areaInfo = detail::clip_area_to_raster(raster, topLeft, rows, cols);
     return RasterArea<T, isConst, NodataValueFilterPolicy<T>, AllLocationsFilterPolicy, ValueProxy<T, isConst>>(
         raster.data(),
         areaInfo.topLeftPtr,
@@ -363,7 +382,7 @@ auto sub_area(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
 template <
     typename Container,
     typename std::enable_if_t<std::is_arithmetic_v<typename std::decay_t<Container>::mask_value_type>, int>* = nullptr>
-auto sub_area(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
+auto sub_area_values(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
 {
     using T                = typename std::decay_t<Container>::value_type;
     using TMask            = typename std::decay_t<Container>::mask_value_type;
