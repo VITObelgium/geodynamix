@@ -144,12 +144,12 @@ TEST_CASE_TEMPLATE("Minimum", TypeParam, RasterFloatTypes)
             3.0, nan, 4.0, -5.0};
 
         Raster raster(RasterMetadata(5, 4, nan), convertTo<T>(v));
-        auto [minCell, maxCell] = minmax_cell(raster);
-        CHECK(raster[minCell] == T(-5));
-        CHECK(raster[maxCell] == T(9));
+        auto minMaxCell = minmax_cell(raster);
+        CHECK(raster[minMaxCell.first] == T(-5));
+        CHECK(raster[minMaxCell.second] == T(9));
 
-        CHECK(minCell == Cell(4, 3));
-        CHECK(maxCell == Cell(1, 3));
+        CHECK(minMaxCell.first == Cell(4, 3));
+        CHECK(minMaxCell.second == Cell(1, 3));
     }
 }
 }
