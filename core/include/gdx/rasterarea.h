@@ -363,6 +363,27 @@ auto sub_area(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
 template <
     typename Container,
     typename std::enable_if_t<std::decay_t<Container>::with_nodata, int>* = nullptr>
+auto sub_area(Container&& raster, const RasterMetadata& subExtent)
+{
+    auto topLeft = raster.metadata().convert_point_to_cell(subExtent.top_left());
+    auto rows    = subExtent.rows;
+    auto cols    = subExtent.cols;
+    if (topLeft.c < 0) {
+        cols += topLeft.c;
+        topLeft.c = 0;
+    }
+
+    if (topLeft.r < 0) {
+        cols += topLeft.r;
+        topLeft.r = 0;
+    }
+
+    return sub_area(raster, topLeft, rows, cols);
+}
+
+template <
+    typename Container,
+    typename std::enable_if_t<std::decay_t<Container>::with_nodata, int>* = nullptr>
 auto sub_area_values(Container&& raster, Cell topLeft, int32_t rows, int32_t cols)
 {
     using T                = typename std::decay_t<Container>::value_type;

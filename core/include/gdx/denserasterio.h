@@ -1,6 +1,8 @@
 #pragma once
 
 #include "gdx/denseraster.h"
+#include "gdx/rasterarea.h"
+
 #include "infra/cast.h"
 #include "infra/filesystem.h"
 #include "infra/gdalalgo.h"
@@ -122,7 +124,7 @@ void write_raster(DenseRaster<T>&& raster, const fs::path& filename, std::span<c
 }
 
 template <typename T>
-DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::gdal::ResampleAlgorithm algo = inf::gdal::ResampleAlgorithm::NearestNeighbour)
+DenseRaster<T> warp_raster(const DenseRaster<T>& raster, const std::string& destProjection, inf::gdal::ResampleAlgorithm algo = inf::gdal::ResampleAlgorithm::NearestNeighbour)
 {
     auto srcMeta = raster.metadata();
 
@@ -132,11 +134,17 @@ DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::g
         srcMeta.nodata = DenseRaster<T>::NaN;
     }
 
-    auto destMeta = inf::gdal::warp_metadata(srcMeta, destCrs);
+    auto destMeta = inf::gdal::warp_metadata(srcMeta, destProjection);
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(*destMeta.nodata));
     inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
     return result;
+}
+
+template <typename T>
+DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::gdal::ResampleAlgorithm algo = inf::gdal::ResampleAlgorithm::NearestNeighbour)
+{
+    return warp_raster<T>(raster, inf::gdal::SpatialReference(destCrs).export_to_pretty_wkt(), algo);
 }
 
 template <typename T>
@@ -155,6 +163,28 @@ DenseRaster<T> resample_raster(const DenseRaster<T>& raster, const RasterMetadat
     DenseRaster<T> result(destMeta, inf::truncate<T>(destMeta.nodata.value_or(0.0)));
     inf::gdal::io::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata(), algo);
     result.init_nodata_values();
+    return result;
+}
+
+template <typename T>
+DenseRaster<T> sub_raster(const DenseRaster<T>& raster, const RasterMetadata& subExtent)
+{
+    if (raster.metadata().cellSize != subExtent.cellSize) {
+        throw inf::RuntimeError("sub_raster expects consistent cell sizes");
+    }
+
+    if (!metadata_is_aligned(raster.metadata(), subExtent)) {
+        throw inf::RuntimeError("sub_raster expects the same extent alignment");
+    }
+
+    auto dstMeta       = subExtent;
+    dstMeta.nodata     = raster.metadata().nodata;
+    dstMeta.projection = raster.metadata().projection;
+
+    gdx::DenseRaster<T> result(dstMeta);
+
+    auto area = gdx::sub_area(raster, raster.metadata().convert_point_to_cell(subExtent.top_left()), subExtent.rows, subExtent.cols);
+    std::copy(area.begin(), area.end(), result.begin());
     return result;
 }
 
