@@ -112,5 +112,41 @@ TEST_CASE_TEMPLATE("dense raster", T, uint8_t, int16_t, int32_t, int64_t, float,
 
         CHECK_RASTER_EQ(expected, raster.add_or_assign(rasterToAdd));
     }
+
+    SUBCASE("sub raster, fully contained")
+    {
+        RasterMetadata meta(5, 5, 10, 10, 5, nod);
+        RasterType raster(meta, convertTo<T>(std::vector<double>{
+                                    nod, 2.0, 3.0, 4.0, 5.0,
+                                    nod, nod, nod, nod, nod,
+                                    6.0, 7.0, 8.0, 9.0, 10.0,
+                                    11.0, 12.0, 13.0, 14.0, 15.0,
+                                    nod, nod, 5.0, 6.0, nod}));
+
+        RasterType expected(RasterMetadata(3, 3, 15, 15, 5, nod), convertTo<T>(std::vector<double>{
+                                                                      nod, nod, nod,
+                                                                      7.0, 8.0, 9.0,
+                                                                      12.0, 13.0, 14.0}));
+
+        CHECK_RASTER_EQ(expected, sub_raster(raster, expected.metadata()));
+    }
+
+    SUBCASE("sub raster, over the edge")
+    {
+        RasterMetadata meta(5, 5, 10, 10, 5, nod);
+        RasterType raster(meta, convertTo<T>(std::vector<double>{
+                                    nod, 2.0, 3.0, 4.0, 5.0,
+                                    nod, nod, nod, nod, nod,
+                                    6.0, 7.0, 8.0, 9.0, 10.0,
+                                    11.0, 12.0, 13.0, 14.0, 15.0,
+                                    nod, nod, 5.0, 6.0, nod}));
+
+        RasterType expected(RasterMetadata(3, 3, 10, 10, 5, nod), convertTo<T>(std::vector<double>{
+                                                                      6.0, 7.0, 8.0,
+                                                                      11.0, 12.0, 13.0,
+                                                                      nod, nod, 5.0}));
+
+        CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(5, 5, 0, 0, 5, nod)));
+    }
 }
 }

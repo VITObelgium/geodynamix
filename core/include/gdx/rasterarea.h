@@ -156,10 +156,19 @@ auto clip_area_to_raster(Raster&& raster, Cell topLeft, int32_t rows, int32_t co
 
     AreaInfo<pointer> area;
 
-    area.topLeft    = topLeft;
-    area.topLeftPtr = &raster[topLeft];
-    area.cols       = cols;
-    area.rows       = rows;
+    area.topLeft = topLeft;
+    if (area.topLeft.r < 0) {
+        rows += area.topLeft.r;
+        area.topLeft.r = 0;
+    }
+
+    if (area.topLeft.c < 0) {
+        cols += area.topLeft.c;
+        area.topLeft.c = 0;
+    }
+
+    area.cols = cols;
+    area.rows = rows;
 
     if (area.topLeft.c + area.cols > raster.cols()) {
         area.cols = raster.cols() - area.topLeft.c;
@@ -167,6 +176,10 @@ auto clip_area_to_raster(Raster&& raster, Cell topLeft, int32_t rows, int32_t co
 
     if (area.topLeft.r + area.rows > raster.rows()) {
         area.rows = raster.rows() - area.topLeft.r;
+    }
+
+    if (area.cols > 0 && area.rows > 0) {
+        area.topLeftPtr = &raster[area.topLeft];
     }
 
     return area;
@@ -367,19 +380,7 @@ template <
 auto sub_area(Container&& raster, const RasterMetadata& subExtent)
 {
     auto topLeft = raster.metadata().convert_point_to_cell(subExtent.top_left());
-    auto rows    = subExtent.rows;
-    auto cols    = subExtent.cols;
-    if (topLeft.c < 0) {
-        cols += topLeft.c;
-        topLeft.c = 0;
-    }
-
-    if (topLeft.r < 0) {
-        cols += topLeft.r;
-        topLeft.r = 0;
-    }
-
-    return sub_area(raster, topLeft, rows, cols);
+    return sub_area(raster, topLeft, subExtent.rows, subExtent.cols);
 }
 
 template <

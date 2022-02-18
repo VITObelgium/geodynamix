@@ -21,7 +21,6 @@ void compute_node_value_distance_decay(
 {
     const int32_t rows = result.rows();
     const int32_t cols = result.cols();
-    double sum         = 0;
 
     const float unreachable = static_cast<float>(maxTravelTime) + 1.f;
     RasterType<float> distanceToTarget(copy_metadata_replace_nodata(result.metadata(), {}), unreachable);
