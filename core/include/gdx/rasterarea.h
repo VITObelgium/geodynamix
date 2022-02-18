@@ -2,6 +2,7 @@
 
 #include "gdx/cell.h"
 #include "gdx/rasteriterator.h"
+#include "gdx/rastermetadata.h"
 #include "infra/cast.h"
 
 #include <cassert>
