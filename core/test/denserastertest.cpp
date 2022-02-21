@@ -141,12 +141,51 @@ TEST_CASE_TEMPLATE("dense raster", T, uint8_t, int16_t, int32_t, int64_t, float,
                                     11.0, 12.0, 13.0, 14.0, 15.0,
                                     nod, nod, 5.0, 6.0, nod}));
 
-        RasterType expected(RasterMetadata(3, 3, 10, 10, 5, nod), convertTo<T>(std::vector<double>{
-                                                                      6.0, 7.0, 8.0,
-                                                                      11.0, 12.0, 13.0,
-                                                                      nod, nod, 5.0}));
+        SUBCASE("lower left edge")
+        {
+            RasterType expected(RasterMetadata(3, 3, 10, 10, 5, nod), convertTo<T>(std::vector<double>{
+                                                                          6.0, 7.0, 8.0,
+                                                                          11.0, 12.0, 13.0,
+                                                                          nod, nod, 5.0}));
 
-        CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(5, 5, 0, 0, 5, nod)));
+            CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(5, 5, 0, 0, 5, nod)));
+        }
+
+        SUBCASE("top right edge")
+        {
+            RasterType expected(RasterMetadata(2, 2, 25, 25, 5, nod), convertTo<T>(std::vector<double>{
+                                                                          4.0, 5.0,
+                                                                          nod, nod}));
+
+            CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(5, 5, 25, 25, 5, nod)));
+        }
+
+        SUBCASE("top edge")
+        {
+            RasterType expected(RasterMetadata(2, 5, 10, 25, 5, nod), convertTo<T>(std::vector<double>{
+                                                                          nod, 2.0, 3.0, 4.0, 5.0,
+                                                                          nod, nod, nod, nod, nod}));
+
+            CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(5, 15, 0, 25, 5, nod)));
+        }
+
+        SUBCASE("top left edge")
+        {
+            RasterType expected(RasterMetadata(2, 2, 10, 25, 5, nod), convertTo<T>(std::vector<double>{
+                                                                          nod, 2.0,
+                                                                          nod, nod}));
+
+            CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(4, 4, 0, 25, 5, nod)));
+        }
+
+        SUBCASE("bottom right edge")
+        {
+            RasterType expected(RasterMetadata(2, 2, 25, 10, 5, nod), convertTo<T>(std::vector<double>{
+                                                                          14.0, 15.0,
+                                                                          6.0, nod}));
+
+            CHECK_RASTER_EQ(expected, sub_raster(raster, RasterMetadata(4, 4, 25, 0, 5, nod)));
+        }
     }
 }
 }
