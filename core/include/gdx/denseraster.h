@@ -336,6 +336,13 @@ public:
         }
     }
 
+    bool contains_only_nodata() const noexcept
+    {
+        return nodata().has_value() && std::all_of(_data.begin(), _data.end(), [this](const auto val) {
+            return is_nodata_value(val);
+        });
+    }
+
     int32_t rows() const noexcept
     {
         return _meta.rows;
@@ -1172,15 +1179,15 @@ DenseRaster<T> operator*(TScalar lhs, const DenseRaster<T>& rhs)
 template <typename TScalar, typename T, typename = std::enable_if_t<std::is_scalar_v<TScalar>>>
 auto operator/(TScalar scalar, const DenseRaster<T>& rhs)
 {
-    //throw_on_size_mismatch(other);
+    // throw_on_size_mismatch(other);
 
     //// For nan nodata, standard eigen operator can be used
-    //if constexpr (has_nan() && std::is_same_v<T, TOther>) {
-    //    // all types are the same, no casts needed
-    //    return DenseRaster<T>(_meta, _data / other._data);
-    //}
+    // if constexpr (has_nan() && std::is_same_v<T, TOther>) {
+    //     // all types are the same, no casts needed
+    //     return DenseRaster<T>(_meta, _data / other._data);
+    // }
 
-    //return performRasterOperation<nodata::divides>(other);
+    // return performRasterOperation<nodata::divides>(other);
 
     using ResultType = decltype(1.0f * T());
 
