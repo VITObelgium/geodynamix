@@ -11,7 +11,7 @@ jobs:
       matrix:
         cfg:
           - { os: ubuntu-latest, triplet: x64-linux }
-          - { os: windows-latest, triplet: x64-windows-static-vs2019 }
+          - { os: windows-2019, triplet: x64-windows-static-vs2019 }
           - { os: macos-latest, triplet: x64-osx }
 
     steps:
