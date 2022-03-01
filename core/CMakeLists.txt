@@ -136,6 +136,9 @@ target_link_libraries(gdxcore PUBLIC
     $<TARGET_NAME_IF_EXISTS:Vc::Vc>
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
 )
+
+target_compile_definitions(gdxcore PUBLIC "-DEIGEN_HAS_STD_RESULT_OF=0")
+
 set_target_properties(gdxcore PROPERTIES PUBLIC_HEADER "${GDXCORE_PUBLIC_HEADERS}")
 
 if (TARGET OpenMP::OpenMP_CXX)
