@@ -109,10 +109,11 @@ RasterType<TRaster> rasterEqualOneOf(const RasterType<TRaster>& ras, const std::
 
     for (std::size_t i = 0; i < ras.size(); ++i) {
         if (ras.is_nodata(i)) {
-            result[i] = ras[i];
+            result.mark_as_nodata(i);
         } else {
             auto iter = std::find(values.begin(), values.end(), ras[i]);
             result[i] = (iter != values.end());
+            result.mark_as_data(i);
         }
     }
 
