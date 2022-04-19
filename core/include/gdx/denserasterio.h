@@ -177,9 +177,10 @@ DenseRaster<T> sub_raster(const DenseRaster<T>& raster, const RasterMetadata& su
         throw inf::RuntimeError("sub_raster expects the same extent alignment");
     }
 
-    gdx::DenseRaster<T> result(metadata_intersection(raster.metadata(), subExtent));
+    const auto intersection = metadata_intersection(raster.metadata(), subExtent);
+    gdx::DenseRaster<T> result(intersection);
 
-    auto area = gdx::sub_area(raster, subExtent);
+    auto area = gdx::sub_area(raster, intersection);
     std::copy(area.begin(), area.end(), result.begin());
     return result;
 }
