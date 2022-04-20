@@ -379,7 +379,7 @@ template <
     typename std::enable_if_t<std::decay_t<Container>::with_nodata, int>* = nullptr>
 auto sub_area(Container&& raster, const RasterMetadata& subExtent)
 {
-    auto topLeft = raster.metadata().convert_point_to_cell(subExtent.top_left());
+    auto topLeft = raster.metadata().convert_point_to_cell(subExtent.top_left_center());
     return sub_area(raster, topLeft, subExtent.rows, subExtent.cols);
 }
 
