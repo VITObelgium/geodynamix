@@ -150,7 +150,7 @@ DenseRaster<T> warp_raster(const DenseRaster<T>& raster, int32_t destCrs, inf::g
 template <typename T>
 DenseRaster<T> resample_raster(const DenseRaster<T>& raster, const RasterMetadata& meta, inf::gdal::ResampleAlgorithm algo)
 {
-    const auto& srcMeta = raster.metadata();
+    auto srcMeta = raster.metadata();
 
     auto destMeta   = meta;
     destMeta.nodata = srcMeta.nodata;
@@ -160,8 +160,12 @@ DenseRaster<T> resample_raster(const DenseRaster<T>& raster, const RasterMetadat
         }
     }
 
+    if constexpr (gdx::DenseRaster<T>::raster_type_has_nan) {
+        srcMeta.nodata = gdx::DenseRaster<T>::NaN;
+    }
+
     DenseRaster<T> result(destMeta, inf::truncate<T>(destMeta.nodata.value_or(0.0)));
-    inf::gdal::io::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata(), algo);
+    inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
     result.init_nodata_values();
     return result;
 }
