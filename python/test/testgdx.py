@@ -486,10 +486,10 @@ class TestGdx(unittest.TestCase):
             np.array([[1, 2, -1], [4, 5, 6], [-1, 8, 9]], dtype=int), meta
         )
 
-        expected = np.array([[1, 0, -1], [0, 1, 0], [-1, 0, 1]], dtype=int)
+        expected = ma.array([[1, 0, -1], [0, 1, 0], [-1, 0, 1]], mask=[[0, 0, 1], [0, 0, 0], [1, 0, 0]], dtype=int)
 
         res = gdx.raster_equal_one_of(ras, [1, 5, 9])
-        self.assertTrue(np.array_equal(res.array, expected))
+        np.testing.assert_array_equal(res.array, expected)
 
     def test_abs(self):
         meta = gdx.raster_metadata(rows=3, cols=3)
