@@ -486,7 +486,7 @@ class TestGdx(unittest.TestCase):
             np.array([[1, 2, -1], [4, 5, 6], [-1, 8, 9]], dtype=int), meta
         )
 
-        expected = ma.array([[1, 0, -1], [0, 1, 0], [-1, 0, 1]], mask=[[0, 0, 1], [0, 0, 0], [1, 0, 0]], dtype=int)
+        expected = np.array([[1, 0, -1], [0, 1, 0], [-1, 0, 1]], dtype=int)
 
         res = gdx.raster_equal_one_of(ras, [1, 5, 9])
         np.testing.assert_array_equal(res.array, expected)
