@@ -8,9 +8,9 @@ mkdir %SRC_DIR%\thirdparty
 
 cd %SRC_DIR%\thirdparty
 
-git clone --branch 7.1.3 --depth 1 https://github.com/fmtlib/fmt.git
-git clone --branch v1.8.5 --depth 1 https://github.com/gabime/spdlog.git
-git clone --branch v3.1.0 --depth 1 https://github.com/Microsoft/GSL.git
+git clone --branch 8.1.1 --depth 1 https://github.com/fmtlib/fmt.git
+git clone --branch v1.10.0 --depth 1 https://github.com/gabime/spdlog.git
+git clone --branch v4.0.0 --depth 1 https://github.com/Microsoft/GSL.git
 git clone --branch v3.0.1 --depth 1 https://github.com/HowardHinnant/date
 
 REM Anaconda pkgs/main package 'eigen' for win-64 does not include Eigen3Config.cmake, so we build Eigen ourselves.
