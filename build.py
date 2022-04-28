@@ -63,6 +63,7 @@ if __name__ == "__main__":
                 cmake_args=cmake_args,
                 build_name=build_dir,
                 run_tests_after_build=args.run_tests,
+                test_arguments=["--verbose"],
             )
     except KeyboardInterrupt:
         print("\nInterrupted")
