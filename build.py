@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
         triplet = args.triplet
         if sys_platform == "win-amd64":
-            triplet = "x64-windows-static-vs2019"
+            triplet = "x64-windows-static-vs2022"
         elif not triplet:
             triplet = vcpkg.prompt_for_triplet()
 

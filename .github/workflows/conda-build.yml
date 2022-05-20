@@ -30,3 +30,16 @@ jobs:
         run: python ./conda/metagen.py
       - name: Build conda package
         run: conda build ./conda
+
+  deploy:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    env:
+      REPO_URL: https://repo.vito.be/artifactory/rma-tools-conda-local
+      REPO_API_URL: https://repo.vito.be/artifactory/api/conda/rma-tools-conda-local
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Deploy conda package
+        run: curl --fail -u${USERNAME}:${PASSWORD} -T $BUILD_FILE -H "X-Checksum-Sha1:$CHECKSUM" "$REPO_URL/$TARGET_FILE"
+      - name: trigger index rebuild
+        run: curl --fail -u${USERNAME}:${PASSWORD} -X POST "$REPO_API_URL/reindex"

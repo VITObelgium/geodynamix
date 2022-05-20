@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         triplet = (
-            "x64-windows-static-vs2019" if platform.system() == "Windows" else args.triplet
+            "x64-windows-static-vs2022" if platform.system() == "Windows" else args.triplet
         )
 
         if args.parent:
