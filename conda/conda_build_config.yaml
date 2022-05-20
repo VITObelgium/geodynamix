@@ -1,5 +1,5 @@
 cxx_compiler:
- - vs2017 # [win]
+  - vs2017 # [win]
 
 target_platform:
   - win-64 # [win]
@@ -8,14 +8,13 @@ vc:
   - 14 # [win]
 
 python:
-  - 3.6
-  - 3.7
   - 3.8
   - 3.9
+  - 3.10
 
 libgdal:
-  - 2.3
-  - 3.0
+  - 2
+  - 3
 
 pin_run_as_build:
   libgdal: x.x
