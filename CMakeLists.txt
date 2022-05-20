@@ -179,7 +179,6 @@ if (GDX_ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif ()
 
-
 if (EMSCRIPTEN)
     add_subdirectory(js)
 endif ()
@@ -200,3 +199,5 @@ if (GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
         DESTINATION ${INSTALL_CONFIGDIR}
     )
 endif ()
+
+add_subdirectory(dist)
