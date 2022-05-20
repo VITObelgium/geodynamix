@@ -13,7 +13,7 @@ python:
   - 3.10
 
 libgdal:
-  - 2
+  - 2.3
   - 3
 
 pin_run_as_build:
