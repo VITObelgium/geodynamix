@@ -14,7 +14,13 @@ if __name__ == "__main__":
 
         args = parser.parse_args()
         triplet = (
-            "x64-windows-static-vs2022" if platform.system() == "Windows" else args.triplet
+            "x64-windows-static-vs2022"
+            if platform.system() == "Windows"
+            else args.triplet
+        )
+
+        overlay_ports = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "deps", "overlay-ports")
         )
 
         if args.parent:
@@ -25,7 +31,11 @@ if __name__ == "__main__":
         if args.clean:
             vcpkg.clean(triplet=triplet)
         else:
-            vcpkg.bootstrap(ports_dir=os.path.join(".", "deps"), triplet=triplet)
+            vcpkg.bootstrap(
+                ports_dir=os.path.join(".", "deps"),
+                triplet=triplet,
+                overlay_ports=overlay_ports,
+            )
     except KeyboardInterrupt:
         print("\nInterrupted")
         sys.exit(-1)
