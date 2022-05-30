@@ -18,6 +18,12 @@ if __name__ == "__main__":
             help="build with avx2 instructions",
         )
 
+        parser.add_argument(
+            "--python-path",
+            dest="python_path",
+            help="the path of the python interpreter (default=autodetect)",
+        )
+
         args = parser.parse_args()
 
         sys_platform = sysconfig.get_platform()
@@ -39,6 +45,9 @@ if __name__ == "__main__":
 
         if not args.no_avx2 and not "arm" in sys_platform:
             cmake_args.append("-DGDX_AVX2=ON")
+
+        if args.python_path:
+            cmake_args.append(f"-DPython3_EXECUTABLE={args.python_path}")
 
         build_dir = "gdx"
 
