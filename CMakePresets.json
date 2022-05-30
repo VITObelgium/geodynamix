@@ -30,7 +30,8 @@
             "cacheVariables": {
                 "CMAKE_OSX_DEPLOYMENT_TARGET": "11.3",
                 "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "${sourceDir}/deps/vcpkg/triplets/toolchain-osx-appleclang.cmake",
-                "VCPKG_CXX_FLAGS": "-fvisibility=hidden -fvisibility-inlines-hidden"
+                "VCPKG_CXX_FLAGS": "-fvisibility=hidden -fvisibility-inlines-hidden",
+                "PYTHON_EXECUTABLE": "/usr/bin/python3"
             }
         },
         {
