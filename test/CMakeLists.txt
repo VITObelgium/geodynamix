@@ -1,9 +1,8 @@
-find_package(PythonInterp REQUIRED)
 get_property(IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 
 macro(add_integration_test _NAME _TEST_FILE)
     add_test(NAME ${_NAME}
-        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST_FILE}
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_TEST_FILE}
     )
 
     if (IS_MULTI_CONFIG)

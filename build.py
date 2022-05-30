@@ -3,7 +3,6 @@ import os
 import sys
 import sysconfig
 import argparse
-import platform
 
 from deps.vcpkg.scripts.buildtools import vcpkg
 

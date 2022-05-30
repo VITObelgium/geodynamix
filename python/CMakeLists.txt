@@ -2,10 +2,9 @@ set(PYTHON_TESTS
     test/testgdx.py
 )
 
-find_package(Python3 COMPONENTS Interpreter Development.Module)
-
 # make sure the pybind11 detected python version matches
 set(PYBIND11_PYTHON_VERSION ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
 add_library(gdxpy MODULE

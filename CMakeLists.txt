@@ -166,6 +166,7 @@ add_subdirectory(core)
 add_subdirectory(algorithms)
 
 if (GDX_PYTHON_BINDINGS)
+    find_package(Python3 COMPONENTS Interpreter Development.Module)
     add_subdirectory(python)
     add_subdirectory(test)
 endif ()
