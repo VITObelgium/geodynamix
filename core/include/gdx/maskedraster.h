@@ -561,7 +561,7 @@ public:
         static_assert(std::is_scalar_v<T>, "Arithmetic operation called with non scalar type");
 
         cpu::plus_scalar<T> pred(value);
-        for (auto& elem : _data) {
+        for (auto& elem : *this) {
             elem = pred(elem);
         }
 
@@ -621,7 +621,7 @@ public:
         static_assert(std::is_scalar_v<T>, "Arithmetic operation called with non scalar type");
 
         cpu::minus_scalar<T> pred(value);
-        for (auto& elem : _data) {
+        for (auto& elem : *this) {
             elem = pred(elem);
         }
 
@@ -647,7 +647,7 @@ public:
         static_assert(std::is_scalar_v<T>, "Arithmetic operation called with non scalar type");
 
         cpu::multiplies_scalar<T> pred(value);
-        for (auto& elem : _data) {
+        for (auto& elem : *this) {
             elem = pred(elem);
         }
 
@@ -750,7 +750,7 @@ public:
         static_assert(std::is_scalar_v<T>, "Arithmetic operation called with non scalar type");
 
         cpu::divides_scalar<T> pred(value);
-        for (auto& elem : _data) {
+        for (auto& elem : *this) {
             elem = pred(elem);
         }
 

@@ -1,5 +1,6 @@
 #include "gdx/eigeniterationsupport-private.h"
 #include "infra/span.h"
+#include <Eigen/Dense>
 
 #include <doctest/doctest.h>
 
@@ -23,8 +24,8 @@ TEST_CASE("EigenIteration.iterate")
     eigenArray.resize(10, 20);
     eigenArray.fill(5.f);
 
-    for (auto& val : eigenArray) {
-        CHECK(val == Approx(5.f));
+    for (auto iter = begin(eigenArray); iter != end(eigenArray); ++iter) {
+        CHECK(*iter == Approx(5.f));
     }
 
     CHECK(eigenArray.size() == std::distance(begin(eigenArray), end(eigenArray)));
