@@ -20,7 +20,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@main
         id: setup-python
         with:
           python-version: "3.x"
@@ -53,4 +53,4 @@ jobs:
       - name: Bootstrap the ports
         run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
       - name: Build the code
-        run: python build.py --triplet ${{ matrix.cfg.triplet }} --no-avx2 --python-path '$pythonLocation' --run-tests
+        run: python build.py --triplet ${{ matrix.cfg.triplet }} --no-avx2 --python-path '${{ steps.setup-python.outputs.python-path }}' --run-tests
