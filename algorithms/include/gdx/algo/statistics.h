@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <limits>
 #include <sstream>
+#include <unordered_set>
 
 namespace gdx {
 
@@ -103,4 +104,21 @@ RasterStats<HistogramValues> statistics(const RasterType& ras, double maxValue)
 
     return stats;
 }
+
+template <template <typename> typename RasterType, typename T>
+std::unordered_set<T> unique_raster_values(const RasterType<T>& ras)
+{
+    std::unordered_set<T> result;
+
+    for (std::size_t i = 0; i < ras.size(); ++i) {
+        if (ras.is_nodata(i)) {
+            continue;
+        }
+
+        result.insert(ras[i]);
+    }
+
+    return result;
+}
+
 }
