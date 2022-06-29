@@ -105,10 +105,10 @@ RasterStats<HistogramValues> statistics(const RasterType& ras, double maxValue)
     return stats;
 }
 
-template <template <typename> typename RasterType, typename T>
-std::unordered_set<T> unique_raster_values(const RasterType<T>& ras)
+template <typename RasterType, template <typename> typename ResultType = std::unordered_set>
+auto unique_raster_values(const RasterType& ras)
 {
-    std::unordered_set<T> result;
+    ResultType<typename std::decay_t<RasterType>::value_type> result;
 
     for (std::size_t i = 0; i < ras.size(); ++i) {
         if (ras.is_nodata(i)) {
