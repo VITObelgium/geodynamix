@@ -17,6 +17,7 @@ struct RasterizeOptions
     bool add        = false;
     bool allTouched = false;
     inf::GeoMetadata meta;
+    std::string inputLayer; // if empty, the first layer will be used
 
     std::vector<std::string> values;
 };
@@ -34,7 +35,7 @@ RasterType rasterize(const inf::gdal::VectorDataSet& shapeDataSet, const Rasteri
     using T = typename RasterType::value_type;
 
     std::vector<std::string> gdalOpts;
-    
+
     if (std::holds_alternative<std::string>(options.burnValue)) {
         gdalOpts.emplace_back("-a");
         gdalOpts.emplace_back(std::get<std::string>(options.burnValue));
@@ -42,6 +43,11 @@ RasterType rasterize(const inf::gdal::VectorDataSet& shapeDataSet, const Rasteri
     } else if (std::holds_alternative<T>(options.burnValue)) {
         gdalOpts.emplace_back("-burn");
         gdalOpts.emplace_back(std::to_string(std::get<T>(options.burnValue)));
+    }
+
+    if (!options.inputLayer.empty()) {
+        gdalOpts.emplace_back("-l");
+        gdalOpts.emplace_back(options.inputLayer);
     }
 
     if (options.allTouched) {
