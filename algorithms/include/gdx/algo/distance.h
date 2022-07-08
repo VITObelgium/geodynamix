@@ -22,6 +22,12 @@ namespace gdx {
 //     }
 // }
 
+enum class BarrierDiagonals
+{
+    Include, // Allow traveral through diagonal barriers
+    Exclude,
+};
+
 namespace internal {
 
 template <template <typename> typename RasterType, typename T>
@@ -118,6 +124,39 @@ void handle_cell(float deltaD, const Cell& cell, const Cell& newCell,
         }
     }
 }
+//
+//#define handleRC(deltaD, newR, newC, boundaryTest)                                                                    \
+//    if ((boundaryTest) && !barrier[newR][newC] && (distanceToTarget[newR][newC] > distanceToTarget[r][c] + deltaD)) { \
+//        distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;                                               \
+//        if (mark[newR][newC] != MARK_BORDER) {                                                                        \
+//            mark[newR][newC] = MARK_BORDER;                                                                           \
+//            border.push_back(newR, newC);                                                                             \
+//        }                                                                                                             \
+//    }
+//
+//#define handleRCDiag(deltaD, newR, newC, boundaryTest, oldR, oldC) \
+//    if ((boundaryTest) && !barrier[newR][newC] && !(barrier[oldR][newC] && barrier[newR][oldC]) && (distanceToTarget[newR][newC] > distanceToTarget[r][c] + deltaD)) {
+//distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;
+//if (mark[newR][newC] != MARK_BORDER) {
+//    mark[newR][newC] = MARK_BORDER;
+//    border.push_back(newR, newC);
+//}
+//}
+
+template <template <typename> typename RasterType>
+void handle_diagonal_cell(float deltaD, const Cell& cell, const Cell& newCell,
+    RasterType<float>& distanceToTarget,
+    RasterType<uint8_t>& mark,
+    FiLo<Cell>& border)
+{
+    if (distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
+        distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
+        if (mark[newCell] != s_markBorder) {
+            mark[newCell] = s_markBorder;
+            border.push_back(newCell);
+        }
+    }
+}
 
 template <template <typename> typename RasterType>
 void handle_cell_with_obstacles(float deltaD, const Cell& cell, const Cell& newCell,
@@ -142,8 +181,14 @@ void handle_cell_with_obstacles_diag(float deltaD, const Cell& cell, const Cell&
     RasterType<uint8_t>& mark,
     FiLo<Cell>& border)
 {
-    if (((!obstacles.is_nodata(newCell)) && obstacles[newCell] == 0) &&
-        !((!obstacles.is_nodata(cell.r, newCell.c) && obstacles(cell.r, newCell.c) != 0) && (!obstacles.is_nodata(newCell.r, cell.c) && obstacles(newCell.r, cell.c) != 0)) &&
+    if (obstacles.is_nodata(newCell) ||
+        obstacles.is_nodata(cell.r, newCell.c) ||
+        obstacles.is_nodata(newCell.r, cell.c)) {
+        return;
+    }
+
+    if ((obstacles[newCell] == 0) &&
+        !(obstacles(cell.r, newCell.c) != 0 && obstacles(newCell.r, cell.c) != 0) &&
         distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
         if (mark[newCell] != s_markBorder) {
@@ -205,27 +250,43 @@ RasterType<float> distance(const RasterType<uint8_t>& target)
     return distances_up_to(target, unreachable);
 }
 
-template <template <typename> typename RasterType>
-RasterType<float> distance(const RasterType<uint8_t>& target, const RasterType<uint8_t>& obstacles)
+template <template <typename> typename RasterType, typename TTarget, typename TObstacles>
+RasterType<float> distance(const RasterType<TTarget>& target, const RasterType<TObstacles>& obstacles, BarrierDiagonals diagonals = BarrierDiagonals::Exclude)
 {
     throw_on_size_mismatch(target, obstacles);
 
-    const float unreachable = std::numeric_limits<float>::infinity();
+    constexpr const float unreachable = std::numeric_limits<float>::infinity();
 
     auto meta   = target.metadata();
     meta.nodata = RasterType<float>::NaN;
-    RasterType<float> distanceToTarget(std::move(meta), unreachable);
+    RasterType<float> distanceToTarget(meta, unreachable);
     RasterType<uint8_t> mark(target.rows(), target.cols(), s_markTodo);
 
-    const auto rows = target.rows();
-    const auto cols = target.cols();
+    RasterType<uint8_t> byteTarget(meta.rows, meta.cols, 0);
+    RasterType<uint8_t> byteObstacles(meta.rows, meta.cols, 0);
+
+    const auto rows = meta.rows;
+    const auto cols = meta.cols;
     FiLo<Cell> border(rows, cols);
+
+    // on whole maps: targets and barriers outside modelling area do matter in case region map reduction is used instead zoning.
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
+            if (!target.is_nodata(r, c) && target(r, c) != 0) {
+                byteTarget(r, c) = 1;
+            }
+
+            if (obstacles.is_nodata(r, c) || obstacles(r, c) != 0) {
+                byteObstacles(r, c) = 1;
+            }
+        }
+    }
 
     for (int32_t r = 0; r < rows; ++r) {
         for (int32_t c = 0; c < cols; ++c) {
-            if (target.is_nodata(r, c)) {
-                distanceToTarget.mark_as_nodata(r, c);
-            } else if (target(r, c) != 0) {
+            if (byteTarget.is_nodata(r, c)) {
+                distanceToTarget(r, c) = 0;
+            } else if (byteTarget(r, c) != 0) {
                 distanceToTarget(r, c) = 0;
                 mark(r, c)             = s_markBorder;
                 border.push_back(Cell(r, c));
@@ -240,15 +301,22 @@ RasterType<float> distance(const RasterType<uint8_t>& target, const RasterType<u
         mark[cell] = s_markDone;
 
         visit_neighbour_cells(cell, rows, cols, [&](const Cell& neighbour) {
-            internal::handle_cell_with_obstacles(1.f, cell, neighbour, obstacles, distanceToTarget, mark, border);
+            internal::handle_cell_with_obstacles(1.f, cell, neighbour, byteObstacles, distanceToTarget, mark, border);
         });
 
-        visit_neighbour_diag_cells(cell, rows, cols, [&](const Cell& neighbour) {
-            internal::handle_cell_with_obstacles_diag(sqrt2, cell, neighbour, obstacles, distanceToTarget, mark, border);
-        });
+        if (diagonals == BarrierDiagonals::Include) {
+            visit_neighbour_diag_cells(cell, rows, cols, [&](const Cell& neighbour) {
+                internal::handle_cell_with_obstacles(sqrt2, cell, neighbour, byteObstacles, distanceToTarget, mark, border);
+            });
+        } else {
+            assert(diagonals == BarrierDiagonals::Exclude);
+            visit_neighbour_diag_cells(cell, rows, cols, [&](const Cell& neighbour) {
+                internal::handle_cell_with_obstacles_diag(sqrt2, cell, neighbour, byteObstacles, distanceToTarget, mark, border);
+            });
+        }
     }
 
-    distanceToTarget *= static_cast<float>(target.metadata().cellSize.x);
+    distanceToTarget *= static_cast<float>(meta.cellSize.x);
 
     return distanceToTarget;
 }

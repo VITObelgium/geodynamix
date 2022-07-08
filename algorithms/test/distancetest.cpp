@@ -89,5 +89,101 @@ TEST_CASE_TEMPLATE("distance", TypeParam, UnspecializedRasterTypes)
 
         CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 1e-4);
     }
+
+    SUBCASE("distance with obstacles only diagonal path")
+    {
+        auto targetsMeta   = meta;
+        targetsMeta.nodata = 255;
+
+        constexpr const float inf = std::numeric_limits<float>::infinity();
+
+        ByteRaster targets(targetsMeta, std::vector<uint8_t>{
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 1, 1, 0, 0, 0, 0});
+
+        ByteRaster barrier(targetsMeta, std::vector<uint8_t>{
+                                            0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                                            1, 0, 1, 1, 1, 1, 1, 1, 0, 1,
+                                            1, 1, 0, 1, 1, 1, 1, 0, 1, 1,
+                                            1, 1, 1, 0, 1, 1, 0, 1, 1, 1,
+                                            1, 1, 1, 1, 0, 0, 1, 1, 1, 1});
+
+        SUBCASE("allow diagonals")
+        {
+            FloatRaster expected(meta, std::vector<float>{
+                                           524.26409721374511719f, inf, inf, inf, inf, inf, inf, inf, inf, 524.26409721374511719f,
+                                           inf, 382.84273147583007813f, inf, inf, inf, inf, inf, inf, 382.84273147583007813f, inf,
+                                           inf, inf, 241.42136573791503906f, inf, inf, inf, inf, 241.42136573791503906f, inf, inf,
+                                           inf, inf, inf, 100, 0, 0, 100, inf, inf, inf,
+                                           inf, inf, inf, inf, 0, 0, inf, inf, inf, inf});
+
+            auto actual = distance(targets, barrier, BarrierDiagonals::Include);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 1e-4);
+        }
+
+        SUBCASE("don't allow diagonals")
+        {
+            FloatRaster expected(meta, std::vector<float>{
+                                           inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+                                           inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+                                           inf, inf, inf, inf, inf, inf, inf, inf, inf, inf,
+                                           inf, inf, inf, 100, 0, 0, 100, inf, inf, inf,
+                                           inf, inf, inf, inf, 0, 0, inf, inf, inf, inf});
+
+            auto actual = distance(targets, barrier, BarrierDiagonals::Exclude);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 1e-4);
+        }
+    }
+
+    SUBCASE("distance with obstacles only diagonal barrier")
+    {
+        auto targetsMeta   = meta;
+        targetsMeta.nodata = 255;
+
+        constexpr const float inf = std::numeric_limits<float>::infinity();
+
+        ByteRaster targets(targetsMeta, std::vector<uint8_t>{
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                            0, 0, 0, 0, 1, 1, 0, 0, 0, 0});
+
+        ByteRaster barrier(targetsMeta, std::vector<uint8_t>{
+                                            1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                                            0, 1, 0, 0, 0, 0, 0, 0, 1, 0,
+                                            0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+                                            0, 0, 0, 1, 0, 0, 1, 0, 0, 0,
+                                            0, 0, 0, 1, 0, 0, 1, 0, 0, 0});
+
+        SUBCASE("allow diagonals")
+        {
+            FloatRaster expected(meta, std::vector<float>{
+                                           inf, 524.264f, 482.843f, 441.421f, 400.f, 400.f, 441.421f, 482.843f, 524.264f, inf,
+                                           665.685f, inf, 382.843f, 341.421f, 300.f, 300.f, 341.421f, 382.843f, inf, 665.685f,
+                                           624.264f, 524.264f, inf, 241.421f, 200.f, 200.f, 241.421f, inf, 524.264f, 624.264f,
+                                           582.843f, 482.843f, 382.843f, inf, 100.f, 100.f, inf, 382.843f, 482.843f, 582.843f,
+                                           624.264f, 524.264f, 482.843f, inf, 0.f, 0.f, inf, 482.843f, 524.264f, 624.264f});
+
+            auto actual = distance(targets, barrier, BarrierDiagonals::Include);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 1e-4);
+        }
+
+        SUBCASE("don't allow diagonals")
+        {
+            FloatRaster expected(meta, std::vector<float>{
+                                           inf, 524.264f, 482.843f, 441.421f, 400.f, 400.f, 441.421f, 482.843f, 524.264f, inf,
+                                           inf, inf, 382.843f, 341.421f, 300.f, 300.f, 341.421f, 382.843f, inf, inf,
+                                           inf, inf, inf, 241.421f, 200.f, 200.f, 241.421f, inf, inf, inf,
+                                           inf, inf, inf, inf, 100, 100, inf, inf, inf, inf,
+                                           inf, inf, inf, inf, 0, 0, inf, inf, inf, inf});
+
+            auto actual = distance(targets, barrier, BarrierDiagonals::Exclude);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 1e-4);
+        }
+    }
 }
 }

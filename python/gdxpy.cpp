@@ -329,7 +329,8 @@ PYBIND11_MODULE(geodynamix, mod)
     mod.def("distance",
         &pyalgo::distance,
         "targets"_a,
-        "obstacles"_a = py::none(),
+        "obstacles"_a        = py::none(),
+        "include_diagonal"_a = false,
         "Calculate the distance from a cell to the nearest target");
 
     mod.def("travel_distance",

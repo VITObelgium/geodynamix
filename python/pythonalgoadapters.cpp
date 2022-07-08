@@ -354,21 +354,25 @@ Raster fuzzyClusterIdWithObstacles(py::object rasterArg, py::object obstacleRast
         RasterArgument(rasterArg).variant());
 }
 
-Raster distance(py::object targetArg, py::object obstaclesArg)
+Raster distance(py::object targetArg, py::object obstaclesArg, bool includeDiagonal)
 {
+    auto diagonalSetting = includeDiagonal ? BarrierDiagonals::Include : BarrierDiagonals::Exclude;
+
     RasterArgument targetRasterArg(targetArg);
     auto& target = targetRasterArg.raster();
-
-    if (target.type() != typeid(uint8_t)) {
-        throw InvalidArgument("Expected target raster to be of type uint8 (numpy.dtype('B')) actual type is {}", target.type().name());
-    }
 
     if (obstaclesArg.is_none()) {
         return Raster(gdx::distance(target.get<uint8_t>()));
     } else {
         RasterArgument obstaclesRasterArg(obstaclesArg);
-        auto& obstacles = obstaclesRasterArg.raster(target);
-        return Raster(gdx::distance(target.get<uint8_t>(), obstacles.get<uint8_t>()));
+
+        return std::visit([&](auto&& targetArg, auto&& obstaclesArg) {
+            return Raster(gdx::distance(targetArg, obstaclesArg, diagonalSetting));
+        },
+            targetRasterArg.variant(), obstaclesRasterArg.variant());
+
+        /*auto& obstacles = obstaclesRasterArg.raster(target);
+        return Raster(gdx::distance(target.get<uint8_t>(), obstacles.get<uint8_t>()));*/
     }
 }
 

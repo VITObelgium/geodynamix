@@ -41,7 +41,7 @@ Raster clusterIdWithObstacles(pybind11::object rasterArg, pybind11::object obsta
 Raster fuzzyClusterId(pybind11::object rasterArg, float radius);
 Raster fuzzyClusterIdWithObstacles(pybind11::object rasterArg, pybind11::object obstacleRasterArg, float radius);
 
-Raster distance(pybind11::object targetArg, pybind11::object barrierArg);
+Raster distance(pybind11::object targetArg, pybind11::object barrierArg, bool includeDiagonal);
 Raster travelDistance(pybind11::object rasterArg, pybind11::object anyTravelTime);
 Raster sumWithinTravelDistance(pybind11::object anyMask, pybind11::object anyResistance, pybind11::object anyValuesMap, double maxResistance, bool includeAdjacent);
 Raster closestTarget(pybind11::object rasterArg);
