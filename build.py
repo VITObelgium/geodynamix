@@ -62,7 +62,6 @@ if __name__ == "__main__":
                 triplet=triplet,
                 cmake_args=cmake_args,
                 build_name=build_dir,
-                targets=["package_source"],
             )
         else:
             vcpkg.build_project(
