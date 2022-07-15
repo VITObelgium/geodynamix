@@ -41,8 +41,8 @@ static uint8_t remap_to_byte(T value, T start, T end, uint8_t mapStart, uint8_t 
     return static_cast<uint8_t>(std::round(mapStart + (mapWidth * pos)));
 }
 
-/*! rescale the range of values to the range in [0, 1]
- *  Maps the rane [min, max] to [0, 1]
+/*! rescale the range of values to the range in [minOut, maxOut]
+ *  Maps the rane [min, max] to [minOut, maxOut]
  */
 template <
     typename InputRasterType,
@@ -61,7 +61,8 @@ void normalise(const InputRasterType& input, OutputRasterType& output, TInput mi
             if constexpr (std::is_same_v<TInput, TOutput>) {
                 output = input * (maxOut / maxIn);
             } else {
-                output = raster_cast<TOutput>(input * static_cast<TInput>(maxOut / maxIn));
+                output = raster_cast<TOutput>(input);
+                output *= maxOut / maxIn;
             }
         } else {
             gdx::transform(input, output, [=](TInput value) {
