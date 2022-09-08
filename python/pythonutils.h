@@ -8,6 +8,8 @@
 
 namespace gdx {
 
+void set_gdal_path();
+
 const std::type_info& dtypeToRasterType(pybind11::dtype type);
 pybind11::dtype rasterTypeToDtype(const std::type_info& type);
 

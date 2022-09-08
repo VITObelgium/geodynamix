@@ -21,6 +21,7 @@ option(GDX_ENABLE_TESTS "Build the c++ unit tests" OFF)
 option(GDX_ENABLE_TEST_UTILS "Build the unit test utilities" ${GDX_ENABLE_TESTS})
 option(GDX_ENABLE_BENCHMARKS "Build the micro benchmarks" OFF)
 option(GDX_PYTHON_BINDINGS "Build python bindings" OFF)
+option(GDX_DYNAMIC_BUILD "Indicate that the dependencies are dynamic libraries (Needed for windows conda builds)" OFF)
 option(GDX_INSOURCE_DEPS "Use submodules for internal dependencies" ON)
 option(GDX_INSTALL_DEVELOPMENT_FILES "Install the gdx development files (headers/libs)" ${GDX_IS_TOPLEVEL})
 

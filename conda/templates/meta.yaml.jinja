@@ -24,6 +24,8 @@ test:
     - python/test/testgdx.py
   commands:
     - python python/test/testgdx.py
+  script_env:
+    - USE_PATH_FOR_GDAL_PYTHON=YES
 
 about:
   home: https://geodynamix.eu
@@ -34,7 +36,7 @@ about:
   description: library for working with raster data
 
 package:
-  name: gdx
+  name: geodynamix
   version: {{ gdx_version }}
 
 source:

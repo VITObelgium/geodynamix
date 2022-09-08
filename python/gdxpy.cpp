@@ -37,9 +37,10 @@ PYBIND11_MODULE(geodynamix, mod)
 
     Log::add_custom_sink(std::make_shared<gdx::python::LogSinkMt>());
     Log::initialize("geodynamix");
+    set_gdal_path();
+
     inf::gdal::RegistrationConfig cfg;
     cfg.setLogHandler = false;
-
     inf::gdal::register_gdal(cfg);
 
 #ifndef NDEBUG

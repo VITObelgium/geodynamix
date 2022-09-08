@@ -1,11 +1,45 @@
 #include "pythonutils.h"
 
+#include "gdx/config.h"
 #include "gdx/exception.h"
+#include "infra/log.h"
 
 namespace gdx {
 
 namespace py = pybind11;
 using namespace py::literals;
+
+void set_gdal_path()
+{
+#if defined(GDX_DYNAMIC_BUILD) && defined(_WIN32)
+    /*
+    if 'USE_PATH_FOR_GDAL_PYTHON' in os.environ and 'PATH' in os.environ:
+      for p in os.environ['PATH'].split(';'):
+        if p:
+          try:
+            os.add_dll_directory(p)
+          except (FileNotFoundError, OSError):
+            continue
+    */
+
+    auto os = py::module::import("os");
+    if (os.attr("environ")["USE_PATH_FOR_GDAL_PYTHON"] && os.attr("environ")["PATH"]) {
+        auto paths = os.attr("environ")["PATH"].attr("split")(";");
+        for (auto path : paths) {
+            if (path) {
+                try {
+                    inf::Log::warn("Add to path: '{}'", std::string(py::str(path)));
+                    os.attr("add_dll_directory")(path);
+                } catch (const std::exception& e) {
+                    inf::Log::error("Add to path error: '{}'", e.what());
+                }
+            }
+        }
+    }
+#else
+    inf::Log::warn("No gdal path modification");
+#endif
+}
 
 const std::type_info& dtypeToRasterType(py::dtype type)
 {

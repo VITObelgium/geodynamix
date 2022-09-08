@@ -62,7 +62,7 @@ void normalise(const InputRasterType& input, OutputRasterType& output, TInput mi
                 output = input * (maxOut / maxIn);
             } else {
                 output = raster_cast<TOutput>(input);
-                output *= maxOut / maxIn;
+                output *= static_cast<TOutput>(maxOut / maxIn);
             }
         } else {
             gdx::transform(input, output, [=](TInput value) {
