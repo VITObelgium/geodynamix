@@ -79,14 +79,14 @@ cmake ^
     %CMAKE_ARGS% ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DPACKAGE_VERSION_COMMITHASH=%GIT_FULL_HASH% ^
-    -DCMAKE_INSTALL_PREFIX:PATH="%PREFIX%" ^
+    -DCMAKE_INSTALL_PREFIX:PATH="%PREFIX%\Lib\geodynamix" ^
     -DCMAKE_PREFIX_PATH:PATH="%CMAKE_PREFIX_PATH%" ^
     -DCMAKE_FIND_ROOT_PATH:PATH="%SRC_DIR%\thirdparty\local" ^
     -DCMAKE_MODULE_PATH:PATH="%RECIPE_DIR%\cmake" ^
+    -DCMAKE_INSTALL_LIBDIR="%PREFIX%\Lib\geodynamix" ^
     -Ddate_DIR="%SRC_DIR%\thirdparty\local\CMake" ^
     -Dfmt_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\fmt" ^
     -Dspdlog_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\spdlog" ^
-    -DGDX_ENABLE_OPENMP=OFF ^
     -DGDX_AVX2=OFF ^
     -DGDX_ENABLE_SIMD=OFF ^
     -DGDX_ENABLE_TOOLS=OFF ^
@@ -101,3 +101,5 @@ cmake ^
     ..
 if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
 cmake --build . --target install
+if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
+copy "%SRC_DIR%\conda\init.py" "%PREFIX%\Lib\geodynamix\__init__.py"
