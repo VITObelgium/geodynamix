@@ -17,6 +17,12 @@ if __name__ == "__main__":
             action="store_true",
             help="build with avx2 instructions",
         )
+        parser.add_argument(
+            "--build-dir",
+            dest="build_dir",
+            default="gdx",
+            help="name of the build directory",
+        )
 
         parser.add_argument(
             "--python-path",
@@ -49,8 +55,6 @@ if __name__ == "__main__":
         if args.python_path:
             cmake_args.append(f"-DPython3_EXECUTABLE={args.python_path}")
 
-        build_dir = "gdx"
-
         if args.parent:
             del vcpkg
             sys.path.insert(0, os.path.join("..", "vcpkg-ports", "scripts"))
@@ -61,14 +65,14 @@ if __name__ == "__main__":
                 os.path.abspath(args.source_dir),
                 triplet=triplet,
                 cmake_args=cmake_args,
-                build_name=build_dir,
+                build_name=args.build_dir,
             )
         else:
             vcpkg.build_project(
                 os.path.abspath(args.source_dir),
                 triplet=triplet,
                 cmake_args=cmake_args,
-                build_name=build_dir,
+                build_name=args.build_dir,
                 run_tests_after_build=args.run_tests,
                 test_arguments=["--verbose"],
             )
