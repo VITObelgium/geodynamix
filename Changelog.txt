@@ -1,3 +1,8 @@
+Release 0.14.1
+--------------
+Changes:
+- node_value_distance_decay improve performance by reducing allocations
+
 Release 0.14.0
 --------------
 Changes:
