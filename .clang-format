@@ -2,13 +2,13 @@
 # BasedOnStyle:  LLVM
 AccessModifierOffset: -4
 ConstructorInitializerIndentWidth: 0
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: Align
 AlignEscapedNewlines: Left
 AlignOperands: true
 AlignTrailingComments: true
 AlignConsecutiveAssignments : true
 AlignConsecutiveDeclarations : false
-AllowAllParametersOfDeclarationOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortIfStatementsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortLoopsOnASingleLine: false

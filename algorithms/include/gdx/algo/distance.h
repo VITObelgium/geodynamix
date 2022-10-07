@@ -5,6 +5,8 @@
 #include "gdx/log.h"
 
 #include "gdx/algo/clusterutils.h"
+#include "gdx/algo/nodata.h"
+#include "infra/chrono.h"
 
 #include <cassert>
 #include <chrono>
@@ -32,10 +34,10 @@ namespace internal {
 
 template <template <typename> typename RasterType, typename T>
 void handle_cell_closest_target(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<T>& closesttarget,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                                RasterType<float>& distanceToTarget,
+                                RasterType<T>& closesttarget,
+                                RasterType<uint8_t>& mark,
+                                FiLo<Cell>& border)
 {
     if (distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
@@ -49,11 +51,11 @@ void handle_cell_closest_target(float deltaD, const Cell& cell, const Cell& newC
 
 template <template <typename> typename RasterType, typename T>
 void handle_sum_le_time_distance_cell(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    const RasterType<T>& travelTime,
-    FiLo<Cell>& border,
-    std::vector<Cell>& cells)
+                                      RasterType<float>& distanceToTarget,
+                                      RasterType<uint8_t>& mark,
+                                      const RasterType<T>& travelTime,
+                                      FiLo<Cell>& border,
+                                      std::vector<Cell>& cells)
 {
     if (travelTime.is_nodata(newCell)) {
         return;
@@ -76,10 +78,10 @@ void handle_sum_le_time_distance_cell(float deltaD, const Cell& cell, const Cell
 
 template <template <typename> typename RasterType, typename T>
 void handle_cell_value_at_closest_target(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    RasterType<T>& valueatclosesttarget,
-    FiLo<Cell>& border)
+                                         RasterType<float>& distanceToTarget,
+                                         RasterType<uint8_t>& mark,
+                                         RasterType<T>& valueatclosesttarget,
+                                         FiLo<Cell>& border)
 {
     if (distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell]     = distanceToTarget[cell] + deltaD;
@@ -93,11 +95,11 @@ void handle_cell_value_at_closest_target(float deltaD, const Cell& cell, const C
 
 template <template <typename> typename RasterType, typename TTravel, typename TValue>
 void handle_cell_value_at_closest_travel_target(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<TValue>& valueatclosesttarget,
-    const RasterType<TTravel>& travelTime,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                                                RasterType<float>& distanceToTarget,
+                                                RasterType<TValue>& valueatclosesttarget,
+                                                const RasterType<TTravel>& travelTime,
+                                                RasterType<uint8_t>& mark,
+                                                FiLo<Cell>& border)
 {
     auto alternativeDist = static_cast<float>(distanceToTarget[cell] + deltaD * travelTime[newCell]);
     if (distanceToTarget[newCell] > alternativeDist) {
@@ -112,9 +114,9 @@ void handle_cell_value_at_closest_travel_target(float deltaD, const Cell& cell, 
 
 template <template <typename> typename RasterType>
 void handle_cell(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                 RasterType<float>& distanceToTarget,
+                 RasterType<uint8_t>& mark,
+                 FiLo<Cell>& border)
 {
     if (distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
@@ -136,8 +138,8 @@ void handle_cell(float deltaD, const Cell& cell, const Cell& newCell,
 //
 //#define handleRCDiag(deltaD, newR, newC, boundaryTest, oldR, oldC) \
 //    if ((boundaryTest) && !barrier[newR][newC] && !(barrier[oldR][newC] && barrier[newR][oldC]) && (distanceToTarget[newR][newC] > distanceToTarget[r][c] + deltaD)) {
-//distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;
-//if (mark[newR][newC] != MARK_BORDER) {
+// distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;
+// if (mark[newR][newC] != MARK_BORDER) {
 //    mark[newR][newC] = MARK_BORDER;
 //    border.push_back(newR, newC);
 //}
@@ -145,9 +147,9 @@ void handle_cell(float deltaD, const Cell& cell, const Cell& newCell,
 
 template <template <typename> typename RasterType>
 void handle_diagonal_cell(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                          RasterType<float>& distanceToTarget,
+                          RasterType<uint8_t>& mark,
+                          FiLo<Cell>& border)
 {
     if (distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
@@ -160,10 +162,10 @@ void handle_diagonal_cell(float deltaD, const Cell& cell, const Cell& newCell,
 
 template <template <typename> typename RasterType>
 void handle_cell_with_obstacles(float deltaD, const Cell& cell, const Cell& newCell,
-    const RasterType<uint8_t>& obstacles,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                                const RasterType<uint8_t>& obstacles,
+                                RasterType<float>& distanceToTarget,
+                                RasterType<uint8_t>& mark,
+                                FiLo<Cell>& border)
 {
     if (((!obstacles.is_nodata(newCell)) && obstacles[newCell] == 0) && distanceToTarget[newCell] > distanceToTarget[cell] + deltaD) {
         distanceToTarget[newCell] = distanceToTarget[cell] + deltaD;
@@ -176,10 +178,10 @@ void handle_cell_with_obstacles(float deltaD, const Cell& cell, const Cell& newC
 
 template <template <typename> typename RasterType>
 void handle_cell_with_obstacles_diag(float deltaD, const Cell& cell, const Cell& newCell,
-    const RasterType<uint8_t>& obstacles,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border)
+                                     const RasterType<uint8_t>& obstacles,
+                                     RasterType<float>& distanceToTarget,
+                                     RasterType<uint8_t>& mark,
+                                     FiLo<Cell>& border)
 {
     if (obstacles.is_nodata(newCell) ||
         obstacles.is_nodata(cell.r, newCell.c) ||
@@ -578,17 +580,17 @@ RasterType<TValue> value_at_closest_less_then_travel_target(const RasterType<TTa
 // computes the sum of the valueToSum that is within the distance via lowest travelTime
 template <template <typename> typename RasterType, typename TTravel, typename TValue>
 TValue compute_sum_le_time_distance(Cell targetCell,
-    const RasterType<TTravel>& travelTime,
-    const float maxTravelTime,
-    const float unreachable,
-    const RasterType<TValue>& valueToSum,
-    bool inclAdjacent,
-    // temporary variables internal to compute_sum_le_time_distance.  Pass them again and again instead of having to recreate them again and again.
-    RasterType<float>& distanceToTarget, // expected to be all unreachable.  This function restores any changes upon return.
-    RasterType<uint8_t>& mark,           // expected to be all s_markTodo.  This function restores any changes upon return.
-    FiLo<Cell>& border,                  // expected to be empty.  Restored to empty upon return.
-    std::vector<Cell>& cells,            // idem
-    std::vector<Cell>& adjacentCells     // idem
+                                    const RasterType<TTravel>& travelTime,
+                                    const float maxTravelTime,
+                                    const float unreachable,
+                                    const RasterType<TValue>& valueToSum,
+                                    bool inclAdjacent,
+                                    // temporary variables internal to compute_sum_le_time_distance.  Pass them again and again instead of having to recreate them again and again.
+                                    RasterType<float>& distanceToTarget, // expected to be all unreachable.  This function restores any changes upon return.
+                                    RasterType<uint8_t>& mark,           // expected to be all s_markTodo.  This function restores any changes upon return.
+                                    FiLo<Cell>& border,                  // expected to be empty.  Restored to empty upon return.
+                                    std::vector<Cell>& cells,            // idem
+                                    std::vector<Cell>& adjacentCells     // idem
 )
 {
     // preconditions on parameters :
@@ -675,10 +677,10 @@ TValue compute_sum_le_time_distance(Cell targetCell,
 
 template <typename TResult, template <typename> typename RasterType, typename TMask, typename TResistence, typename TValue>
 RasterType<TResult> sum_within_travel_distance(const RasterType<TMask>& mask,
-    const RasterType<TResistence>& resistenceMap,
-    const RasterType<TValue>& valueMap,
-    float maxResistance,
-    bool includeAdjacent)
+                                               const RasterType<TResistence>& resistenceMap,
+                                               const RasterType<TValue>& valueMap,
+                                               float maxResistance,
+                                               bool includeAdjacent)
 {
     if (mask.size() != resistenceMap.size() || mask.size() != valueMap.size()) {
         throw InvalidArgument("Mask, resistence and value map dimensions should be the same");
@@ -719,7 +721,7 @@ RasterType<TResult> sum_within_travel_distance(const RasterType<TMask>& mask,
         for (int c = 0; c < cols; ++c) {
             if (!mask.is_nodata(r, c) && mask(r, c) != 0) {
                 result(r, c) = static_cast<TResult>(compute_sum_le_time_distance(Cell(r, c), resistenceMap, maxResistance,
-                    unreachable, valueMap, includeAdjacent, distanceToTarget, mark, border, cells, adjacentCells));
+                                                                                 unreachable, valueMap, includeAdjacent, distanceToTarget, mark, border, cells, adjacentCells));
             }
         }
 
@@ -730,13 +732,98 @@ RasterType<TResult> sum_within_travel_distance(const RasterType<TMask>& mask,
 
             lastMsg = now;
             Log::warn("sum_within_travel_distance processed {:.2f}%, elapsed {:02}:{:02}:{:02}, expected total runtime {:02}:{:02}:{:02}",
-                100.0 * (r + 1) / rows,
-                std::chrono::duration_cast<std::chrono::hours>(elapsed).count(),
-                std::chrono::duration_cast<std::chrono::minutes>(elapsed).count() % 60,
-                std::chrono::duration_cast<std::chrono::seconds>(elapsed).count() % 60,
-                std::chrono::duration_cast<std::chrono::hours>(total).count(),
-                std::chrono::duration_cast<std::chrono::minutes>(total).count() % 60,
-                std::chrono::duration_cast<std::chrono::seconds>(total).count() % 60);
+                      100.0 * (r + 1) / rows,
+                      std::chrono::duration_cast<std::chrono::hours>(elapsed).count(),
+                      std::chrono::duration_cast<std::chrono::minutes>(elapsed).count() % 60,
+                      std::chrono::duration_cast<std::chrono::seconds>(elapsed).count() % 60,
+                      std::chrono::duration_cast<std::chrono::hours>(total).count(),
+                      std::chrono::duration_cast<std::chrono::minutes>(total).count() % 60,
+                      std::chrono::duration_cast<std::chrono::seconds>(total).count() % 60);
+        }
+    }
+
+    return result;
+}
+
+template <typename TResult, template <typename> typename RasterType, typename TTarget, typename TResistance>
+RasterType<TResult> sum_targets_within_travel_distance(const RasterType<TTarget>& targets,
+                                                       const RasterType<TResistance>& resistanceMap,
+                                                       float maxResistance)
+{
+    if (targets.size() != resistanceMap.size()) {
+        throw inf::InvalidArgument("Targets and resistence map dimensions should be the same");
+    }
+
+    if (maxResistance <= 0) {
+        throw inf::InvalidArgument("maxResistance should be postive");
+    }
+
+    for (size_t i = 0; i < resistanceMap.size(); ++i) {
+        if (!resistanceMap.is_nodata(i) && resistanceMap[i] < 0) {
+            throw inf::InvalidArgument("resistance may not be negative");
+        }
+    }
+
+    auto resultMeta = targets.metadata();
+    RasterType<TResult> result(resultMeta, 0);
+    if constexpr (result.has_nan()) {
+        result.set_nodata(result.NaN);
+    }
+
+    const auto rows         = targets.rows();
+    const auto cols         = targets.cols();
+    const float unreachable = maxResistance + 1;
+    const float sqrt2       = std::sqrt(2.f);
+
+    // FLT_MAX/4 allows to add 2 x sqrt(2) of them and still be less than FLT_MAX
+    const auto resistance = gdx::replace_nodata<RasterType, TResistance>(resistanceMap, std::numeric_limits<TResistance>::max() / 4);
+
+    resultMeta.nodata.reset();
+    RasterType<float> distanceToTarget(resultMeta, unreachable);
+    RasterType<uint8_t> mark(resultMeta, s_markTodo);
+    RasterType<uint8_t> added(resultMeta, 0);
+    FiLo<Cell> border(rows, cols);
+
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
+            if (targets.is_nodata(r, c) || targets(r, c) == 0) {
+                continue;
+            }
+
+            distanceToTarget.fill(unreachable);
+            mark.fill(s_markTodo);
+            added.fill(0);
+            assert(border.empty());
+
+            Cell cell(r, c);
+            distanceToTarget[cell] = 0;
+            if (!resistanceMap.is_nodata(cell)) {
+                border.push_back(cell);
+                mark[cell] = s_markBorder;
+            } else {
+                mark[cell] = s_markDone;
+            }
+
+            while (!border.empty()) {
+                auto curCell = border.pop_head();
+                assert(mark[curCell] == s_markBorder);
+                mark[curCell] = s_markDone;
+                if (distanceToTarget[curCell] <= maxResistance) {
+                    // we can get here via different routes within the maxTravelTime.  But count only once.
+                    if (added[curCell] == 0) {
+                        result[curCell] += static_cast<TResult>(targets[cell]);
+                        added[curCell] = 1;
+                    }
+                }
+
+                visit_neighbour_cells(curCell, rows, cols, [&](const Cell& neighbour) {
+                    internal::handle_time_cell(1.f, curCell, neighbour, distanceToTarget, mark, resistance, border);
+                });
+
+                visit_neighbour_diag_cells(curCell, rows, cols, [&](const Cell& neighbour) {
+                    internal::handle_time_cell(sqrt2, curCell, neighbour, distanceToTarget, mark, resistance, border);
+                });
+            }
         }
     }
 

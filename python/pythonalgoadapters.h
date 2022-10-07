@@ -44,6 +44,7 @@ Raster fuzzyClusterIdWithObstacles(pybind11::object rasterArg, pybind11::object 
 Raster distance(pybind11::object targetArg, pybind11::object barrierArg, bool includeDiagonal);
 Raster travelDistance(pybind11::object rasterArg, pybind11::object anyTravelTime);
 Raster sumWithinTravelDistance(pybind11::object anyMask, pybind11::object anyResistance, pybind11::object anyValuesMap, double maxResistance, bool includeAdjacent);
+Raster sumTargetsWithinTravelDistance(pybind11::object anyTargets, pybind11::object anyResistance, double maxResistance);
 Raster closestTarget(pybind11::object rasterArg);
 Raster valueAtClosestTarget(pybind11::object rasterArg, pybind11::object valuesArg);
 Raster valueAtClosestTravelTarget(pybind11::object rasterArg, pybind11::object travelTimeArg, pybind11::object valuesArg);
@@ -99,10 +100,10 @@ Raster& replaceNodataInPlace(Raster& raster, double replaceValue);
 void drawShapeFileOnRaster(Raster& anyRaster, const std::string& shapeFilepath);
 
 bool lddValidate(pybind11::object rasterArg,
-    const std::function<void(int32_t, int32_t)>& loopCb,
-    const std::function<void(int32_t, int32_t)>& invalidValueCb,
-    const std::function<void(int32_t, int32_t)>& endsInNoDataCb,
-    const std::function<void(int32_t, int32_t)>& outsideOfMapCb);
+                 const std::function<void(int32_t, int32_t)>& loopCb,
+                 const std::function<void(int32_t, int32_t)>& invalidValueCb,
+                 const std::function<void(int32_t, int32_t)>& endsInNoDataCb,
+                 const std::function<void(int32_t, int32_t)>& outsideOfMapCb);
 
 Raster lddFix(pybind11::object lddArg);
 Raster accuflux(pybind11::object lddArg, pybind11::object freightArg);

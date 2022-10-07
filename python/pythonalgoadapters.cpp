@@ -61,7 +61,7 @@ Raster blurFilter(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::blur_filter(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster majorityFilter(py::object rasterArg, double radiusInMeter)
@@ -69,7 +69,7 @@ Raster majorityFilter(py::object rasterArg, double radiusInMeter)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::majority_filter(raster, static_cast<float>(radiusInMeter)));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 template <typename RasterType>
@@ -109,7 +109,7 @@ Raster min(py::args args)
     return std::visit([&args](auto&& raster) {
         return Raster(gdx::minimum(createRasterVectorFromArgs<std::remove_reference_t<decltype(raster)>>(args)));
     },
-        rasterPtr->get());
+                      rasterPtr->get());
 }
 
 Raster max(py::args args)
@@ -126,7 +126,7 @@ Raster max(py::args args)
     return std::visit([&args](auto&& raster) {
         return Raster(gdx::maximum(createRasterVectorFromArgs<std::remove_reference_t<decltype(raster)>>(args)));
     },
-        rasterPtr->get());
+                      rasterPtr->get());
 }
 
 Raster clip(pybind11::object rasterArg, double low, double high)
@@ -135,7 +135,7 @@ Raster clip(pybind11::object rasterArg, double low, double high)
         using T = value_type<decltype(raster)>;
         return Raster(gdx::clip(raster, static_cast<T>(low), static_cast<T>(high)));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster clipLow(pybind11::object rasterArg, double low)
@@ -144,7 +144,7 @@ Raster clipLow(pybind11::object rasterArg, double low)
         using T = value_type<decltype(raster)>;
         return Raster(gdx::clip_low(raster, static_cast<T>(low)));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster clipHigh(pybind11::object rasterArg, double high)
@@ -153,7 +153,7 @@ Raster clipHigh(pybind11::object rasterArg, double high)
         using T = value_type<decltype(raster)>;
         return Raster(gdx::clip_high(raster, static_cast<T>(high)));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster abs(py::object rasterArg)
@@ -161,7 +161,7 @@ Raster abs(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::abs(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster round(py::object rasterArg)
@@ -169,7 +169,7 @@ Raster round(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::round(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster sin(py::object rasterArg)
@@ -177,7 +177,7 @@ Raster sin(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::sin(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster cos(py::object rasterArg)
@@ -185,7 +185,7 @@ Raster cos(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::cos(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster log(py::object rasterArg)
@@ -193,7 +193,7 @@ Raster log(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::log(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster log10(py::object rasterArg)
@@ -201,7 +201,7 @@ Raster log10(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::log10(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster exp(py::object rasterArg)
@@ -209,7 +209,7 @@ Raster exp(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::exp(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster pow(py::object rasterArg1, py::object rasterArg2)
@@ -223,7 +223,7 @@ Raster pow(py::object rasterArg1, py::object rasterArg2)
         using T = value_type<decltype(raster)>;
         return Raster(gdx::pow(raster, r2.get<T>(r1.raster())));
     },
-        RasterArgument(rasterArg1).variant());
+                      RasterArgument(rasterArg1).variant());
 }
 
 Raster normalise(pybind11::object rasterArg)
@@ -231,7 +231,7 @@ Raster normalise(pybind11::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::normalise_min_max<float>(raster, 0.f, 1.f));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster normaliseToByte(pybind11::object rasterArg)
@@ -239,7 +239,7 @@ Raster normaliseToByte(pybind11::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::normalise_min_max<uint8_t>(raster, 0, 254));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 bool any(py::object rasterArg)
@@ -247,7 +247,7 @@ bool any(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return gdx::any_of(raster);
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 bool all(py::object rasterArg)
@@ -255,7 +255,7 @@ bool all(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return gdx::all_of(raster);
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 py::object minimumValue(py::object rasterArg)
@@ -263,7 +263,7 @@ py::object minimumValue(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return pybind11::cast(gdx::minimum(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 py::object maximumValue(py::object rasterArg)
@@ -271,7 +271,7 @@ py::object maximumValue(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return pybind11::cast(gdx::maximum(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 double sum(py::object rasterArg)
@@ -279,7 +279,7 @@ double sum(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return gdx::sum(raster);
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster clusterSize(py::object rasterArg, bool includeDiagonal)
@@ -289,7 +289,7 @@ Raster clusterSize(py::object rasterArg, bool includeDiagonal)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::cluster_size(raster, diagonalSetting));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster clusterSum(py::object rasterArg, py::object rasterToSumArg, bool includeDiagonal)
@@ -299,7 +299,7 @@ Raster clusterSum(py::object rasterArg, py::object rasterToSumArg, bool includeD
     return std::visit([diagonalSetting](auto&& raster, auto&& rasterToSum) {
         return Raster(gdx::cluster_sum<float>(raster, rasterToSum, diagonalSetting));
     },
-        RasterArgument(rasterArg).variant(), RasterArgument(rasterToSumArg).variant());
+                      RasterArgument(rasterArg).variant(), RasterArgument(rasterToSumArg).variant());
 }
 
 Raster clusterId(py::object rasterArg, bool includeDiagonal)
@@ -309,7 +309,7 @@ Raster clusterId(py::object rasterArg, bool includeDiagonal)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::cluster_id(raster, diagonalSetting));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster clusterIdWithObstacles(py::object rasterArg, py::object obstacleRasterArg)
@@ -325,7 +325,7 @@ Raster clusterIdWithObstacles(py::object rasterArg, py::object obstacleRasterArg
         auto categories = raster_cast<int32_t>(raster);
         return Raster(gdx::cluster_id_with_obstacles(categories, obstacles.get<uint8_t>()));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster fuzzyClusterId(py::object rasterArg, float radius)
@@ -334,7 +334,7 @@ Raster fuzzyClusterId(py::object rasterArg, float radius)
         show_warning_if_clustering_on_floats(raster);
         return Raster(gdx::fuzzy_cluster_id(raster, radius));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster fuzzyClusterIdWithObstacles(py::object rasterArg, py::object obstacleRasterArg, float radius)
@@ -351,7 +351,7 @@ Raster fuzzyClusterIdWithObstacles(py::object rasterArg, py::object obstacleRast
         auto categories = raster_cast<int32_t>(raster);
         return Raster(gdx::fuzzy_cluster_id_with_obstacles(categories, obstacles.get<uint8_t>(), radius));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster distance(py::object targetArg, py::object obstaclesArg, bool includeDiagonal)
@@ -369,7 +369,7 @@ Raster distance(py::object targetArg, py::object obstaclesArg, bool includeDiago
         return std::visit([&](auto&& targetArg, auto&& obstaclesArg) {
             return Raster(gdx::distance(targetArg, obstaclesArg, diagonalSetting));
         },
-            targetRasterArg.variant(), obstaclesRasterArg.variant());
+                          targetRasterArg.variant(), obstaclesRasterArg.variant());
 
         /*auto& obstacles = obstaclesRasterArg.raster(target);
         return Raster(gdx::distance(target.get<uint8_t>(), obstacles.get<uint8_t>()));*/
@@ -388,7 +388,7 @@ Raster travelDistance(py::object rasterArg, py::object anyTravelTimeArg)
     return std::visit([&target](auto&& travelTime) {
         return Raster(gdx::travel_distance(target.get<uint8_t>(), travelTime));
     },
-        RasterArgument(anyTravelTimeArg).variant());
+                      RasterArgument(anyTravelTimeArg).variant());
 }
 
 Raster sumWithinTravelDistance(py::object anyMask, py::object anyResistance, py::object anyValuesMap, double maxResistance, bool includeAdjacent)
@@ -396,7 +396,15 @@ Raster sumWithinTravelDistance(py::object anyMask, py::object anyResistance, py:
     return std::visit([maxResistance, includeAdjacent](auto&& mask, auto&& resistance, auto&& values) {
         return Raster(gdx::sum_within_travel_distance<float>(mask, resistance, values, static_cast<float>(maxResistance), includeAdjacent));
     },
-        RasterArgument(anyMask).variant(), RasterArgument(anyResistance).variant(), RasterArgument(anyValuesMap).variant());
+                      RasterArgument(anyMask).variant(), RasterArgument(anyResistance).variant(), RasterArgument(anyValuesMap).variant());
+}
+
+Raster sumTargetsWithinTravelDistance(py::object anyTargets, py::object anyResistance, double maxResistance)
+{
+    return std::visit([maxResistance](auto&& targets, auto&& resistance) {
+        return Raster(gdx::sum_targets_within_travel_distance<float>(targets, resistance, static_cast<float>(maxResistance)));
+    },
+                      RasterArgument(anyTargets).variant(), RasterArgument(anyResistance).variant());
 }
 
 Raster closestTarget(py::object rasterTargetsArg)
@@ -404,7 +412,7 @@ Raster closestTarget(py::object rasterTargetsArg)
     return std::visit([](auto&& target) {
         return Raster(gdx::closest_target(target));
     },
-        RasterArgument(rasterTargetsArg).variant());
+                      RasterArgument(rasterTargetsArg).variant());
 }
 
 Raster valueAtClosestTarget(py::object rasterTargetsArg, py::object valuesArg)
@@ -412,7 +420,7 @@ Raster valueAtClosestTarget(py::object rasterTargetsArg, py::object valuesArg)
     return std::visit([](auto&& target, auto&& values) {
         return Raster(gdx::value_at_closest_target(target, values));
     },
-        RasterArgument(rasterTargetsArg).variant(), RasterArgument(valuesArg).variant());
+                      RasterArgument(rasterTargetsArg).variant(), RasterArgument(valuesArg).variant());
 }
 
 Raster valueAtClosestTravelTarget(py::object rasterTargetsArg, py::object travelTimeArg, py::object valuesArg)
@@ -420,7 +428,7 @@ Raster valueAtClosestTravelTarget(py::object rasterTargetsArg, py::object travel
     return std::visit([](auto&& target, auto&& travelTimes, auto&& values) {
         return Raster(gdx::value_at_closest_travel_target(target, travelTimes, values));
     },
-        RasterArgument(rasterTargetsArg).variant(), RasterArgument(travelTimeArg).variant(), RasterArgument(valuesArg).variant());
+                      RasterArgument(rasterTargetsArg).variant(), RasterArgument(travelTimeArg).variant(), RasterArgument(valuesArg).variant());
 }
 
 Raster valueAtClosestLessThenTravelTarget(py::object rasterTargetsArg, py::object travelTimeArg, double maxTravelTime, py::object valuesArg)
@@ -428,7 +436,7 @@ Raster valueAtClosestLessThenTravelTarget(py::object rasterTargetsArg, py::objec
     return std::visit([maxTravelTime](auto&& target, auto&& travelTimes, auto&& values) {
         return Raster(gdx::value_at_closest_less_then_travel_target(target, travelTimes, static_cast<float>(maxTravelTime), values));
     },
-        RasterArgument(rasterTargetsArg).variant(), RasterArgument(travelTimeArg).variant(), RasterArgument(valuesArg).variant());
+                      RasterArgument(rasterTargetsArg).variant(), RasterArgument(travelTimeArg).variant(), RasterArgument(valuesArg).variant());
 }
 
 Raster nodeValueDistanceDecay(pybind11::object targetArg, pybind11::object travelTimeArg, double maxTravelTime, double a, double b)
@@ -437,7 +445,7 @@ Raster nodeValueDistanceDecay(pybind11::object targetArg, pybind11::object trave
         using TTravelTime = value_type<decltype(travelTimes)>;
         return Raster(gdx::node_value_distance_decay(target, travelTimes, truncate<TTravelTime>(maxTravelTime), truncate<float>(a), truncate<float>(b)));
     },
-        RasterArgument(targetArg).variant(), RasterArgument(travelTimeArg).variant());
+                      RasterArgument(targetArg).variant(), RasterArgument(travelTimeArg).variant());
 }
 
 Raster categorySum(py::object clusterArg, py::object valuesArg)
@@ -448,7 +456,7 @@ Raster categorySum(py::object clusterArg, py::object valuesArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_sum(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(valuesArg).variant(clusters.raster()));
+                      RasterArgument(valuesArg).variant(clusters.raster()));
 }
 
 Raster categoryMin(py::object clusterArg, py::object valuesArg)
@@ -459,7 +467,7 @@ Raster categoryMin(py::object clusterArg, py::object valuesArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_min(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(valuesArg).variant(clusters.raster()));
+                      RasterArgument(valuesArg).variant(clusters.raster()));
 }
 
 Raster categoryMax(py::object clusterArg, py::object valuesArg)
@@ -470,7 +478,7 @@ Raster categoryMax(py::object clusterArg, py::object valuesArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_max(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(valuesArg).variant(clusters.raster()));
+                      RasterArgument(valuesArg).variant(clusters.raster()));
 }
 
 Raster categoryMode(py::object clusterArg, py::object valuesArg)
@@ -481,7 +489,7 @@ Raster categoryMode(py::object clusterArg, py::object valuesArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_mode(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(valuesArg).variant(clusters.raster()));
+                      RasterArgument(valuesArg).variant(clusters.raster()));
 }
 
 Raster categoryFilterOr(py::object clusterArg, py::object filterArg)
@@ -492,7 +500,7 @@ Raster categoryFilterOr(py::object clusterArg, py::object filterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_filter_or(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(filterArg).variant());
+                      RasterArgument(filterArg).variant());
 }
 
 Raster categoryFilterAnd(py::object clusterArg, py::object filterArg)
@@ -503,7 +511,7 @@ Raster categoryFilterAnd(py::object clusterArg, py::object filterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_filter_and(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(filterArg).variant());
+                      RasterArgument(filterArg).variant());
 }
 
 Raster categoryFilterNot(py::object clusterArg, py::object filterArg)
@@ -514,7 +522,7 @@ Raster categoryFilterNot(py::object clusterArg, py::object filterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_filter_not(clusters.get<int32_t>(), raster));
     },
-        RasterArgument(filterArg).variant());
+                      RasterArgument(filterArg).variant());
 }
 
 Raster categorySumInBuffer(py::object clusterArg, py::object valuesArg, double radiusInMeter)
@@ -525,7 +533,7 @@ Raster categorySumInBuffer(py::object clusterArg, py::object valuesArg, double r
     return std::visit([&](auto&& raster) {
         return Raster(gdx::category_sum_in_buffer(clusters.get<int32_t>(), raster, static_cast<float>(radiusInMeter)));
     },
-        RasterArgument(valuesArg).variant());
+                      RasterArgument(valuesArg).variant());
 }
 
 Raster sumInBuffer(const Raster& anyRaster, float radius, BufferStyle bufferStyle)
@@ -533,7 +541,7 @@ Raster sumInBuffer(const Raster& anyRaster, float radius, BufferStyle bufferStyl
     return std::visit([&](auto&& raster) {
         return Raster(gdx::sum_in_buffer(raster, radius, bufferStyle));
     },
-        anyRaster.get());
+                      anyRaster.get());
 }
 
 Raster maxInBuffer(const Raster& anyRaster, float radius)
@@ -541,7 +549,7 @@ Raster maxInBuffer(const Raster& anyRaster, float radius)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::max_in_buffer(raster, radius));
     },
-        anyRaster.get());
+                      anyRaster.get());
 }
 
 Raster reclass(const std::string& mappingFilepath, py::object rasterArg)
@@ -552,9 +560,9 @@ Raster reclass(const std::string& mappingFilepath, py::object rasterArg)
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclass(mappingFilepath, inputRaster));
+                          gdx::reclass(mappingFilepath, inputRaster));
     },
-        r.variant());
+                      r.variant());
 }
 
 Raster reclass(const std::string& mappingFilepath, py::object rasterArg1, py::object rasterArg2)
@@ -566,9 +574,9 @@ Raster reclass(const std::string& mappingFilepath, py::object rasterArg1, py::ob
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclass(mappingFilepath, raster1, raster2));
+                          gdx::reclass(mappingFilepath, raster1, raster2));
     },
-        r1.variant(), r2.variant());
+                      r1.variant(), r2.variant());
 }
 
 Raster reclass(const std::string& mappingFilepath, py::object rasterArg1, py::object rasterArg2, py::object rasterArg3)
@@ -581,9 +589,9 @@ Raster reclass(const std::string& mappingFilepath, py::object rasterArg1, py::ob
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclass(mappingFilepath, raster1, raster2, raster3));
+                          gdx::reclass(mappingFilepath, raster1, raster2, raster3));
     },
-        r1.variant(), r2.variant(), r3.variant());
+                      r1.variant(), r2.variant(), r3.variant());
 }
 
 Raster reclassi(const std::string& mappingFilepath, py::object rasterArg, int32_t index)
@@ -594,9 +602,9 @@ Raster reclassi(const std::string& mappingFilepath, py::object rasterArg, int32_
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclassi(mappingFilepath, raster, index));
+                          gdx::reclassi(mappingFilepath, raster, index));
     },
-        r.variant());
+                      r.variant());
 }
 
 Raster reclassi(const std::string& mappingFilepath, py::object rasterArg1, py::object rasterArg2, int32_t index)
@@ -608,9 +616,9 @@ Raster reclassi(const std::string& mappingFilepath, py::object rasterArg1, py::o
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclassi(mappingFilepath, raster1, raster2, index));
+                          gdx::reclassi(mappingFilepath, raster1, raster2, index));
     },
-        r1.variant(), r2.variant());
+                      r1.variant(), r2.variant());
 }
 
 Raster reclassi(const std::string& mappingFilepath, py::object rasterArg1, py::object rasterArg2, py::object rasterArg3, int32_t index)
@@ -623,9 +631,9 @@ Raster reclassi(const std::string& mappingFilepath, py::object rasterArg1, py::o
         return std::visit([](auto&& resultRaster) {
             return Raster(std::move(resultRaster));
         },
-            gdx::reclassi(mappingFilepath, raster1, raster2, raster3, index));
+                          gdx::reclassi(mappingFilepath, raster1, raster2, raster3, index));
     },
-        r1.variant(), r2.variant(), r3.variant());
+                      r1.variant(), r2.variant(), r3.variant());
 }
 
 Raster nreclass(const std::string& mappingFilepath, py::object rasterArg)
@@ -633,7 +641,7 @@ Raster nreclass(const std::string& mappingFilepath, py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::nreclass(mappingFilepath, raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster logicalAnd(py::object rasterArg1, py::object rasterArg2)
@@ -773,7 +781,7 @@ Raster ifThenElse(py::object ifArg, py::object thenArg, py::object elseArg)
     return std::visit([](auto&& rasterIf, auto&& rasterThen, auto&& rasterElse) -> Raster {
         return Raster(gdx::if_then_else(rasterIf, rasterThen, rasterElse));
     },
-        ifRaster.get(), RasterArgument(thenArg).variant(ifRaster.metadata()), RasterArgument(elseArg).variant(ifRaster.metadata()));
+                      ifRaster.get(), RasterArgument(thenArg).variant(ifRaster.metadata()), RasterArgument(elseArg).variant(ifRaster.metadata()));
 }
 
 bool rasterEqual(py::object rasterArg1, py::object rasterArg2)
@@ -792,7 +800,7 @@ Raster rasterEqualOneOf(py::object rasterArg, const std::vector<double>& values)
         std::transform(values.begin(), values.end(), tvalues.begin(), [](auto v) { return static_cast<T>(v); });
         return Raster(gdx::rasterEqualOneOf(raster, tvalues));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 bool allClose(py::object rasterArg1, py::object rasterArg2, double tolerance)
@@ -817,7 +825,7 @@ Raster isClose(py::object rasterArg1, py::object rasterArg2, double relTolerance
         using T = value_type<decltype(raster1)>;
         return Raster(gdx::isClose(raster1, raster2.get<T>(), static_cast<T>(relTolerance)));
     },
-        raster1.get());
+                      raster1.get());
 }
 
 template <typename T>
@@ -836,7 +844,7 @@ Raster is_nodata(py::object rasterArg)
     return std::visit([&](auto&& raster) {
         return Raster(maskedis_nodata(raster));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster replaceValue(py::object rasterArg, py::object searchValue, py::object replaceValue)
@@ -845,7 +853,7 @@ Raster replaceValue(py::object rasterArg, py::object searchValue, py::object rep
         using T = value_type<decltype(raster)>;
         return Raster(gdx::replace_value(raster, searchValue.cast<T>(), replaceValue.cast<T>()));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster replaceNodata(py::object rasterArg, py::object replaceValue)
@@ -854,7 +862,7 @@ Raster replaceNodata(py::object rasterArg, py::object replaceValue)
         using T = value_type<decltype(raster)>;
         return Raster(gdx::replace_nodata(raster, replaceValue.cast<T>()));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster& replaceNodataInPlace(Raster& raster, double replaceValue)
@@ -863,7 +871,7 @@ Raster& replaceNodataInPlace(Raster& raster, double replaceValue)
         using T = value_type<decltype(ras)>;
         gdx::replace_nodata_in_place(ras, static_cast<T>(replaceValue));
     },
-        raster.get());
+               raster.get());
     return raster;
 }
 
@@ -872,14 +880,14 @@ void drawShapeFileOnRaster(Raster& anyRaster, const std::string& shapeFilepath)
     return std::visit([&](auto&& raster) {
         gdx::draw_shapefile_on_raster(raster, shapeFilepath);
     },
-        anyRaster.get());
+                      anyRaster.get());
 }
 
 bool lddValidate(py::object rasterArg,
-    const std::function<void(int32_t, int32_t)>& loopCb,
-    const std::function<void(int32_t, int32_t)>& invalidValueCb,
-    const std::function<void(int32_t, int32_t)>& endsInNodataCb,
-    const std::function<void(int32_t, int32_t)>& outsideOfMapCb)
+                 const std::function<void(int32_t, int32_t)>& loopCb,
+                 const std::function<void(int32_t, int32_t)>& invalidValueCb,
+                 const std::function<void(int32_t, int32_t)>& endsInNodataCb,
+                 const std::function<void(int32_t, int32_t)>& outsideOfMapCb)
 {
     return std::visit([&](auto&& raster) -> bool {
         using T = value_type<decltype(raster)>;
@@ -889,7 +897,7 @@ bool lddValidate(py::object rasterArg,
             throw InvalidArgument("Ldd raster should be of type uint8_t");
         }
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster lddFix(py::object rasterArg)
@@ -916,7 +924,7 @@ Raster lddFix(py::object rasterArg)
             throw InvalidArgument("Ldd raster should be of type uint8_t");
         }
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster accuflux(py::object lddArg, py::object freightArg)
@@ -1067,7 +1075,7 @@ RasterStats<512> statistics(pybind11::object rasterArg)
         using T = value_type<decltype(raster)>;
         return gdx::statistics<decltype(raster), 512>(raster, std::numeric_limits<T>::max());
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 void tableRow(const std::string& output, pybind11::object rasterArg, pybind11::object categoryArg, Operation op, const std::string& label, bool append)
@@ -1078,7 +1086,7 @@ void tableRow(const std::string& output, pybind11::object rasterArg, pybind11::o
     return std::visit([&](auto&& raster, auto&& categories) {
         return gdx::table_row(raster, categories, op, output, label, append);
     },
-        r1.variant(), r2.variant());
+                      r1.variant(), r2.variant());
 }
 
 Raster& randomFill(Raster& raster, double minValue, double maxValue)
@@ -1096,7 +1104,7 @@ Raster& randomFill(Raster& raster, double minValue, double maxValue)
 
         gdx::fill_random(typedRaster, truncate<T>(minValue), truncate<T>(maxValue));
     },
-        raster.get());
+               raster.get());
     return raster;
 }
 }
