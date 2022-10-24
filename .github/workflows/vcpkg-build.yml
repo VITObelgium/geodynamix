@@ -16,11 +16,11 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Set up Python
-        uses: actions/setup-python@main
+        uses: actions/setup-python@v4
         id: setup-python
         with:
           python-version: "3.x"
@@ -36,7 +36,7 @@ jobs:
         run: brew install nasm ninja
       - name: Cache vcpkg binary
         id: cache-vcpkg-bin
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             deps/vcpkg/vcpkg
@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('deps/vcpkg/bootstrap.cmake') }}
       - name: Cache vcpkg packages
         id: cache-vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/vcpkg
