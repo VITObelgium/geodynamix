@@ -139,7 +139,7 @@ public:
     MaskedRaster(const MaskedRaster<T>& other) = delete;
     MaskedRaster(MaskedRaster<T>&&)            = default;
 
-    MaskedRaster& operator=(MaskedRaster<T>&&) = default;
+    MaskedRaster& operator=(MaskedRaster<T>&&)            = default;
     MaskedRaster& operator=(const MaskedRaster<T>& other) = delete;
 
     void resize_and_fill(int32_t rows, int32_t cols, value_type value)
@@ -174,7 +174,7 @@ public:
 
     void set_metadata(RasterMetadata meta)
     {
-        if (meta.rows * meta.cols != ssize()) {
+        if (int64_t(meta.rows) * int64_t(meta.cols) != ssize()) {
             throw InvalidArgument("Cannot change metadata: invalid size");
         }
 
@@ -891,7 +891,7 @@ private:
 
     static void throw_on_datasize_mismatch(int32_t rows, int32_t cols, size_t dataSize)
     {
-        if (static_cast<size_t>(rows * cols) != dataSize) {
+        if (size_t(rows) * size_t(cols) != dataSize) {
             throw InvalidArgument("Raster data size does not match provided dimensions {} vs {}x{}", dataSize, rows, cols);
         }
     }

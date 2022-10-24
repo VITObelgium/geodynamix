@@ -66,7 +66,7 @@ public:
 
     explicit DenseRaster(RasterMetadata meta)
     : _meta(std::move(meta))
-    , _data(_meta.rows * _meta.cols)
+    , _data(size_t(_meta.rows) * size_t(_meta.cols))
     {
         init_nodata_values();
     }
@@ -78,7 +78,7 @@ public:
 
     DenseRaster(const RasterMetadata& meta, T fillValue)
     : _meta(meta)
-    , _data(meta.rows * meta.cols)
+    , _data(size_t(_meta.rows) * size_t(_meta.cols))
     {
         if constexpr (raster_type_has_nan) {
             // make sure we fill tha raster with NaNs if the fill value is the nodata value
@@ -97,7 +97,7 @@ public:
 
     DenseRaster(const RasterMetadata& meta, std::span<const T> data)
     : _meta(meta)
-    , _data(meta.rows * meta.cols)
+    , _data(size_t(_meta.rows) * size_t(_meta.cols))
     {
         throw_on_datasize_mismatch(meta.rows, meta.cols, data.size());
         std::copy(data.begin(), data.end(), _data.data());
@@ -108,17 +108,14 @@ public:
     : _meta(meta)
     , _data(data)
     {
-        if (inf::truncate<int32_t>(_data.size()) != meta.rows * meta.cols) {
-            throw InvalidArgument("Invalid data size provided");
-        }
-
+        throw_on_datasize_mismatch(meta.rows, meta.cols, data.size());
         init_nodata_values();
     }
 
     DenseRaster(DenseRaster<T>&&) noexcept   = default;
     DenseRaster(const DenseRaster<T>& other) = delete;
 
-    DenseRaster& operator=(DenseRaster<T>&&) = default;
+    DenseRaster& operator=(DenseRaster<T>&&)            = default;
     DenseRaster& operator=(const DenseRaster<T>& other) = delete;
 
     void resize_and_fill(int32_t rows, int32_t cols, value_type value)
@@ -131,20 +128,18 @@ public:
     {
         _meta.rows = rows;
         _meta.cols = cols;
-        _data.resize(rows * cols);
+        _data.resize(size_t(rows) * size_t(cols));
     }
 
     void resize(int32_t rows, int32_t cols, std::optional<double> nodata)
     {
-        _meta.rows   = rows;
-        _meta.cols   = cols;
+        resize(rows, cols);
         _meta.nodata = nodata;
-        _data.resize(rows * cols);
     }
 
     void set_metadata(RasterMetadata meta)
     {
-        if (meta.rows * meta.cols != ssize()) {
+        if (int64_t(meta.rows) * int64_t(meta.cols) != ssize()) {
             throw InvalidArgument("Cannot change metadata: invalid size");
         }
 
@@ -339,8 +334,8 @@ public:
     bool contains_only_nodata() const noexcept
     {
         return nodata().has_value() && std::all_of(_data.begin(), _data.end(), [this](const auto val) {
-            return is_nodata_value(val);
-        });
+                   return is_nodata_value(val);
+               });
     }
 
     int32_t rows() const noexcept
