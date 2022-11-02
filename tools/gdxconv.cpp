@@ -2,9 +2,9 @@
 
 #include "infra/colormap.h"
 #include "infra/exception.h"
-#include "infra/log.h"
 #include "infra/gdal.h"
 #include "infra/gdallog.h"
+#include "infra/log.h"
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
                            return cli::parser_result::runtimeError(cli::parser_result_type::no_match, "Type must match : byte|int|float|double");
                        }
                    },
-                       "type")["-t"]["--type"]("Change type (byte, int, float, double)") |
+                            "type")["-t"]["--type"]("Change type (byte, int, float, double)") |
                    cli::opt(options.colorMap, "value")["-c"]["--color-map"]("Color map of the image output") | cli::arg(options.inputRaster, "input")("input raster") | cli::arg(options.outputRaster, "output")("output raster");
 
         auto result = cli.parse(cli::args(argc, argv));
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
         }
 
         if (options.showHelp || argc == 1) {
-            fmt::print("{}", cli);
+            fmt::print("{}", fmt::streamed(cli));
             return EXIT_SUCCESS;
         }
 

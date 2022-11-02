@@ -76,7 +76,7 @@ bool compareRasters(const gdx::Raster& raster1, const gdx::Raster& raster2, floa
 
         return false;
     },
-        raster1.get(), raster2.get());
+                      raster1.get(), raster2.get());
 }
 
 int main(int argc, char* argv[])
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
         }
 
         if (options.showHelp || argc == 1) {
-            fmt::print("{}", cli);
+            fmt::print("{}", fmt::streamed(cli));
             return EXIT_SUCCESS;
         }
 

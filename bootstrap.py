@@ -23,6 +23,7 @@ if __name__ == "__main__":
             os.path.join(os.path.dirname(__file__), "deps", "overlay-ports")
         )
 
+        build_root = None
         if args.parent:
             del vcpkg
             sys.path.insert(0, os.path.join("..", "vcpkg-ports", "scripts"))
