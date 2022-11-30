@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 #include <type_traits>
 #include <vector>
 
@@ -832,18 +833,31 @@ public:
     {
         auto result = TResult(0);
 
-        if (!nodata().has_value()) {
-            simd::for_each(begin(), end(), [&result](const auto& v) {
-                result += v.sum();
-            });
-        } else {
-            if constexpr (raster_type_has_nan) {
+        if constexpr (simd_supported()) {
+            if (!nodata().has_value()) {
                 simd::for_each(begin(), end(), [&result](const auto& v) {
-                    result += v.sum(!Vc::isnan(v));
+                    result += v.sum();
                 });
             } else {
-                simd::for_each(begin(), end(), [&result, nod = *nodata()](const auto& v) {
-                    result += v.sum(v != nod);
+                if constexpr (raster_type_has_nan) {
+                    simd::for_each(begin(), end(), [&result](const auto& v) {
+                        result += v.sum(!Vc::isnan(v));
+                    });
+                } else {
+                    simd::for_each(begin(), end(), [&result, nod = *nodata()](const auto& v) {
+                        result += v.sum(v != nod);
+                    });
+                }
+            }
+        } else {
+            static_assert(!std::numeric_limits<T>::has_quiet_NaN, "Unexpected nan logic required");
+            if (!nodata().has_value()) {
+                result = std::accumulate(_data.begin(), _data.end(), result);
+            } else {
+                std::for_each(_data.begin(), _data.end(), [nod = *nodata(), &result](T val) {
+                    if (val != nod) {
+                        result += val;
+                    }
                 });
             }
         }

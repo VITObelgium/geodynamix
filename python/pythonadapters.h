@@ -26,7 +26,8 @@ bool isRowColOnRaster(const gdx::RasterMetadata& meta, const std::tuple<int32_t,
 
 pybind11::list rasterBounds(const gdx::RasterMetadata& meta, bool projected = true);
 
-pybind11::object rasterNumpyMaskedArray(Raster& raster);
+pybind11::object rasterNumpyArray(Raster& raster);
+pybind11::buffer_info rasterBufferInfo(Raster& raster);
 std::string rasterRepresentation(const gdx::Raster& raster);
 
 Raster castRaster(const Raster& raster, pybind11::object dataType);

@@ -1,6 +1,6 @@
 #include "pythonadapters.h"
 
-#include "gdx/maskedrasterio.h"
+#include "gdx/denserasterio.h"
 #include "gdx/rasterspanio.h"
 #include "infra/cast.h"
 #include "infra/crs.h"
@@ -42,14 +42,14 @@ using namespace py::literals;
 using namespace inf;
 
 const std::unordered_map<uint8_t, std::tuple<uint8_t, uint8_t, uint8_t>> cm::ldd{{{1, {50, 136, 189}},
-    {2, {102, 194, 165}},
-    {3, {171, 221, 164}},
-    {4, {230, 245, 152}},
-    {5, {255, 255, 191}},
-    {6, {254, 224, 139}},
-    {7, {253, 174, 97}},
-    {8, {244, 109, 67}},
-    {9, {213, 62, 79}}}};
+                                                                                  {2, {102, 194, 165}},
+                                                                                  {3, {171, 221, 164}},
+                                                                                  {4, {230, 245, 152}},
+                                                                                  {5, {255, 255, 191}},
+                                                                                  {6, {254, 224, 139}},
+                                                                                  {7, {253, 174, 97}},
+                                                                                  {8, {244, 109, 67}},
+                                                                                  {9, {213, 62, 79}}}};
 
 template <typename StorageType>
 static auto convertColorDescription(StorageType desc)
@@ -58,8 +58,8 @@ static auto convertColorDescription(StorageType desc)
     for (auto d : desc) {
         auto tup = d.template cast<py::tuple>();
         result.push_back({tup[0].template cast<float>(),
-            tup[1].template cast<float>(),
-            tup[2].template cast<float>()});
+                          tup[1].template cast<float>(),
+                          tup[2].template cast<float>()});
     }
 
     return result;
@@ -104,8 +104,8 @@ static ColorMap convertMatplotlibColorMapToColorMap(py::object colorMap)
                 for (size_t i = 0; i < cmap.size(); ++i) {
                     float pos = i / 255.f;
                     cmap[i]   = Color(static_cast<uint8_t>(pydict["red"](pos).cast<float>() * 255.f),
-                        static_cast<uint8_t>(pydict["green"](pos).cast<float>() * 255.f),
-                        static_cast<uint8_t>(pydict["blue"](pos).cast<float>() * 255.f));
+                                      static_cast<uint8_t>(pydict["green"](pos).cast<float>() * 255.f),
+                                      static_cast<uint8_t>(pydict["blue"](pos).cast<float>() * 255.f));
                 }
                 return ColorMap(cmap);
             }
@@ -120,8 +120,8 @@ static ColorMap convertMatplotlibColorMapToColorMap(py::object colorMap)
         for (auto color : colors) {
             auto tup = color.cast<py::tuple>();
             clist.push_back(Color(static_cast<uint8_t>(std::round(tup[0].cast<float>() * 255.f)),
-                static_cast<uint8_t>(std::round(tup[1].cast<float>() * 255.f)),
-                static_cast<uint8_t>(std::round(tup[2].cast<float>() * 255.f))));
+                                  static_cast<uint8_t>(std::round(tup[1].cast<float>() * 255.f)),
+                                  static_cast<uint8_t>(std::round(tup[2].cast<float>() * 255.f))));
         }
 
         return ColorMap::qualitative(clist);
@@ -142,7 +142,7 @@ std::tuple<double, double> rowColCenterToXY(const gdx::RasterMetadata& meta, con
     auto topLeftCorner = Point<double>(minX, maxY);
 
     auto point = gdx::Point<double>(topLeftCorner.x + ((std::get<1>(cell) + 0.5) * meta.cellSize.x) /*col*/,
-        topLeftCorner.y - ((std::get<0>(cell) + 0.5) * std::abs(meta.cellSize.y)) /*row*/);
+                                    topLeftCorner.y - ((std::get<0>(cell) + 0.5) * std::abs(meta.cellSize.y)) /*row*/);
     return std::make_tuple(point.x, point.y);
 }
 
@@ -189,46 +189,38 @@ py::list rasterBounds(const RasterMetadata& meta, bool projected)
 }
 
 template <typename T>
-std::pair<py::array, py::object> createDataMaskPair(Raster& raster)
+py::buffer_info rasterBufferInfo(Raster& raster)
 {
-    py::object parent = py::cast(raster);
-    py::object mask;
+    const auto rows = raster.metadata().rows;
+    const auto cols = raster.metadata().cols;
 
-    auto& mask_data = raster.mask_data<T>();
-    if (mask_data.size() > 0) {
-        mask = py::cast(mask_data, py::return_value_policy::reference_internal, parent);
-    }
-
-    return {py::cast(raster.eigen_data<T>(), py::return_value_policy::reference_internal, parent), mask};
+    return py::buffer_info(
+        raster.raster_data<T>(),            /* Pointer to buffer */
+        sizeof(T),                          /* Size of one scalar */
+        py::format_descriptor<T>::format(), /* Python struct-style format descriptor */
+        2,                                  /* Number of dimensions */
+        {rows, cols},                       /* Buffer dimensions */
+        {sizeof(T) * cols, sizeof(T)}       /* Strides (in bytes) for each index */
+    );
 }
 
-static std::pair<py::array, py::object> rasterNumpyArray(Raster& raster)
+py::buffer_info rasterBufferInfo(Raster& raster)
 {
     auto& type = raster.type();
-    if (type == typeid(uint8_t)) return createDataMaskPair<uint8_t>(raster);
-    if (type == typeid(int16_t)) return createDataMaskPair<int16_t>(raster);
-    if (type == typeid(uint16_t)) return createDataMaskPair<uint16_t>(raster);
-    if (type == typeid(int32_t)) return createDataMaskPair<int32_t>(raster);
-    if (type == typeid(uint32_t)) return createDataMaskPair<uint32_t>(raster);
-    if (type == typeid(float)) return createDataMaskPair<float>(raster);
-    if (type == typeid(double)) return createDataMaskPair<double>(raster);
+    if (type == typeid(uint8_t)) return rasterBufferInfo<uint8_t>(raster);
+    if (type == typeid(int16_t)) return rasterBufferInfo<int16_t>(raster);
+    if (type == typeid(uint16_t)) return rasterBufferInfo<uint16_t>(raster);
+    if (type == typeid(int32_t)) return rasterBufferInfo<int32_t>(raster);
+    if (type == typeid(uint32_t)) return rasterBufferInfo<uint32_t>(raster);
+    if (type == typeid(float)) return rasterBufferInfo<float>(raster);
+    if (type == typeid(double)) return rasterBufferInfo<double>(raster);
 
     throw InvalidArgument("Invalid raster data type");
 }
 
-py::object rasterNumpyMaskedArray(Raster& raster)
+py::object rasterNumpyArray(Raster& raster)
 {
-    py::object maskedArray;
-    auto ma           = py::module::import("numpy.ma");
-    auto [data, mask] = rasterNumpyArray(raster);
-    if (mask) {
-        maskedArray = ma.attr("array")(data, "mask"_a = mask, "fill_value"_a = raster.metadata().nodata.value_or(0));
-    } else {
-        maskedArray = ma.attr("array")(data);
-    }
-
-    maskedArray.attr("_sharedmask") = false; // makes sure changes to the mask in python are done in the raster mask data
-    return maskedArray;
+    return py::cast(raster);
 }
 
 std::string rasterRepresentation(const gdx::Raster& raster)
@@ -275,7 +267,7 @@ void write_raster(py::object dataType, Raster& raster, const std::string& filepa
         raster.write(fs::u8path(filepath), dtype);
     } else {
         throw RuntimeError("Color maps with custom types currently not supported");
-        //raster.writeColorMapped(filePath, dtype, convertMatplotlibColorMapToColorMap(colorMap));
+        // raster.writeColorMapped(filePath, dtype, convertMatplotlibColorMapToColorMap(colorMap));
     }
 }
 
@@ -283,7 +275,7 @@ template <typename T>
 Raster createFromNdArray(py::array_t<T> arrayData, const gdx::RasterMetadata& meta)
 {
     auto dataSpan = std::span<const T>(reinterpret_cast<const T*>(arrayData.data()), arrayData.size());
-    return Raster(MaskedRaster<T>(meta, dataSpan));
+    return Raster(DenseRaster<T>(meta, dataSpan));
 }
 
 Raster createFromNdArray(py::array arrayData, const gdx::RasterMetadata& meta)
@@ -392,7 +384,7 @@ void writeAsPng(const RasterType& ras, const RasterMetadata& meta, const fs::pat
             if (normMeta.nodata.has_value()) {
                 normMeta.nodata = std::numeric_limits<uint8_t>::max();
             }
-            MaskedRaster<uint8_t> normalisedData(normMeta);
+            DenseRaster<uint8_t> normalisedData(normMeta);
             normalise_min_max(ras, normalisedData, 0, 254);
             gdx::write_raster(normalisedData, filename);
         } else if constexpr (!(std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t>)) {
@@ -409,15 +401,15 @@ void writeAsPng(const RasterType& ras, const RasterMetadata& meta, const fs::pat
             if (normMeta.nodata.has_value()) {
                 normMeta.nodata = std::numeric_limits<uint8_t>::max();
             }
-            MaskedRaster<uint8_t> normalisedData(normMeta);
+            DenseRaster<uint8_t> normalisedData(normMeta);
             normalise_min_max(ras, normalisedData, 0, 254);
-            gdx::write_rasterColorMapped(normalisedData, filename, cmap);
+            gdx::write_raster_color_mapped(raster_span<const uint8_t>(std::as_const(normalisedData).data(), normalisedData.metadata()), filename, cmap);
         } else if constexpr (!(std::is_same_v<T, uint8_t> || std::is_same_v<T, uint16_t>)) {
             std::vector<uint8_t> clippedData(ras.size());
             auto clippedMeta = inf::gdal::io::cast_raster<T, uint8_t>(meta, ras, clippedData);
             inf::gdal::io::write_raster_color_mapped(std::span<const uint8_t>(clippedData), clippedMeta, filename, cmap);
         } else {
-            gdx::write_rasterColorMapped<T>(ras, filename, cmap);
+            gdx::write_raster_color_mapped<T>(gdx::raster_span<const T>(ras.data(), ras.metadata()), filename, cmap);
         }
     }
 }
@@ -525,7 +517,7 @@ py::object showRaster(py::object rasterArg, py::object colorMap, bool normalize)
 
         return createFoliumMap(*displayRaster, displayRaster->metadata(), colorMap, normalize);
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 pybind11::object showRaster(pybind11::array arr, const RasterMetadata& meta, pybind11::object colorMap, bool normalize)
@@ -553,7 +545,7 @@ Raster warp_raster(py::object rasterArg, int32_t epsg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::warp_raster(raster, epsg));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster resample(py::object rasterArg, const RasterMetadata& meta, inf::gdal::ResampleAlgorithm algo)
@@ -562,6 +554,6 @@ Raster resample(py::object rasterArg, const RasterMetadata& meta, inf::gdal::Res
         using T = typename std::decay_t<decltype(raster)>::value_type;
         return Raster(gdx::resample_raster<T>(raster, meta, algo));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 }

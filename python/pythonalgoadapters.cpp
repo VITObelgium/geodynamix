@@ -829,9 +829,9 @@ Raster isClose(py::object rasterArg1, py::object rasterArg2, double relTolerance
 }
 
 template <typename T>
-static MaskedRaster<uint8_t> maskedis_nodata(const MaskedRaster<T>& input)
+static DenseRaster<uint8_t> is_nodata(const DenseRaster<T>& input)
 {
-    MaskedRaster<uint8_t> output(input.metadata());
+    DenseRaster<uint8_t> output(input.metadata());
     // input.metadata().nodata may not be representable as uint8, and that gives numpy error
     // when doing "result.array" on the result in python.  So set nodata to 255.
     output.set_nodata(255);
@@ -842,7 +842,7 @@ static MaskedRaster<uint8_t> maskedis_nodata(const MaskedRaster<T>& input)
 Raster is_nodata(py::object rasterArg)
 {
     return std::visit([&](auto&& raster) {
-        return Raster(maskedis_nodata(raster));
+        return Raster(is_nodata(raster));
     },
                       RasterArgument(rasterArg).variant());
 }

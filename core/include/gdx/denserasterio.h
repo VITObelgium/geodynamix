@@ -104,6 +104,14 @@ void write_raster(const DenseRaster<T>& raster, const fs::path& filename, std::s
 }
 
 template <typename T>
+void write_raster(const DenseRaster<T>& raster, const fs::path& filename, const std::type_info& type)
+{
+    auto copy = raster.copy();
+    copy.collapse_data();
+    inf::gdal::io::write_raster(std::span<const T>(raster), raster.metadata(), filename, type);
+}
+
+template <typename T>
 void write_raster_to_dataset_band(DenseRaster<T>&& raster, inf::gdal::RasterDataSet& ds, int bandNr)
 {
     raster.collapse_data();

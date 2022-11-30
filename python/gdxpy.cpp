@@ -145,7 +145,7 @@ PYBIND11_MODULE(geodynamix, mod)
         .def_readonly("max_value", &gdx::RasterStats<512>::highestValue)
         .def_readonly("min_value", &gdx::RasterStats<512>::lowestValue);
 
-    py::class_<Raster>(mod, "raster")
+    py::class_<Raster>(mod, "raster", py::buffer_protocol())
         // Customized init funtions because we need to convert the dataType first
         .def(py::init([](int32_t rows, int32_t cols, py::object dataType) {
                  return Raster(rows, cols, dtypeToRasterType(py::dtype::from_args(dataType)));
@@ -168,6 +168,7 @@ PYBIND11_MODULE(geodynamix, mod)
             // use the representation of the foilum map
             return showRaster(instance, py::none(), true).attr("_repr_html_")();
         })
+        .def_buffer(&rasterBufferInfo)
         .def("set_projection", &Raster::set_projection)
         .def("replace_value", &Raster::replaceValue, "old"_a, "new"_a, "Replaces all occurences of 'old' value with 'new' value")
         .def("turn_value_into_nodata", &Raster::turn_value_into_nodata, "value"_a, "All occurences of value become nodata")
@@ -176,7 +177,7 @@ PYBIND11_MODULE(geodynamix, mod)
         .def_property_readonly("dtype", [](const Raster& ras) { return rasterTypeToDtype(ras.type()); })
         .def_property_readonly(
             "array", [](Raster& raster) {
-                return rasterNumpyMaskedArray(raster);
+                return rasterNumpyArray(raster);
             },
             py::return_value_policy::reference_internal)
 

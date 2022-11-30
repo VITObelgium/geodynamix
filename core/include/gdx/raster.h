@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gdx/maskedraster.h"
+#include "gdx/denseraster.h"
 
 #include <cinttypes>
 #include <variant>
@@ -16,13 +16,13 @@ class Raster
 {
 public:
     using RasterVariant = std::variant<
-        MaskedRaster<uint8_t>,
-        MaskedRaster<uint16_t>,
-        MaskedRaster<uint32_t>,
-        MaskedRaster<int16_t>,
-        MaskedRaster<int32_t>,
-        MaskedRaster<float>,
-        MaskedRaster<double>>;
+        DenseRaster<uint8_t>,
+        DenseRaster<uint16_t>,
+        DenseRaster<uint32_t>,
+        DenseRaster<int16_t>,
+        DenseRaster<int32_t>,
+        DenseRaster<float>,
+        DenseRaster<double>>;
 
     Raster(int32_t rows, int32_t cols, const std::type_info& dataType);
     Raster(int32_t rows, int32_t cols, const std::type_info& dataType, double fillValue);
@@ -44,38 +44,31 @@ public:
     const RasterMetadata& metadata() const;
 
     template <typename T>
-    typename MaskedRaster<T>::data_type& eigen_data()
+    typename DenseRaster<T>::value_type* raster_data()
     {
-        assert(std::holds_alternative<MaskedRaster<T>>(_raster));
-        return std::get<MaskedRaster<T>>(_raster).eigen_data();
+        assert(std::holds_alternative<DenseRaster<T>>(_raster));
+        return std::get<DenseRaster<T>>(_raster).data();
     }
 
     template <typename T>
-    const typename MaskedRaster<T>::data_type& eigen_data() const
+    const typename DenseRaster<T>::value_type* raster_data() const
     {
-        assert(std::holds_alternative<MaskedRaster<T>>(_raster));
-        return std::get<MaskedRaster<T>>(_raster).eigen_data();
-    }
-
-    template <typename T>
-    mask_type& mask_data()
-    {
-        assert(std::holds_alternative<MaskedRaster<T>>(_raster));
-        return std::get<MaskedRaster<T>>(_raster).mask_data();
+        assert(std::holds_alternative<DenseRaster<T>>(_raster));
+        return std::get<DenseRaster<T>>(_raster).data();
     }
 
     Raster copy() const;
 
     template <typename T>
-    MaskedRaster<T>& get()
+    DenseRaster<T>& get()
     {
-        return std::get<MaskedRaster<T>>(_raster);
+        return std::get<DenseRaster<T>>(_raster);
     }
 
     template <typename T>
-    const MaskedRaster<T>& get() const
+    const DenseRaster<T>& get() const
     {
-        return std::get<MaskedRaster<T>>(_raster);
+        return std::get<DenseRaster<T>>(_raster);
     }
 
     bool equalTo(const Raster& other) const noexcept;
@@ -143,7 +136,7 @@ public:
     void write(const fs::path& filepath, const std::type_info& dataType);
 
     void writeColorMapped(const fs::path& filepath, const inf::ColorMap& cmap) const;
-    //void writeColorMapped(const std::string& filepath, const std::type_info& dataType, const ColorMap& cmap) const;
+    // void writeColorMapped(const std::string& filepath, const std::type_info& dataType, const ColorMap& cmap) const;
 
 private:
     void throwOnTypeMismatch(const std::type_info& other) const;

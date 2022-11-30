@@ -3,9 +3,9 @@
 #include "gdx/raster.h"
 
 #include "gdx/algo/maximum.h"
-#include "gdx/maskedraster.h"
-#include "infra/gdalio.h"
+#include "gdx/denseraster.h"
 #include "gdx/rastermetadata.h"
+#include "infra/gdalio.h"
 
 #include <pybind11/pybind11.h>
 
@@ -37,15 +37,15 @@ public:
     Raster& raster(const RasterMetadata& metadata);
 
     template <typename T>
-    MaskedRaster<T>& get()
+    DenseRaster<T>& get()
     {
-        return std::get<MaskedRaster<T>>(variant());
+        return std::get<DenseRaster<T>>(variant());
     }
 
     template <typename T>
-    MaskedRaster<T>& get(const Raster& context)
+    DenseRaster<T>& get(const Raster& context)
     {
-        return std::get<MaskedRaster<T>>(variant(context));
+        return std::get<DenseRaster<T>>(variant(context));
     }
 
 private:

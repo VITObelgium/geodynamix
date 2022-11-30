@@ -31,7 +31,7 @@ void write_raster(raster_span<const T> rasterData, const fs::path& filename)
 }
 
 template <typename T>
-void write_rasterColorMapped(raster_span<const T> rasterData, const fs::path& filename, const inf::ColorMap& cm)
+void write_raster_color_mapped(raster_span<const T> rasterData, const fs::path& filename, const inf::ColorMap& cm)
 {
     inf::gdal::io::write_raster_color_mapped(rasterData, rasterData.metadata(), filename, cm);
 }

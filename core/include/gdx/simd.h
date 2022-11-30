@@ -119,7 +119,9 @@ OutputIt transform(InputIt1 first, InputIt1 last, InputIt2 second, OutputIt out,
 
     static_assert(std::is_same_v<typename V1::abi, typename V2::abi>, "simd abi mismatch");
     static_assert(std::is_same_v<typename V1::abi, typename VOut::abi>, "simd abi mismatch");
-    static_assert(sizeof(typename V1::value_type) == sizeof(typename V2::value_type) && sizeof(typename V1::value_type) == sizeof(typename VOut::value_type), "simd::transform: data types must have equal size");
+    static_assert(sizeof(typename V1::value_type) == sizeof(typename V2::value_type), "simd::transform: input data types must have equal size");
+
+    //&& sizeof(typename V1::value_type) == sizeof(typename VOut::value_type)
 
     if (V1::size() <= static_cast<uint64_t>(std::distance(first, last))) {
         const auto lastV = last - V1::size() + 1;

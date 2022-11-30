@@ -2,6 +2,7 @@ import os
 import geodynamix as gdx
 import copy
 import unittest
+import math
 import numpy as np
 from pathlib import Path
 
@@ -36,7 +37,7 @@ test_array = np.array(
         [0, 1, 2, 3, 4],
         [5, 6, 7, 8, 9],
         [0, 0, 0, 0, 0],
-        [0, 0, float("nan"), float("nan"), 0],
+        [0, 0, math.nan, math.nan, 0],
     ],
     dtype="f",
 )
@@ -60,13 +61,13 @@ class TestGdx(unittest.TestCase):
         self.assertEqual(np.dtype("int32"), ras.dtype)
         self.assertEqual(3, ras.metadata.rows)
         self.assertEqual(4, ras.metadata.cols)
-        self.assertTrue(np.all(ras.array == 4))
+        self.assertTrue(np.all(np.array(ras, copy=False) == 4))
 
         ras = gdx.raster(gdx.raster_metadata(rows=3, cols=4), dtype=int, fill=4)
         self.assertEqual(np.dtype("int32"), ras.dtype)
         self.assertEqual(3, ras.metadata.rows)
         self.assertEqual(4, ras.metadata.cols)
-        self.assertTrue(np.all(ras.array == 4))
+        self.assertTrue(np.all(np.array(ras, copy=False) == 4))
 
     def test_raster_creation_with_dtype(self):
         ras = gdx.raster(rows=3, cols=4, dtype=int)
@@ -134,7 +135,7 @@ class TestGdx(unittest.TestCase):
         self.assertEqual(0.0, raster.metadata.xll)
         self.assertEqual(-10.0, raster.metadata.yll)
         self.assertEqual(-1, raster.metadata.nodata)
-        self.assertTrue(np.allclose(test_array, raster.array, equal_nan=True))
+        self.assertTrue(np.allclose(test_array, np.array(raster, copy=False), equal_nan=True))
 
     def test_read_map_from_pathlib(self):
         create_test_file("raster.asc", test_raster)
@@ -148,7 +149,7 @@ class TestGdx(unittest.TestCase):
 
         written_raster = gdx.read("writtenraster.asc")
         os.remove("writtenraster.asc")
-        self.assertTrue(np.allclose(raster.array, written_raster.array, equal_nan=True))
+        self.assertTrue(np.allclose(np.array(raster, copy=False), np.array(written_raster, copy=False), equal_nan=True))
 
     def test_modify_raster_using_numpy(self):
         # modify the raster data using the ndarry accessor
@@ -158,7 +159,7 @@ class TestGdx(unittest.TestCase):
         create_test_file("raster.asc", test_raster)
         raster = gdx.read("raster.asc")
 
-        raster.array.fill(44)
+        np.array(raster, copy=False).fill(44)
 
         gdx.write(raster, "writtenraster.asc")
         written_raster = gdx.read("writtenraster.asc")
@@ -174,26 +175,27 @@ class TestGdx(unittest.TestCase):
             dtype="f",
         )
 
-        self.assertTrue(np.allclose(expected, written_raster.array, equal_nan=True))
+        self.assertTrue(np.allclose(expected, np.array(written_raster, copy=False), equal_nan=True))
 
     def test_method_chain(self):
         expected = np.array(
-            [[0, 1, 2, 3, 4], [5, 11, 12, 8, 9], [0, 0, 0, 0, 0], [0, 0, 9, 9, 0]],
-            dtype=int,
+            [[0, 1, 2, 3, 4], [5, 11, 12, 8, 9], [0, 0, 0, 0, 0], [0, 0, math.nan, math.nan, 0]],
+            dtype=float,
         )
 
         ras = gdx.raster_from_ndarray(
-            test_array, gdx.raster_metadata(rows=4, cols=5, nodata=float("NaN"))
+            test_array, gdx.raster_metadata(rows=4, cols=5, nodata=math.nan)
         )
         ras = ras.replace_value(6, 11).replace_value(7, 12)
-        np.testing.assert_array_equal(expected, ras.array)
+        np.testing.assert_array_equal(expected, np.array(ras, copy=False))
 
     def test_astype(self):
-        ras = gdx.raster_from_ndarray(test_array, gdx.raster_metadata(rows=4, cols=5))
-        intras = ras.astype(int)
+        ras = gdx.raster_from_ndarray(test_array, gdx.raster_metadata(rows=4, cols=5, nodata=math.nan))
+        int_ras = ras.astype(int)
 
         expected = test_array.astype("int32")
-        np.testing.assert_array_equal(expected, intras.array)
+
+        np.testing.assert_array_equal(expected, np.array(int_ras, copy=False))
 
     def test_astype_float_and_back(self):
         byte_array = np.array([[255, 1, 2], [5, 6, 7], [0, 0, 255]], dtype="B")
@@ -205,16 +207,16 @@ class TestGdx(unittest.TestCase):
         float_raster = ras.astype(float)
         byte_raster = float_raster.astype("B")
 
-        np.testing.assert_array_equal(ras.array, byte_raster.array)
-        np.testing.assert_array_equal(byte_array, byte_raster.array)
+        np.testing.assert_array_equal(np.array(ras, copy=False), np.array(byte_raster, copy=False))
+        np.testing.assert_array_equal(byte_array, np.array(byte_raster, copy=False))
 
     def test_sum_raster(self):
         create_test_file("raster.asc", test_raster)
         raster1 = gdx.read("raster.asc")
         raster2 = copy.deepcopy(raster1)
 
-        raster1.array.fill(4)
-        raster2.array.fill(3)
+        np.array(raster1,copy = False).fill(4)
+        np.array(raster2,copy = False).fill(3)
 
         sum = raster1 + raster2
 
@@ -223,7 +225,7 @@ class TestGdx(unittest.TestCase):
             dtype="f",
         )
 
-        np.testing.assert_allclose(expected, sum.array, equal_nan=True)
+        np.testing.assert_allclose(expected, np.array(sum, copy = False), equal_nan=True)
 
     def test_comparison(self):
         create_test_file("raster.asc", test_raster)
@@ -235,7 +237,7 @@ class TestGdx(unittest.TestCase):
             dtype="B",
         )
 
-        self.assertTrue(np.allclose(expected, result.array))
+        self.assertTrue(np.allclose(expected, np.array(result, copy = False)))
 
     def test_comparison_int(self):
         create_test_file("raster.asc", test_raster)
@@ -247,7 +249,7 @@ class TestGdx(unittest.TestCase):
             dtype="B",
         )
 
-        np.testing.assert_array_equal(expected, result.array)
+        np.testing.assert_array_equal(expected, np.array(result, copy = False))
 
     def test_create_from_float_array(self):
         array = np.array(
@@ -266,7 +268,7 @@ class TestGdx(unittest.TestCase):
 
         result = gdx.raster_from_ndarray(array, meta)
 
-        self.assertTrue(np.allclose(array, result.array, equal_nan=True))
+        self.assertTrue(np.allclose(array, np.array(result, copy = False), equal_nan=True))
 
     def test_create_from_bool_array(self):
         array = np.zeros((2, 2))
@@ -276,7 +278,7 @@ class TestGdx(unittest.TestCase):
         meta.cols = 2
 
         result = gdx.raster_from_ndarray(array == 0, meta)
-        np.testing.assert_array_equal(result.array, np.ones((2, 2)))
+        np.testing.assert_array_equal(np.array(result, copy = False), np.ones((2, 2)))
 
     def test_create_from_float_array_bad_dimension(self):
         array = np.array(
@@ -300,7 +302,7 @@ class TestGdx(unittest.TestCase):
         meta = gdx.raster_metadata(rows=4, cols=5)
         result = gdx.raster_from_ndarray(array, meta)
 
-        self.assertTrue(np.allclose(array, result.array))
+        self.assertTrue(np.allclose(array, np.array(result, copy = False)))
 
     def test_operators_int_raster(self):
         array1 = np.array(
@@ -342,10 +344,10 @@ class TestGdx(unittest.TestCase):
         self.assertEqual((ras1 & ras2).dtype, np.dtype("B"))
         self.assertEqual((ras1 | ras2).dtype, np.dtype("B"))
 
-        np.testing.assert_array_equal(gdx.logical_and(ras1, ras2).array, (ras1 & ras2).array)
-        np.testing.assert_array_equal(gdx.logical_and(ras1, ras2, ras3).array, (ras1 & ras2 & ras3).array)
-        np.testing.assert_array_equal(gdx.logical_or(ras1, ras2).array, (ras1 | ras2).array)
-        np.testing.assert_array_equal(gdx.logical_or(ras1, ras2, ras3).array, (ras1 | ras2 | ras3).array)
+        np.testing.assert_array_equal(np.array(gdx.logical_and(ras1, ras2)), np.array(ras1 & ras2))
+        np.testing.assert_array_equal(np.array(gdx.logical_and(ras1, ras2, ras3)), np.array(ras1 & ras2 & ras3))
+        np.testing.assert_array_equal(np.array(gdx.logical_or(ras1, ras2)), np.array(ras1 | ras2))
+        np.testing.assert_array_equal(np.array(gdx.logical_or(ras1, ras2, ras3)), np.array(ras1 | ras2 | ras3))
 
         with self.assertRaises(ValueError):
             ras1 * 1.0
@@ -389,8 +391,8 @@ class TestGdx(unittest.TestCase):
             np.ones([2, 3], dtype="B"), gdx.raster_metadata(rows=2, cols=3)
         )
 
-        np.testing.assert_array_equal(np.ones([2, 3], dtype="B"), (arr1 == arr2).array)
-        np.testing.assert_array_equal(np.ones([2, 3], dtype="B"), (arr1 == arr3).array)
+        np.testing.assert_array_equal(np.ones([2, 3], dtype="B"), np.array(arr1 == arr2))
+        np.testing.assert_array_equal(np.ones([2, 3], dtype="B"), np.array(arr1 == arr3))
 
     def test_operators_float_raster(self):
         array = np.array(
@@ -468,16 +470,16 @@ class TestGdx(unittest.TestCase):
         array3 = gdx.raster_from_ndarray(np.full((3, 3), 6, dtype=int), meta)
 
         max = gdx.max(array1, array2)
-        self.assertTrue(np.array_equal(array2.array, max.array))
+        self.assertTrue(np.array_equal(np.array(array2, copy = False), np.array(max, copy = False)))
 
         max = gdx.max(array1, array2, array3)
-        self.assertTrue(np.array_equal(array3.array, max.array))
+        self.assertTrue(np.array_equal(np.array(array3, copy = False), np.array(max, copy = False)))
 
         min = gdx.min(array1, array2)
-        self.assertTrue(np.array_equal(array1.array, min.array))
+        self.assertTrue(np.array_equal(np.array(array1, copy = False), np.array(min, copy = False)))
 
         min = gdx.min(array2, array3)
-        self.assertTrue(np.array_equal(array2.array, min.array))
+        self.assertTrue(np.array_equal(np.array(array2, copy = False), np.array(min, copy = False)))
 
     def test_equal_one_of(self):
         meta = gdx.raster_metadata(rows=3, cols=3)
@@ -489,7 +491,7 @@ class TestGdx(unittest.TestCase):
         expected = np.array([[1, 0, -1], [0, 1, 0], [-1, 0, 1]], dtype=int)
 
         res = gdx.raster_equal_one_of(ras, [1, 5, 9])
-        np.testing.assert_array_equal(res.array, expected)
+        np.testing.assert_array_equal(np.array(res, copy = False), expected)
 
     def test_abs(self):
         meta = gdx.raster_metadata(rows=3, cols=3)
@@ -501,7 +503,7 @@ class TestGdx(unittest.TestCase):
         expected = np.array([[-1, 2, -1], [4, 5, 6], [-1, 8, 9]], dtype=int)
 
         res = gdx.abs(ras)
-        np.testing.assert_array_equal(res.array, expected)
+        np.testing.assert_array_equal(np.array(res, copy = False), expected)
 
     def test_round(self):
         meta = gdx.raster_metadata(rows=3, cols=3)
@@ -519,7 +521,7 @@ class TestGdx(unittest.TestCase):
         )
 
         res = gdx.round(ras)
-        self.assertTrue(np.allclose(res.array, expected, equal_nan=True))
+        self.assertTrue(np.allclose(np.array(res, copy = False), expected, equal_nan=True))
 
     def test_exp_rasters(self):
         meta = gdx.raster_metadata(rows=2, cols=2)
@@ -533,7 +535,7 @@ class TestGdx(unittest.TestCase):
         )
 
         self.assertEqual(expected.dtype, np.dtype("float32"))
-        self.assertTrue(np.allclose(res.array, expected, equal_nan=True))
+        self.assertTrue(np.allclose(np.array(res, copy = False), expected, equal_nan=True))
 
     def test_exp_value_exp(self):
         meta = gdx.raster_metadata(rows=2, cols=2)
@@ -545,7 +547,7 @@ class TestGdx(unittest.TestCase):
         )
 
         self.assertEqual(expected.dtype, np.dtype("float32"))
-        self.assertTrue(np.allclose(res.array, expected, equal_nan=True))
+        self.assertTrue(np.allclose(np.array(res, copy = False), expected, equal_nan=True))
 
     def test_regression_bug_2018_05_08(self):
         meta = gdx.raster_metadata(rows=2, cols=2)
@@ -554,7 +556,7 @@ class TestGdx(unittest.TestCase):
         b = gdx.if_then_else(
             a < 0.4, 0.4, a
         )  # bug was that the then-part got type uint8
-        b = b.array
+        b = np.array(b, copy=False)
         expected = np.array([[0.4, float("nan")], [0.4, 1]], dtype=np.dtype("float32"))
         self.assertTrue(np.allclose(b, expected, equal_nan=True))
 
@@ -564,22 +566,23 @@ class TestGdx(unittest.TestCase):
         a = gdx.raster_from_ndarray(np.array([[0, -1], [0.1, 1]], dtype=float), meta)
         a.replace_nodata(1)
         expected = np.array([[0, 1], [0.1, 1]], dtype=np.dtype("float32"))
-        self.assertTrue(np.allclose(a.array, expected, equal_nan=True))
+        self.assertTrue(np.allclose(np.array(a, copy=False), expected, equal_nan=True))
 
     def test_fuzzy_cluster_id(self):
         meta = gdx.raster_metadata(rows=6, cols=6)
         meta.nodata = -1
         meta.cell_size = 100
         a = gdx.raster_from_ndarray(np.zeros((6, 6), dtype=np.int32), meta)
-        a.array[0, 0] = 1
-        a.array[2, 2] = 1
-        a.array[5, 5] = 1
+        nparray = np.array(a, copy = False)
+        nparray[0, 0] = 1
+        nparray[2, 2] = 1
+        nparray[5, 5] = 1
         b = gdx.fuzzy_cluster_id(a, 2.9 * meta.cell_size)
         expected = np.zeros((6, 6), dtype=np.int32)
         expected[0, 0] = 1
         expected[2, 2] = 1
         expected[5, 5] = 2
-        self.assertTrue(np.array_equal(b.array, expected))
+        self.assertTrue(np.array_equal(np.array(b, copy = False), expected))
 
     def test_regression_bug_2018_05_09(self):
         meta = gdx.raster_metadata(rows=1, cols=1)

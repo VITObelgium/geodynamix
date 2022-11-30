@@ -1,7 +1,7 @@
 #include "gdx/raster.h"
 #include "gdx/algo/cast.h"
+#include "gdx/denserasterio.h"
 #include "gdx/log.h"
-#include "gdx/maskedrasterio.h"
 #include "gdx/rastercompare.h"
 #include "infra/gdalio.h"
 
@@ -12,19 +12,19 @@ namespace {
 Raster::RasterVariant createRasterVariant(RasterMetadata meta, const std::type_info& dataType)
 {
     if (dataType == typeid(uint8_t))
-        return Raster::RasterVariant(MaskedRaster<uint8_t>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<uint8_t>(std::move(meta)));
     else if (dataType == typeid(int16_t))
-        return Raster::RasterVariant(MaskedRaster<int16_t>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<int16_t>(std::move(meta)));
     else if (dataType == typeid(uint16_t))
-        return Raster::RasterVariant(MaskedRaster<uint16_t>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<uint16_t>(std::move(meta)));
     else if (dataType == typeid(int32_t))
-        return Raster::RasterVariant(MaskedRaster<int32_t>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<int32_t>(std::move(meta)));
     else if (dataType == typeid(uint32_t))
-        return Raster::RasterVariant(MaskedRaster<uint32_t>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<uint32_t>(std::move(meta)));
     else if (dataType == typeid(float))
-        return Raster::RasterVariant(MaskedRaster<float>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<float>(std::move(meta)));
     else if (dataType == typeid(double))
-        return Raster::RasterVariant(MaskedRaster<double>(std::move(meta)));
+        return Raster::RasterVariant(DenseRaster<double>(std::move(meta)));
 
     throw InvalidArgument("Invalid raster data type");
 }
@@ -32,19 +32,19 @@ Raster::RasterVariant createRasterVariant(RasterMetadata meta, const std::type_i
 Raster::RasterVariant createRasterVariant(RasterMetadata meta, const std::type_info& dataType, double fillValue)
 {
     if (dataType == typeid(uint8_t))
-        return Raster::RasterVariant(MaskedRaster<uint8_t>(std::move(meta), static_cast<uint8_t>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<uint8_t>(std::move(meta), static_cast<uint8_t>(fillValue)));
     else if (dataType == typeid(int16_t))
-        return Raster::RasterVariant(MaskedRaster<int16_t>(std::move(meta), static_cast<int16_t>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<int16_t>(std::move(meta), static_cast<int16_t>(fillValue)));
     else if (dataType == typeid(uint16_t))
-        return Raster::RasterVariant(MaskedRaster<uint16_t>(std::move(meta), static_cast<uint16_t>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<uint16_t>(std::move(meta), static_cast<uint16_t>(fillValue)));
     else if (dataType == typeid(int32_t))
-        return Raster::RasterVariant(MaskedRaster<int32_t>(std::move(meta), static_cast<int32_t>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<int32_t>(std::move(meta), static_cast<int32_t>(fillValue)));
     else if (dataType == typeid(uint32_t))
-        return Raster::RasterVariant(MaskedRaster<uint32_t>(std::move(meta), static_cast<uint32_t>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<uint32_t>(std::move(meta), static_cast<uint32_t>(fillValue)));
     else if (dataType == typeid(float))
-        return Raster::RasterVariant(MaskedRaster<float>(std::move(meta), static_cast<float>(fillValue)));
+        return Raster::RasterVariant(DenseRaster<float>(std::move(meta), static_cast<float>(fillValue)));
     else if (dataType == typeid(double))
-        return Raster::RasterVariant(MaskedRaster<double>(std::move(meta), fillValue));
+        return Raster::RasterVariant(DenseRaster<double>(std::move(meta), fillValue));
 
     throw InvalidArgument("Invalid raster data type");
 }
@@ -62,7 +62,7 @@ void throwOnScalarTypeMismatch(const Raster::RasterVariant& var)
             throw InvalidArgument("Mixing of floating point and integer values is not supported Raster type ({}) <-> Scalar type ({})", typeid(T).name(), typeid(TScalar).name());
         }
     },
-        var);
+               var);
 }
 }
 
@@ -108,7 +108,7 @@ const RasterMetadata& Raster::metadata() const
     return std::visit([](auto&& raster) {
         return std::cref(raster.metadata());
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::copy() const
@@ -116,7 +116,7 @@ Raster Raster::copy() const
     return std::visit([](auto&& raster) {
         return Raster(raster.copy());
     },
-        _raster);
+                      _raster);
 }
 
 bool Raster::equalTo(const Raster& other) const noexcept
@@ -129,7 +129,7 @@ bool Raster::equalTo(const Raster& other) const noexcept
         using T = value_type<decltype(raster)>;
         return raster == other.get<T>();
     },
-        _raster);
+                      _raster);
 }
 
 bool Raster::tolerant_equal_to(const Raster& other, double tolerance) const noexcept
@@ -142,7 +142,7 @@ bool Raster::tolerant_equal_to(const Raster& other, double tolerance) const noex
         using T = value_type<decltype(raster)>;
         return raster.tolerant_equal_to(other.get<T>(), static_cast<T>(tolerance));
     },
-        _raster);
+                      _raster);
 }
 
 bool Raster::tolerant_data_equal_to(const Raster& other, double tolerance) const noexcept
@@ -156,7 +156,7 @@ bool Raster::tolerant_data_equal_to(const Raster& other, double tolerance) const
         using T = value_type<decltype(raster)>;
         return raster.tolerant_data_equal_to(other.get<T>(), static_cast<T>(tolerance));
     },
-        _raster);
+                      _raster);
 }
 
 Raster& Raster::fill(double value)
@@ -165,7 +165,7 @@ Raster& Raster::fill(double value)
         using T = value_type<decltype(raster)>;
         raster.fill(static_cast<T>(value));
     },
-        _raster);
+               _raster);
 
     return *this;
 }
@@ -175,7 +175,7 @@ Raster& Raster::set_projection(int32_t epsg)
     std::visit([epsg](auto&& raster) {
         raster.set_projection(epsg);
     },
-        _raster);
+               _raster);
 
     return *this;
 }
@@ -186,7 +186,7 @@ Raster& Raster::replaceValue(double oldValue, double newValue)
         using T = value_type<decltype(raster)>;
         raster.replace(static_cast<T>(oldValue), static_cast<T>(newValue));
     },
-        _raster);
+               _raster);
 
     return *this;
 }
@@ -202,7 +202,7 @@ void Raster::setValue(int32_t row, int32_t col, double value)
         raster(row, col) = static_cast<T>(value);
         raster.mark_as_data(row, col);
     },
-        _raster);
+               _raster);
 }
 
 void Raster::turn_value_into_nodata(double value)
@@ -211,7 +211,7 @@ void Raster::turn_value_into_nodata(double value)
         using T = value_type<decltype(raster)>;
         raster.turn_value_into_nodata(static_cast<T>(value));
     },
-        _raster);
+               _raster);
 }
 
 Raster::operator bool() const
@@ -219,7 +219,7 @@ Raster::operator bool() const
     return std::visit([](auto&& raster) {
         return raster.size() > 0;
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator+(int32_t value) const
@@ -229,7 +229,7 @@ Raster Raster::operator+(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster + static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator+(double value) const
@@ -239,7 +239,7 @@ Raster Raster::operator+(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster + static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator-() const
@@ -247,7 +247,7 @@ Raster Raster::operator-() const
     return std::visit([](auto&& raster) {
         return Raster(-raster);
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator-(int32_t value) const
@@ -257,7 +257,7 @@ Raster Raster::operator-(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster - static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator-(double value) const
@@ -267,7 +267,7 @@ Raster Raster::operator-(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster - static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator*(int32_t value) const
@@ -277,7 +277,7 @@ Raster Raster::operator*(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster * static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator*(double value) const
@@ -287,7 +287,7 @@ Raster Raster::operator*(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster * static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator/(int32_t value) const
@@ -297,7 +297,7 @@ Raster Raster::operator/(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster / static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator/(double value) const
@@ -307,7 +307,7 @@ Raster Raster::operator/(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster / static_cast<T>(value));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator+(const Raster& other) const
@@ -315,7 +315,7 @@ Raster Raster::operator+(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 + raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster Raster::operator-(const Raster& other) const
@@ -323,7 +323,7 @@ Raster Raster::operator-(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 - raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster Raster::operator*(const Raster& other) const
@@ -331,7 +331,7 @@ Raster Raster::operator*(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 * raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster Raster::operator/(const Raster& other) const
@@ -339,7 +339,7 @@ Raster Raster::operator/(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 / raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster operator+(int32_t lhs, const Raster& rhs)
@@ -360,7 +360,7 @@ Raster operator-(int32_t lhs, const Raster& rhs)
         using T = value_type<decltype(raster)>;
         return Raster(static_cast<T>(lhs) - raster);
     },
-        rhs.get());
+                      rhs.get());
 }
 
 Raster operator-(double lhs, const Raster& rhs)
@@ -371,7 +371,7 @@ Raster operator-(double lhs, const Raster& rhs)
         using T = value_type<decltype(raster)>;
         return Raster(static_cast<T>(lhs) - raster);
     },
-        rhs.get());
+                      rhs.get());
 }
 
 Raster operator*(int32_t lhs, const Raster& rhs)
@@ -392,7 +392,7 @@ Raster operator/(int32_t lhs, const Raster& rhs)
         using T = value_type<decltype(raster)>;
         return Raster(static_cast<T>(lhs) / raster);
     },
-        rhs.get());
+                      rhs.get());
 }
 
 Raster operator/(double lhs, const Raster& rhs)
@@ -403,7 +403,7 @@ Raster operator/(double lhs, const Raster& rhs)
         using T = value_type<decltype(raster)>;
         return Raster(static_cast<T>(lhs) / raster);
     },
-        rhs.get());
+                      rhs.get());
 }
 
 Raster Raster::operator!() const
@@ -411,7 +411,7 @@ Raster Raster::operator!() const
     return std::visit([](auto&& raster) {
         return Raster(!raster);
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator~() const
@@ -424,7 +424,7 @@ Raster Raster::operator&&(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 && raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster Raster::operator&(const Raster& other) const
@@ -437,7 +437,7 @@ Raster Raster::operator||(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(raster1 || raster2);
     },
-        _raster, other._raster);
+                      _raster, other._raster);
 }
 
 Raster Raster::operator|(const Raster& other) const
@@ -451,7 +451,7 @@ Raster Raster::operator>(const Raster& other) const
         using T = value_type<decltype(raster)>;
         return Raster(raster > other.get<T>());
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator>(double threshold) const
@@ -460,7 +460,7 @@ Raster Raster::operator>(double threshold) const
         using T = value_type<decltype(raster)>;
         return Raster(raster > static_cast<T>(threshold));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator>=(const Raster& other) const
@@ -469,7 +469,7 @@ Raster Raster::operator>=(const Raster& other) const
         using T = value_type<decltype(raster)>;
         return Raster(raster >= other.get<T>());
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator>=(double threshold) const
@@ -478,7 +478,7 @@ Raster Raster::operator>=(double threshold) const
         using T = value_type<decltype(raster)>;
         return Raster(raster >= static_cast<T>(threshold));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator<(const Raster& other) const
@@ -487,7 +487,7 @@ Raster Raster::operator<(const Raster& other) const
         using T = value_type<decltype(raster)>;
         return Raster(raster < other.get<T>());
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator<(double threshold) const
@@ -496,7 +496,7 @@ Raster Raster::operator<(double threshold) const
         using T = value_type<decltype(raster)>;
         return Raster(raster < static_cast<T>(threshold));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator<=(const Raster& other) const
@@ -505,7 +505,7 @@ Raster Raster::operator<=(const Raster& other) const
         using T = value_type<decltype(raster)>;
         return Raster(raster <= other.get<T>());
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator<=(double threshold) const
@@ -514,7 +514,7 @@ Raster Raster::operator<=(double threshold) const
         using T = value_type<decltype(raster)>;
         return Raster(raster <= static_cast<T>(threshold));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator==(const Raster& other) const
@@ -522,7 +522,7 @@ Raster Raster::operator==(const Raster& other) const
     return std::visit([](auto&& raster1, auto&& raster2) {
         return Raster(equals(raster1, raster2));
     },
-        _raster, other.get());
+                      _raster, other.get());
 }
 
 Raster Raster::operator==(int32_t value) const
@@ -533,7 +533,7 @@ Raster Raster::operator==(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(equals(raster, static_cast<T>(value)));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator==(double value) const
@@ -544,7 +544,7 @@ Raster Raster::operator==(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(equals(raster, static_cast<T>(value)));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator!=(const Raster& other) const
@@ -555,8 +555,8 @@ Raster Raster::operator!=(const Raster& other) const
         using T = value_type<decltype(raster)>;
         return Raster(raster.not_equals(other.get<T>()));
     },
-        _raster);
-    return Raster(MaskedRaster<uint8_t>());
+                      _raster);
+    return Raster(DenseRaster<uint8_t>());
 }
 
 Raster Raster::operator!=(int32_t value) const
@@ -567,7 +567,7 @@ Raster Raster::operator!=(int32_t value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster.not_equals(static_cast<T>(value)));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::operator!=(double value) const
@@ -578,7 +578,7 @@ Raster Raster::operator!=(double value) const
         using T = value_type<decltype(raster)>;
         return Raster(raster.not_equals(static_cast<T>(value)));
     },
-        _raster);
+                      _raster);
 }
 
 Raster Raster::cast(const std::type_info& type) const
@@ -594,7 +594,7 @@ Raster Raster::cast(const std::type_info& type) const
 
         throw RuntimeError("Unsupported raster data type");
     },
-        _raster);
+                      _raster);
 }
 
 void Raster::throwOnTypeMismatch(const std::type_info& other) const
@@ -613,7 +613,7 @@ void Raster::throwOnTypeMismatch() const
             throw InvalidArgument("Mixing of floating point and integer rasters is not supported {} <-> {}", typeid(T).name(), typeid(TOtherRaster).name());
         }
     },
-        _raster);
+               _raster);
 }
 
 template <typename TScalar>
@@ -634,26 +634,26 @@ Raster Raster::read(const fs::path& fileName, const RasterMetadata& extent)
 
 Raster Raster::read(const fs::path& fileName, const std::type_info& type)
 {
-    if (type == typeid(uint8_t)) return read_masked_raster<uint8_t>(fileName);
-    if (type == typeid(int16_t)) return read_masked_raster<int16_t>(fileName);
-    if (type == typeid(uint16_t)) return read_masked_raster<uint16_t>(fileName);
-    if (type == typeid(int32_t)) return read_masked_raster<int32_t>(fileName);
-    if (type == typeid(uint32_t)) return read_masked_raster<uint32_t>(fileName);
-    if (type == typeid(float)) return read_masked_raster<float>(fileName);
-    if (type == typeid(double)) return read_masked_raster<double>(fileName);
+    if (type == typeid(uint8_t)) return read_dense_raster<uint8_t>(fileName);
+    if (type == typeid(int16_t)) return read_dense_raster<int16_t>(fileName);
+    if (type == typeid(uint16_t)) return read_dense_raster<uint16_t>(fileName);
+    if (type == typeid(int32_t)) return read_dense_raster<int32_t>(fileName);
+    if (type == typeid(uint32_t)) return read_dense_raster<uint32_t>(fileName);
+    if (type == typeid(float)) return read_dense_raster<float>(fileName);
+    if (type == typeid(double)) return read_dense_raster<double>(fileName);
 
     throw RuntimeError("Unsupported raster data type");
 }
 
 Raster Raster::read(const fs::path& fileName, const std::type_info& type, const RasterMetadata& extent)
 {
-    if (type == typeid(uint8_t)) return read_masked_raster<uint8_t>(fileName, extent);
-    if (type == typeid(int16_t)) return read_masked_raster<int16_t>(fileName, extent);
-    if (type == typeid(uint16_t)) return read_masked_raster<uint16_t>(fileName, extent);
-    if (type == typeid(int32_t)) return read_masked_raster<int32_t>(fileName, extent);
-    if (type == typeid(uint32_t)) return read_masked_raster<uint32_t>(fileName, extent);
-    if (type == typeid(float)) return read_masked_raster<float>(fileName, extent);
-    if (type == typeid(double)) return read_masked_raster<double>(fileName, extent);
+    if (type == typeid(uint8_t)) return read_dense_raster<uint8_t>(fileName, extent);
+    if (type == typeid(int16_t)) return read_dense_raster<int16_t>(fileName, extent);
+    if (type == typeid(uint16_t)) return read_dense_raster<uint16_t>(fileName, extent);
+    if (type == typeid(int32_t)) return read_dense_raster<int32_t>(fileName, extent);
+    if (type == typeid(uint32_t)) return read_dense_raster<uint32_t>(fileName, extent);
+    if (type == typeid(float)) return read_dense_raster<float>(fileName, extent);
+    if (type == typeid(double)) return read_dense_raster<double>(fileName, extent);
 
     throw RuntimeError("Unsupported raster data type");
 }
@@ -676,7 +676,7 @@ void Raster::write(const fs::path& filepath)
     std::visit([&filepath](auto&& raster) {
         gdx::write_raster(raster, filepath);
     },
-        _raster);
+               _raster);
 }
 
 // Writes the raster to disk using the provided type
@@ -685,7 +685,7 @@ void Raster::write(const fs::path& filepath, const std::type_info& type)
     std::visit([&filepath, &type](auto&& raster) {
         gdx::write_raster(raster, filepath, type);
     },
-        _raster);
+               _raster);
 }
 
 void Raster::writeColorMapped(const fs::path& filepath, const inf::ColorMap& cmap) const
@@ -694,7 +694,7 @@ void Raster::writeColorMapped(const fs::path& filepath, const inf::ColorMap& cma
         using T = value_type<decltype(raster)>;
         inf::gdal::io::write_raster_color_mapped(std::span<const T>(raster), raster.metadata(), filepath, cmap);
     },
-        _raster);
+               _raster);
 }
 
 double Raster::nodataForType(const std::type_info& dataType)
