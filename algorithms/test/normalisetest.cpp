@@ -29,7 +29,7 @@ TEST_CASE_TEMPLATE("Normalise", TypeParam, RasterTypes)
         ResultRasterType expected(meta, std::vector<uint8_t>{
                                             0, 32, 32,
                                             127, 127, 127,
-                                            190, 190, 254});
+                                            191, 191, 254});
 
         ResultRasterType result(meta);
         normalise(raster, result, T(0), T(128), uint8_t(0), uint8_t(254));
@@ -46,7 +46,7 @@ TEST_CASE_TEMPLATE("Normalise", TypeParam, RasterTypes)
         ResultRasterType expected(meta, std::vector<uint8_t>{
                                             0, 32, 32,
                                             127, 127, 127,
-                                            190, 190, 254});
+                                            191, 191, 254});
 
         ResultRasterType result = normalise_min_max<uint8_t>(raster, uint8_t(0), uint8_t(254));
         CHECK_RASTER_EQ(expected, result);
