@@ -42,7 +42,11 @@ RasterType rasterize(const inf::gdal::VectorDataSet& shapeDataSet, const Rasteri
 
     } else if (std::holds_alternative<T>(options.burnValue)) {
         gdalOpts.emplace_back("-burn");
-        gdalOpts.emplace_back(std::to_string(std::get<T>(options.burnValue)));
+        if constexpr (std::is_floating_point_v<T>) {
+            gdalOpts.emplace_back(fmt::format("{:f}", std::get<T>(options.burnValue)));
+        } else {
+            gdalOpts.emplace_back(std::to_string(std::get<T>(options.burnValue)));
+        }
     }
 
     if (!options.inputLayer.empty()) {
