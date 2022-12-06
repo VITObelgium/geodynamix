@@ -24,7 +24,12 @@ jobs:
           python-version: 3.8
       - name: create meta.yaml
         run: python
-      - name: Install build requirement
+      - name: Setup conda forge
+        if: ${{ matrix.cfg.os == 'windows-latest' }}
+        run: |
+          conda config --add channels conda-forge
+          conda config --set channel_priority strict
+      - name: Install build requirements
         run: conda install conda-build jinja2
       - name: Generate package metadata
         run: python ./conda/metagen.py
