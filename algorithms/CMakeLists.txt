@@ -56,6 +56,7 @@ add_library(gdxalgo
     ${GDXALGO_PUBLIC_HEADERS}
     accuflux.cpp
     reclass.cpp
+    rasterize.cpp
     rasterizelineantialiased.cpp
     shape.cpp
     suminbuffer.cpp

@@ -90,7 +90,6 @@ set(GDXCORE_PUBLIC_HEADERS
     include/gdx/rasterfwd.h
     include/gdx/rasterdiff.h
     include/gdx/rastercompare.h
-    include/gdx/rasteriterator.h
     include/gdx/rastercelliterator.h
     include/gdx/rasterchecks.h
     include/gdx/sparseraster.h
