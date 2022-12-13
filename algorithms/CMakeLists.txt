@@ -75,6 +75,12 @@ target_link_libraries(gdxalgo PUBLIC
     geodynamix::gdxcommon
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
 )
+
+if (GDX_ENABLE_GEOMETRY)
+    target_compile_definitions(gdxalgo PRIVATE GDX_HAVE_GEOS)
+    target_link_libraries(gdxalgo PRIVATE GEOS::geos)
+endif ()
+
 set_target_properties(gdxalgo PROPERTIES PUBLIC_HEADER "${GDXALGO_PUBLIC_HEADERS}")
 
 

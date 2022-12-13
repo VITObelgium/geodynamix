@@ -47,6 +47,7 @@ if __name__ == "__main__":
             "-DGDX_ENABLE_TOOLS=ON",
             "-DGDX_ENABLE_BENCHMARKS=ON",
             "-DGDX_ENABLE_SIMD=ON",
+            "-DGDX_ENABLE_GEOMETRY=ON"
         ]
 
         if not args.no_avx2 and not "arm" in sys_platform:

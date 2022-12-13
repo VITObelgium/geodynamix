@@ -116,7 +116,7 @@ RasterType rasterize(const inf::gdal::VectorDataSet& shapeDataSet, const Rasteri
     if (options.add) {
         gdalOpts.emplace_back("-add");
         if (options.meta.nodata.has_value() && std::isnan(*options.meta.nodata)) {
-            throw RuntimeError("Raster output nodata is nan, this is not compatible with the add algorithm");
+            throw inf::RuntimeError("Raster output nodata is nan, this is not compatible with the add algorithm");
         }
     }
 

@@ -7,12 +7,17 @@
 
 #include <algorithm>
 #include <execution>
+
+#ifdef GDX_HAVE_GEOS
 #include <geos/geom/Geometry.h>
 #include <geos/geom/prep/PreparedGeometryFactory.h>
+#endif
 
 namespace gdx::internal {
 
 using namespace inf;
+
+#ifdef GDX_HAVE_GEOS
 
 static GeoMetadata create_geometry_extent(const geos::geom::Geometry& geom, const GeoMetadata& gridExtent)
 {
@@ -130,10 +135,10 @@ static std::vector<PolygonCellCoverage::CellInfo> create_cell_coverages(const Ge
     return result;
 }
 
-PolygonCellCoverage create_polygon_coverage(uint64_t polygonId,
-                                            const geos::geom::Geometry& geom,
-                                            const gdal::SpatialReference& geometryProjection,
-                                            const GeoMetadata& outputExtent)
+static PolygonCellCoverage create_polygon_coverage(uint64_t polygonId,
+                                                   const geos::geom::Geometry& geom,
+                                                   const gdal::SpatialReference& geometryProjection,
+                                                   const GeoMetadata& outputExtent)
 {
     PolygonCellCoverage cov;
 
@@ -154,6 +159,16 @@ PolygonCellCoverage create_polygon_coverage(uint64_t polygonId,
 
     return cov;
 }
+
+#else
+static PolygonCellCoverage create_polygon_coverage(uint64_t /*polygonId*/,
+                                                   const geos::geom::Geometry& /*geom*/,
+                                                   const gdal::SpatialReference& /*geometryProjection*/,
+                                                   const GeoMetadata& /*outputExtent*/)
+{
+    throw RuntimeError("GeoDynamiX was not compiled with geometry support");
+}
+#endif
 
 std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata& outputExtent,
                                                           gdal::VectorDataSet& vectorDs,
@@ -223,5 +238,4 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
 
     return result;
 }
-
 }
