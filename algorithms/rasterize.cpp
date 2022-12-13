@@ -116,9 +116,6 @@ static std::vector<PolygonCellCoverage::CellInfo> create_cell_coverages(const Ge
 
     auto preparedGeom = geos::geom::prep::PreparedGeometryFactory::prepare(&geom);
 
-    const auto cellSize = extent.cellSize;
-    const auto cellArea = std::abs(cellSize.x * cellSize.y);
-
     for (auto cell : gdx::RasterCells(polygonExtent.rows, polygonExtent.cols)) {
         const Rect<double> box = polygonExtent.bounding_box(cell);
         const auto cellGeom    = geom::create_polygon(box.topLeft, box.bottomRight);
