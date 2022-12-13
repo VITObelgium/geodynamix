@@ -5,9 +5,10 @@
 #include "infra/geometry.h"
 #include "infra/log.h"
 
+#include <algorithm>
+#include <execution>
 #include <geos/geom/Geometry.h>
 #include <geos/geom/prep/PreparedGeometryFactory.h>
-#include <oneapi/tbb/parallel_for_each.h>
 
 namespace gdx::internal {
 
@@ -208,8 +209,7 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
 
         std::mutex mut;
         ProgressInfo progress(geometries.size(), progressCb);
-        // std::for_each(geometries.rbegin(), geometries.rend(), [&](const std::tuple<int64_t, double, geos::geom::Geometry::Ptr>& idGeom) {
-        tbb::parallel_for_each(geometries, [&](const std::tuple<int64_t, double, geos::geom::Geometry::Ptr>& idGeom) {
+        std::for_each(std::execution::par, geometries.begin(), geometries.end(), [&](const std::tuple<int64_t, double, geos::geom::Geometry::Ptr>& idGeom) {
             auto cov  = create_polygon_coverage(std::get<0>(idGeom), *std::get<2>(idGeom), gdal::SpatialReference(projection), outputExtent);
             cov.value = std::get<1>(idGeom);
             progress.tick();

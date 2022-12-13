@@ -57,9 +57,6 @@ class GdxIntegrationTest(unittest.TestCase):
         ids_sum_number = gdx.csum(ids, 1)
         ids_sum_raster = gdx.csum(ids, gdx.raster(hungary.metadata, np.int32, fill=1))
 
-        gdx.write(ids_sum_number, "c:/temp/csumnum.tif")
-        gdx.write(ids_sum_number, "c:/temp/csumras.tif")
-
         self.assertEqual(gdx.raster_sum(ids_sum_number), gdx.raster_sum(ids_sum_raster))
         np.testing.assert_array_equal(ids_sum_number.array, ids_sum_raster.array)
 
