@@ -73,20 +73,29 @@ TEST_CASE_TEMPLATE("RasterizePolygons", TypeParam, UnspecializedRasterTypes)
 
         SUBCASE("prop1")
         {
+            opts.burnValue = "prop1";
+
             polygon1Val = 200.0 / 4.0;
             polygon2Val = 10.0;
             polygon3Val = 100.0 / 4.0;
-
-            opts.burnValue = "prop1";
         }
 
         SUBCASE("prop2")
         {
+            opts.burnValue = "prop2";
+
             polygon1Val = 9.0 / 4.0;
             polygon2Val = 20.0;
             polygon3Val = 200.0 / 4.0;
+        }
 
-            opts.burnValue = "prop2";
+        SUBCASE("Fixed value")
+        {
+            opts.burnValue = 50.0;
+
+            polygon1Val = 50.0 / 4.0;
+            polygon2Val = 50.0;
+            polygon3Val = 50.0 / 4.0;
         }
 
         DoubleRaster expected(opts.outputMeta, std::vector<double>{
