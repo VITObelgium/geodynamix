@@ -77,11 +77,16 @@ target_link_libraries(gdxalgo PUBLIC
 )
 
 if (GDX_ENABLE_GEOMETRY)
-    target_compile_definitions(gdxalgo PUBLIC GDX_HAVE_GEOS)
     target_link_libraries(gdxalgo PRIVATE GEOS::geos)
 endif ()
 
 set_target_properties(gdxalgo PROPERTIES PUBLIC_HEADER "${GDXALGO_PUBLIC_HEADERS}")
+target_compile_definitions(gdxalgo
+PUBLIC
+    $<$<BOOL:${GDX_ENABLE_GEOMETRY}>:GDX_HAVE_GEOS>
+PRIVATE
+    $<$<BOOL:${GDX_HAVE_PAR_EXECUTION}>:GDX_HAVE_PAR_EXECUTION>
+)
 
 
 if (GDX_INSTALL_DEVELOPMENT_FILES)

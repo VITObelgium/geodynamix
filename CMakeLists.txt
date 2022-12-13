@@ -10,6 +10,7 @@ enable_testing()
 include(CTestUseLaunchers)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
+include(CheckCXXSymbolExists)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
@@ -124,6 +125,8 @@ endif ()
 if (MINGW)
     add_definitions("-DMINGW_HAS_SECURE_API")
 endif ()
+
+check_cxx_symbol_exists(std::execution::par "execution" GDX_HAVE_PAR_EXECUTION)
 
 find_package(Gsl REQUIRED)
 find_package(Eigen3 REQUIRED)
