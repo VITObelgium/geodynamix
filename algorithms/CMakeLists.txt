@@ -77,7 +77,7 @@ target_link_libraries(gdxalgo PUBLIC
 )
 
 if (GDX_ENABLE_GEOMETRY)
-    target_compile_definitions(gdxalgo PRIVATE GDX_HAVE_GEOS)
+    target_compile_definitions(gdxalgo PUBLIC GDX_HAVE_GEOS)
     target_link_libraries(gdxalgo PRIVATE GEOS::geos)
 endif ()
 

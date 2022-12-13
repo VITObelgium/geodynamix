@@ -195,8 +195,8 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
             throw RuntimeError("Invalid input vector: No projection information available");
         }
 
-        if (outputExtent.geographic_epsg() != layer.projection()->epsg_geog_cs()) {
-            throw RuntimeError("Projection mismatch between input vector and metadata grid EPSG:{} <-> EPSG:{}", outputExtent.geographic_epsg().value(), layer.projection()->epsg_geog_cs().value());
+        if (outputExtent.projected_epsg() != layer.projection()->epsg_cs()) {
+            throw RuntimeError("Projection mismatch between input vector and metadata grid EPSG:{} <-> EPSG:{}", outputExtent.projected_epsg().value(), layer.projection()->epsg_cs().value());
         }
 
         const auto bbox = outputExtent.bounding_box();

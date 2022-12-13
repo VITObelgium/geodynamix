@@ -157,6 +157,7 @@ RasterType rasterize_polygons(inf::gdal::VectorDataSet& vectorDs, const Rasteriz
             if (auto cell = polygonCell.computeGridCell; options.outputMeta.is_on_map(cell)) {
                 if (result.is_nodata(cell)) {
                     result[cell] = inf::truncate<T>(options.initNodata.value_or(0.0));
+                    result.mark_as_data(cell);
                 }
 
                 result[cell] += inf::truncate<T>(polygonCell.coverage * polygonCov.value);
