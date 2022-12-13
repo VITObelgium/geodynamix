@@ -67,49 +67,6 @@ static inf::GeoMetadata create_geometry_extent(const geos::geom::Geometry& geom,
     }
 }
 
-static GeoMetadata create_geometry_intersection_extent(const geos::geom::Geometry& geom, const GeoMetadata& gridExtent)
-{
-    GeoMetadata geometryExtent = gridExtent;
-
-    const auto* env = geom.getEnvelopeInternal();
-
-    Rect<double> geomRect;
-    geomRect.topLeft     = Point<double>(env->getMinX(), env->getMaxY());
-    geomRect.bottomRight = Point<double>(env->getMaxX(), env->getMinY());
-
-    auto intersect = rectangle_intersection(geomRect, gridExtent.bounding_box());
-    if (!intersect.is_valid() || intersect.width() == 0 || intersect.height() == 0) {
-        // no intersection
-        return {};
-    }
-
-    auto topLeftCell     = gridExtent.convert_point_to_cell(intersect.topLeft);
-    auto bottomRightCell = gridExtent.convert_point_to_cell(intersect.bottomRight);
-
-    auto lowerLeft = gridExtent.convert_cell_ll_to_xy(Cell(bottomRightCell.r, topLeftCell.c));
-
-    geometryExtent.xll  = lowerLeft.x;
-    geometryExtent.yll  = lowerLeft.y;
-    geometryExtent.cols = std::max(0, (bottomRightCell.c - topLeftCell.c) + 1);
-    geometryExtent.rows = std::max(0, (bottomRightCell.r - topLeftCell.r) + 1);
-
-    return geometryExtent;
-}
-
-static GeoMetadata create_geometry_intersection_extent(const geos::geom::Geometry& geom, const inf::GeoMetadata& gridExtent, const gdal::SpatialReference& sourceProjection)
-{
-    gdal::SpatialReference destProj(gridExtent.projection);
-
-    if (sourceProjection.epsg_cs() != destProj.epsg_cs()) {
-        auto outputGeometry = geom.clone();
-        geom::CoordinateWarpFilter warpFilter(sourceProjection.export_to_wkt().c_str(), gridExtent.projection.c_str());
-        outputGeometry->apply_rw(warpFilter);
-        return create_geometry_intersection_extent(*outputGeometry, gridExtent);
-    } else {
-        return create_geometry_intersection_extent(geom, gridExtent);
-    }
-}
-
 static std::vector<PolygonCellCoverage::CellInfo> create_cell_coverages(const GeoMetadata& extent, const GeoMetadata& polygonExtent, const geos::geom::Geometry& geom)
 {
     std::vector<PolygonCellCoverage::CellInfo> result;

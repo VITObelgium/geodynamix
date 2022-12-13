@@ -40,7 +40,6 @@ RasterType<float> node_value_distance_decay(const RasterType<TTarget>& target, c
     RasterType<float> distanceToTarget(copy_metadata_replace_nodata(result.metadata(), {}));
     RasterType<uint8_t> mark(copy_metadata_replace_nodata(result.metadata(), {}));
 
-    int count = 0;
     for (int32_t r = 0; r < rows; ++r) {
         for (int32_t c = 0; c < cols; ++c) {
             if (target.is_nodata(r, c) || target(r, c) == 0) {
