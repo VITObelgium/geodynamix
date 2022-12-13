@@ -126,24 +126,6 @@ void handle_cell(float deltaD, const Cell& cell, const Cell& newCell,
         }
     }
 }
-//
-//#define handleRC(deltaD, newR, newC, boundaryTest)                                                                    \
-//    if ((boundaryTest) && !barrier[newR][newC] && (distanceToTarget[newR][newC] > distanceToTarget[r][c] + deltaD)) { \
-//        distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;                                               \
-//        if (mark[newR][newC] != MARK_BORDER) {                                                                        \
-//            mark[newR][newC] = MARK_BORDER;                                                                           \
-//            border.push_back(newR, newC);                                                                             \
-//        }                                                                                                             \
-//    }
-//
-//#define handleRCDiag(deltaD, newR, newC, boundaryTest, oldR, oldC) \
-//    if ((boundaryTest) && !barrier[newR][newC] && !(barrier[oldR][newC] && barrier[newR][oldC]) && (distanceToTarget[newR][newC] > distanceToTarget[r][c] + deltaD)) {
-// distanceToTarget[newR][newC] = distanceToTarget[r][c] + deltaD;
-// if (mark[newR][newC] != MARK_BORDER) {
-//    mark[newR][newC] = MARK_BORDER;
-//    border.push_back(newR, newC);
-//}
-//}
 
 template <template <typename> typename RasterType>
 void handle_diagonal_cell(float deltaD, const Cell& cell, const Cell& newCell,
