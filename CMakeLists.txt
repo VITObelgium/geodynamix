@@ -201,4 +201,6 @@ if (GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
     )
 endif ()
 
-add_subdirectory(dist)
+if (GDX_IS_TOPLEVEL)
+	add_subdirectory(dist)
+endif ()
