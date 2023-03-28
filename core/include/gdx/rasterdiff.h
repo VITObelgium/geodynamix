@@ -15,7 +15,12 @@ struct RasterDiff
     uint32_t dataDifference  = 0;
     uint32_t equal           = 0;
 
-    uint32_t differentCells() const noexcept
+    bool rasters_are_equal() const noexcept
+    {
+        return different_cells() == 0;
+    }
+
+    uint32_t different_cells() const noexcept
     {
         return zeroToNonZero +
                nonZeroToZero +
