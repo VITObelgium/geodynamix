@@ -30,7 +30,7 @@ static void increment_or_assign(RasterType& ras, int row, int col, double value)
 }
 
 template <typename OutputRasterType, typename InputRasterType>
-OutputRasterType filter(const InputRasterType& input, FilterMode mode, int radiusInCells)
+OutputRasterType filter(const InputRasterType& input, FilterMode mode, int radiusInCells, bool normalize)
 {
     OutputRasterType result(input.metadata());
     using TResult = typename OutputRasterType::value_type;
@@ -38,9 +38,9 @@ OutputRasterType filter(const InputRasterType& input, FilterMode mode, int radiu
         result.fill_with_nodata();
     }
 
-    const auto numRows   = input.rows();
-    const auto numCols   = input.cols();
-    const int radius_sqr = radiusInCells * radiusInCells;
+    const auto numRows      = input.rows();
+    const auto numCols      = input.cols();
+    const double radius_sqr = radiusInCells * radiusInCells;
 
     for (int i = 0; i < numRows; ++i) {
         for (int j = 0; j < numCols; ++j) {
@@ -65,57 +65,69 @@ OutputRasterType filter(const InputRasterType& input, FilterMode mode, int radiu
                     const int dc     = (c - col);
                     const int dc_sqr = dc * dc;
 
-                    const int d_sqr = dr_sqr + dc_sqr;
+                    double factor = 0.0;
+
+                    const double d_sqr = dr_sqr + dc_sqr;
                     if (d_sqr <= radius_sqr) {
                         if (mode == FilterMode::Exponential2) {
                             if (d_sqr > 0) {
-                                sum_area += (1.0 / d_sqr);
+                                factor = (1.0 / d_sqr);
                             } else {
-                                sum_area += 1.0;
+                                factor = 1.0;
                             }
                         } else if (mode == FilterMode::Exponential) {
                             if (d_sqr > 0) {
-                                sum_area += (1.0 / std::sqrt((double)d_sqr));
+                                factor = (1.0 / std::sqrt(d_sqr));
                             } else {
-                                sum_area += 1.0;
+                                factor = 1.0;
                             }
                         } else if (mode == FilterMode::Linear) {
-                            sum_area += 1.0 - std::sqrt((double)d_sqr) / (radiusInCells + 1);
+                            factor = 1.0 - std::sqrt(d_sqr) / (radiusInCells + 1);
                         } else {
                             assert(mode == FilterMode::Constant);
-                            sum_area += 1.0;
+                            factor = 1.0;
+                        }
+                    }
+
+                    if (factor > 0) {
+                        if (normalize) {
+                            sum_area += factor;
+                        } else {
+                            increment_or_assign(result, r, c, value * factor);
                         }
                     }
                 }
             }
 
-            for (int r = r0; r <= r1; ++r) {
-                const int dr     = (r - row);
-                const int dr_sqr = dr * dr;
-                for (int c = c0; c <= c1; ++c) {
-                    const int dc     = (c - col);
-                    const int dc_sqr = dc * dc;
+            if (normalize) {
+                for (int r = r0; r <= r1; ++r) {
+                    const int dr     = (r - row);
+                    const int dr_sqr = dr * dr;
+                    for (int c = c0; c <= c1; ++c) {
+                        const int dc     = (c - col);
+                        const int dc_sqr = dc * dc;
 
-                    const int d_sqr = dr_sqr + dc_sqr;
-                    if (d_sqr <= radius_sqr) {
-                        if (mode == FilterMode::Exponential2) {
-                            if (d_sqr > 0) {
-                                increment_or_assign(result, r, c, (value * (1.0 / d_sqr)) / sum_area);
+                        const int d_sqr = dr_sqr + dc_sqr;
+                        if (d_sqr <= radius_sqr) {
+                            if (mode == FilterMode::Exponential2) {
+                                if (d_sqr > 0) {
+                                    increment_or_assign(result, r, c, (value * (1.0 / d_sqr)) / sum_area);
+                                } else {
+                                    increment_or_assign(result, r, c, value / sum_area);
+                                }
+                            } else if (mode == FilterMode::Exponential) {
+                                if (d_sqr > 0) {
+                                    increment_or_assign(result, r, c, (value * (1.0 / std::sqrt(static_cast<double>(d_sqr)))) / sum_area);
+                                } else {
+                                    result(r, c) += static_cast<TResult>((value * (1.0)) / sum_area);
+                                    increment_or_assign(result, r, c, value / sum_area);
+                                }
+                            } else if (mode == FilterMode::Linear) {
+                                increment_or_assign(result, r, c, (value * (1.0 - std::sqrt(static_cast<double>(d_sqr)) / (radiusInCells + 1))) / sum_area);
                             } else {
+                                assert(mode == FilterMode::Constant);
                                 increment_or_assign(result, r, c, value / sum_area);
                             }
-                        } else if (mode == FilterMode::Exponential) {
-                            if (d_sqr > 0) {
-                                increment_or_assign(result, r, c, (value * (1.0 / std::sqrt(static_cast<double>(d_sqr)))) / sum_area);
-                            } else {
-                                result(r, c) += static_cast <TResult>((value * (1.0)) / sum_area);
-                                increment_or_assign(result, r, c, value / sum_area);
-                            }
-                        } else if (mode == FilterMode::Linear) {
-                            increment_or_assign(result, r, c, (value * (1.0 - std::sqrt(static_cast<double>(d_sqr)) / (radiusInCells + 1))) / sum_area);
-                        } else {
-                            assert(mode == FilterMode::Constant);
-                            increment_or_assign(result, r, c, value / sum_area);
                         }
                     }
                 }
