@@ -36,7 +36,7 @@ struct PolygonCellCoverage
 
     int64_t id;
     double value = 0.0;
-    inf::GeoMetadata outputSubgridExtent; // This countries subgrid within the output grid, depending on the coverageMode this is contained in the output grid or not
+    inf::GeoMetadata outputSubgridExtent; // This polygon subgrid within the output grid, depending on the coverageMode this is contained in the output grid or not
     std::vector<CellInfo> cells;
 };
 
