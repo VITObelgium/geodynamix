@@ -139,7 +139,7 @@ public:
     MaskedRaster(const MaskedRaster<T>& other) = delete;
     MaskedRaster(MaskedRaster<T>&&)            = default;
 
-    MaskedRaster& operator=(MaskedRaster<T>&&) = default;
+    MaskedRaster& operator=(MaskedRaster<T>&&)            = default;
     MaskedRaster& operator=(const MaskedRaster<T>& other) = delete;
 
     void resize_and_fill(int32_t rows, int32_t cols, value_type value)
@@ -905,10 +905,10 @@ private:
             result.set_nodata(static_cast<double>(std::numeric_limits<uint8_t>::max()));
         }
 
-        auto pred       = BinaryPredicate<T>();
-        const auto size = result.size();
+        auto pred          = BinaryPredicate<T>();
+        const int32_t size = static_cast<int32_t>(result.size());
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size; ++i) {
+        for (int32_t i = 0; i < size; ++i) {
             result[i] = pred(_data(i), static_cast<T>(value));
         }
         return result;
@@ -937,10 +937,10 @@ private:
             result.set_nodata(std::numeric_limits<uint8_t>::max());
         }
 
-        auto pred       = BinaryPredicate<WidestType>();
-        const auto size = result.size();
+        auto pred          = BinaryPredicate<WidestType>();
+        const int32_t size = static_cast<int32_t>(result.size());
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size; ++i) {
+        for (int32_t i = 0; i < size; ++i) {
             result[i] = pred(static_cast<WidestType>(_data(i)), static_cast<WidestType>(other[i]));
         }
         return result;
