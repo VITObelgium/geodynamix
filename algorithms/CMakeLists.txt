@@ -34,6 +34,7 @@ set(GDXALGO_PUBLIC_HEADERS
     include/gdx/algo/multiresolution.h
     include/gdx/algo/nodata.h
     include/gdx/algo/normalise.h
+    include/gdx/algo/polygoncoverage.h
     include/gdx/algo/propdist.h
     include/gdx/algo/random.h
     include/gdx/algo/rasterize.h
@@ -55,8 +56,8 @@ set(GDXALGO_PUBLIC_HEADERS
 add_library(gdxalgo
     ${GDXALGO_PUBLIC_HEADERS}
     accuflux.cpp
+    polygoncoverage.cpp
     reclass.cpp
-    rasterize.cpp
     rasterizelineantialiased.cpp
     shape.cpp
     suminbuffer.cpp

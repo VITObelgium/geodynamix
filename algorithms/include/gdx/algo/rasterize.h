@@ -12,41 +12,6 @@ namespace gdx {
 
 namespace gdal = inf::gdal;
 
-namespace internal {
-struct PolygonCellCoverage
-{
-    struct CellInfo
-    {
-        CellInfo() noexcept = default;
-        CellInfo(inf::Cell compute, double cov)
-        : computeGridCell(compute)
-        , coverage(cov)
-        {
-        }
-
-        inf::Cell computeGridCell; // row column index of this cell in the full output grid
-        double coverage = 0.0;     // The cell coverage percentage of this country in the grid
-
-        constexpr bool operator==(const CellInfo& other) const noexcept
-        {
-            // Don't compare the country cell, we want to compare cells from different countries in the compute grid
-            return computeGridCell == other.computeGridCell && coverage == other.coverage;
-        }
-    };
-
-    int64_t id;
-    double value = 0.0;
-    inf::GeoMetadata outputSubgridExtent; // This polygon subgrid within the output grid, depending on the coverageMode this is contained in the output grid or not
-    std::vector<CellInfo> cells;
-};
-
-std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata& outputExtent,
-                                                          gdal::VectorDataSet& vectorDs,
-                                                          std::variant<std::string, double> burnValue,
-                                                          const std::string& inputLayer,
-                                                          const inf::ProgressInfo::Callback& progressCb);
-}
-
 template <typename T>
 struct RasterizeOptions
 {
@@ -141,7 +106,8 @@ struct RasterizePolygonOptions
     std::optional<double> initNodata;
 
     inf::GeoMetadata outputMeta;
-    std::string inputLayer; // if empty, the first layer will be used
+    std::string inputLayer;      // if empty, the first layer will be used
+    std::string attributeFilter; // if empty, no filtering is applied
     inf::ProgressInfo::Callback progressCb;
 };
 
@@ -149,7 +115,7 @@ template <typename RasterType>
 RasterType rasterize_polygons(inf::gdal::VectorDataSet& vectorDs, const RasterizePolygonOptions& options)
 {
     using T              = typename RasterType::value_type;
-    const auto coverages = internal::create_polygon_coverages(options.outputMeta, vectorDs, options.burnValue, options.inputLayer, options.progressCb);
+    const auto coverages = internal::create_polygon_coverages(options.outputMeta, vectorDs, options.burnValue, options.featureFilter, options.inputLayer, options.progressCb);
 
     RasterType result(options.outputMeta, inf::truncate<T>(options.outputMeta.nodata.value_or(0.0)));
     for (const auto& polygonCov : coverages) {
