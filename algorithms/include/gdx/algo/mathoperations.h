@@ -27,6 +27,20 @@ RasterType<ResultType> perform_operation(const RasterType<T>& input1, const Rast
 }
 
 template <typename RasterType>
+double mean(const RasterType& input)
+{
+    double sum   = 0.0;
+    size_t count = 0;
+
+    gdx::for_each_data_value(input, [&](auto val) {
+        sum += val;
+        ++count;
+    });
+
+    return sum / count;
+}
+
+template <typename RasterType>
 void abs(const RasterType& input, RasterType& output)
 {
     using T = typename RasterType::value_type;
