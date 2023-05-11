@@ -46,8 +46,15 @@ struct PolygonCellCoverage
     std::vector<CellInfo> cells;
 };
 
+enum class BorderHandling
+{
+    None,           // No specific border logic
+    AdjustCoverage, // The coverage is divided over the polygons in a border cell (e.g Polygon1: 30%, Polygon2: 30%, 40% No intersections -> Polygon 1 and 2 are adjusted to 50%)
+};
+
 std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata& outputExtent,
                                                           gdal::VectorDataSet& vectorDs,
+                                                          BorderHandling borderHandling,
                                                           std::variant<std::string, double> burnValue,
                                                           const std::string& attributeFilter,
                                                           const std::string& inputLayer,

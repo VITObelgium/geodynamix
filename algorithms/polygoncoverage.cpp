@@ -136,8 +136,66 @@ static PolygonCellCoverage create_polygon_coverage(uint64_t /*polygonId*/,
 }
 #endif
 
+std::vector<gdx::PolygonCellCoverage> process_region_borders(const std::vector<gdx::PolygonCellCoverage>& cellCoverages)
+{
+    std::vector<gdx::PolygonCellCoverage> result;
+    result.reserve(cellCoverages.size());
+
+    for (auto& cov : cellCoverages) {
+        auto& region       = cov.name;
+        auto& outputExtent = cov.outputSubgridExtent;
+        auto& cells        = cov.cells;
+
+        std::vector<gdx::PolygonCellCoverage::CellInfo> modifiedCoverages;
+        modifiedCoverages.reserve(cells.size());
+
+        for (auto& cell : cells) {
+            auto modifiedCoverage = cell;
+
+            if (cell.coverage < 1.0 && cell.coverage > 0.0) {
+                // polygon border, check if there are other polygons in this cell
+                double otherPolygonCoverages = 0;
+
+                for (const auto& testCov : cellCoverages) {
+                    if (testCov.name == region) {
+                        continue;
+                    }
+
+                    // Locate the current cell in the coverage of the other polygon
+                    auto cellIter = std::lower_bound(testCov.cells.begin(), testCov.cells.end(), cell.computeGridCell, [](const gdx::PolygonCellCoverage::CellInfo& cov, Cell c) {
+                        return cov.computeGridCell < c;
+                    });
+
+                    if (cellIter != testCov.cells.end() && cellIter->computeGridCell == cell.computeGridCell) {
+                        // the other polygon covers the cell
+                        otherPolygonCoverages += cellIter->coverage;
+                    }
+                }
+
+                if (otherPolygonCoverages == 0.0) {
+                    // This is the only polygon in the cell, so we get all the coverage
+                    modifiedCoverage.coverage = 1.0;
+                } else {
+                    modifiedCoverage.coverage = cell.coverage / (cell.coverage + otherPolygonCoverages);
+                }
+            }
+
+            modifiedCoverages.push_back(modifiedCoverage);
+        }
+
+        gdx::PolygonCellCoverage cov;
+        cov.name                = region;
+        cov.cells               = std::move(modifiedCoverages);
+        cov.outputSubgridExtent = outputExtent;
+        result.push_back(std::move(cov));
+    }
+
+    return result;
+}
+
 std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata& outputExtent,
                                                           gdal::VectorDataSet& vectorDs,
+                                                          BorderHandling borderHandling,
                                                           std::variant<std::string, double> burnValue,
                                                           const std::string& attributeFilter,
                                                           const std::string& inputLayer,
@@ -212,6 +270,13 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
         });
 
         Log::debug("Create cell coverages took: {}", rec.elapsed_time_string());
+
+        if (borderHandling == BorderHandling::AdjustCoverage) {
+            // Update the coverages on the polygon borders to get appropriate coverage values at the edges
+            // E.g a cell on the border that is only covered by 1 polygon for 50% should be modified to 100%
+            // Because the data is only for inside the region
+            result = process_region_borders(result);
+        }
     }
 
     return result;
