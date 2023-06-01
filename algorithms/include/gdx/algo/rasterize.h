@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gdx/algo/polygoncoverage.h"
 #include "gdx/rastermetadata.h"
 #include "infra/cast.h"
 #include "infra/filesystem.h"
@@ -108,6 +109,7 @@ struct RasterizePolygonOptions
     inf::GeoMetadata outputMeta;
     std::string inputLayer;      // if empty, the first layer will be used
     std::string attributeFilter; // if empty, no filtering is applied
+    BorderHandling borderHandling = BorderHandling::None;
     inf::ProgressInfo::Callback progressCb;
 };
 
@@ -115,7 +117,7 @@ template <typename RasterType>
 RasterType rasterize_polygons(inf::gdal::VectorDataSet& vectorDs, const RasterizePolygonOptions& options)
 {
     using T              = typename RasterType::value_type;
-    const auto coverages = internal::create_polygon_coverages(options.outputMeta, vectorDs, options.burnValue, options.featureFilter, options.inputLayer, options.progressCb);
+    const auto coverages = create_polygon_coverages(options.outputMeta, vectorDs, options.borderHandling, options.burnValue, options.attributeFilter, options.inputLayer, "", options.progressCb);
 
     RasterType result(options.outputMeta, inf::truncate<T>(options.outputMeta.nodata.value_or(0.0)));
     for (const auto& polygonCov : coverages) {
