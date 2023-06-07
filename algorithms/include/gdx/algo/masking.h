@@ -11,13 +11,21 @@
 namespace gdx {
 
 template <typename RasterType, typename MaskType>
-void apply_mask(RasterType& ras, const MaskType& mask)
+void apply_mask_in_place(RasterType& ras, const MaskType& mask)
 {
     gdx::for_each_optional_value(ras, mask, [&](auto& rasterValue, auto& maskValue) {
         if (maskValue.is_nodata()) {
             rasterValue.reset();
         }
     });
+}
+
+template <typename RasterType, typename MaskType>
+RasterType apply_mask(const RasterType& ras, const MaskType& mask)
+{
+    RasterType result = ras.copy();
+    apply_mask_in_place(result, mask);
+    return result;
 }
 
 template <typename RasterType, typename MaskType>
