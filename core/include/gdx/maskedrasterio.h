@@ -69,7 +69,7 @@ MaskedRaster<T> warp_raster(MaskedRaster<T>& raster, int32_t destCrs)
     auto destMeta = inf::gdal::warp_metadata(raster.metadata(), destCrs);
     MaskedRaster<T> result(destMeta, inf::truncate<T>(*destMeta.nodata));
     raster.collapse_data();
-    inf::gdal::io::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata());
+    inf::gdal::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata());
     result.init_nodata_values();
     return result;
 }
@@ -86,7 +86,7 @@ MaskedRaster<T> resample_raster(MaskedRaster<T>& raster, const RasterMetadata& m
     }
 
     MaskedRaster<T> result(destMeta, inf::truncate<T>(destMeta.nodata.value_or(0.0)));
-    inf::gdal::io::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata(), algo);
+    inf::gdal::warp_raster<T, T>(raster, raster.metadata(), result, result.metadata(), algo);
     result.init_nodata_values();
     return result;
 }

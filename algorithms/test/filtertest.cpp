@@ -27,7 +27,7 @@ TEST_CASE_TEMPLATE("filter", TypeParam, RasterFloatTypes)
         })));
         // clang-format on
 
-        auto actual = filter<Raster>(ras, FilterMode::Constant, 1);
+        auto actual = filter<Raster>(ras, FilterMode::Constant, 1, false);
         CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 10e-5);
         CHECK(sum(actual) == Approx(sum(ras)).epsilon(10e-5));
     }
