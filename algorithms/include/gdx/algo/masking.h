@@ -21,7 +21,7 @@ void apply_mask_in_place(RasterType& ras, const MaskType& mask)
 }
 
 template <typename RasterType, typename MaskType>
-RasterType apply_mask(const RasterType& ras, const MaskType& mask)
+[[nodiscard]] RasterType apply_mask(const RasterType& ras, const MaskType& mask)
 {
     RasterType result = ras.copy();
     apply_mask_in_place(result, mask);
