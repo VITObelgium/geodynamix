@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
 
         auto result = cli.parse(cli::args(argc, argv));
         if (!result) {
-            fmt::print(fg(fmt::color::red), "Error in command line: {}", result.errorMessage());
+            fmt::print(fg(fmt::color::red), "Error in command line: {}", result.message());
             return EXIT_FAILURE;
         }
 

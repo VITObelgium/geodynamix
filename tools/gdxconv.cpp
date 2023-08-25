@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
                            options.type = s;
                            return cli::parser_result::ok(cli::parser_result_type::matched);
                        } else {
-                           return cli::parser_result::runtimeError(cli::parser_result_type::no_match, "Type must match : byte|int|float|double");
+                           return cli::parser_result::error(cli::parser_result_type::no_match, "Type must match : byte|int|float|double");
                        }
                    },
                             "type")["-t"]["--type"]("Change type (byte, int, float, double)") |
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
         auto result = cli.parse(cli::args(argc, argv));
         if (!result) {
-            Log::error("Error in command line: {}", result.errorMessage());
+            Log::error("Error in command line: {}", result.message());
             return EXIT_FAILURE;
         }
 

@@ -7,6 +7,7 @@
 
 namespace gdx::test {
 
+using namespace inf;
 using namespace doctest;
 
 static const std::vector<std::vector<float>> s_expectedRows = {
@@ -27,12 +28,12 @@ TEST_CASE("ShapeIOTest")
     {
         SUBCASE("readTabDataAsRows")
         {
-            data = detail::read_tab_data_row_based(fs::u8path(TEST_DATA_DIR) / "testtabfile.tab");
+            data = detail::read_tab_data_row_based(file::u8path(TEST_DATA_DIR) / "testtabfile.tab");
         }
 
         SUBCASE("readCsvDataAsRows")
         {
-            data = detail::read_csv_data_row_based(TEST_DATA_DIR "/testtabfile.csv");
+            data = detail::read_csv_data_row_based(file::u8path(TEST_DATA_DIR) / "testtabfile.csv");
         }
 
         REQUIRE(data.size() == s_expectedRows.size());
@@ -45,12 +46,12 @@ TEST_CASE("ShapeIOTest")
     {
         SUBCASE("readTabDataAsColumns")
         {
-            data = detail::read_tab_data_column_based(fs::u8path(TEST_DATA_DIR) / "testtabfile.tab");
+            data = detail::read_tab_data_column_based(file::u8path(TEST_DATA_DIR) / "testtabfile.tab");
         }
 
         SUBCASE("readCsvDataAsColumns")
         {
-            data = detail::read_csv_data_column_based(TEST_DATA_DIR "/testtabfile.csv");
+            data = detail::read_csv_data_column_based(file::u8path(TEST_DATA_DIR) / "testtabfile.csv");
         }
 
         REQUIRE(data.size() == s_expectedCols.size());

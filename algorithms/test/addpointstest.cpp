@@ -5,10 +5,12 @@
 
 namespace gdx::test {
 
+using namespace inf;
+
 TEST_CASE("AddPoints.addPointsWeiss")
 {
     RasterMetadata meta(5, 5, 0, 0, 100, 0);
-    inf::gdal::VectorDataSet shapes = inf::gdal::VectorDataSet::open(fs::u8path(TEST_DATA_DIR) / "addpoints.shp", gdal::VectorType::ShapeFile);
+    inf::gdal::VectorDataSet shapes = inf::gdal::VectorDataSet::open(file::u8path(TEST_DATA_DIR) / "addpoints.shp", gdal::VectorType::ShapeFile);
     auto actual                     = gdx::add_points<float, DenseRaster>(shapes.layer(0), "value", meta);
 
     DenseRaster<float> expected(meta, std::vector<float>{
