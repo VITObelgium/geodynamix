@@ -22,7 +22,7 @@ namespace gdx {
 */
 
 template <typename ResultType, template <typename> typename RasterType, typename T>
-std::vector<RasterType<ResultType>> distribute(const RasterType<T>& raster, gsl::span<const float> proportions)
+std::vector<RasterType<ResultType>> distribute(const RasterType<T>& raster, std::span<const float> proportions)
 {
     std::vector<RasterType<ResultType>> result;
     result.reserve(proportions.size());
