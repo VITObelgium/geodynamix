@@ -130,7 +130,6 @@ if (NOT CMAKE_COMPILER_IS_GNUCXX) # gcc pstl is not compatible with recent tbb l
     check_cxx_symbol_exists(std::execution::par "execution" GDX_HAVE_PAR_EXECUTION)
 endif ()
 
-find_package(Gsl REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
