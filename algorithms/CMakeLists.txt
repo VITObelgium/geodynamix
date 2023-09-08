@@ -34,7 +34,6 @@ set(GDXALGO_PUBLIC_HEADERS
     include/gdx/algo/multiresolution.h
     include/gdx/algo/nodata.h
     include/gdx/algo/normalise.h
-    include/gdx/algo/polygoncoverage.h
     include/gdx/algo/propdist.h
     include/gdx/algo/random.h
     include/gdx/algo/rasterize.h
@@ -53,16 +52,23 @@ set(GDXALGO_PUBLIC_HEADERS
     include/gdx/algo/weightedsum.h
 )
 
+if(TARGET GEOS::geos)
+    list(APPEND GDXALGO_PUBLIC_HEADERS include/gdx/algo/polygoncoverage.h)
+endif()
+
 add_library(gdxalgo
     ${GDXALGO_PUBLIC_HEADERS}
     accuflux.cpp
-    polygoncoverage.cpp
     reclass.cpp
     rasterizelineantialiased.cpp
     shape.cpp
     suminbuffer.cpp
     categoryio.cpp
 )
+
+if(TARGET GEOS::geos)
+    target_sources(gdxalgo polygoncoverage.cpp)
+endif()
 
 add_library(geodynamix::gdxalgo ALIAS gdxalgo)
 
