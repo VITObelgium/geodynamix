@@ -2,6 +2,7 @@
 
 #include "gdx/sparseraster.h"
 #include "infra/filesystem.h"
+#include "infra/gdalalgo.h"
 #include "infra/gdalio.h"
 
 namespace gdx {
@@ -43,7 +44,7 @@ template <typename RasterDataType>
 SparseRaster<RasterDataType> warp_raster(const SparseRaster<RasterDataType>& raster, int32_t destCrs)
 {
     SparseRaster<RasterDataType> result;
-    result.set_metadata(inf::gdal::io::warp_raster(raster, raster.metadata(), destCrs, result));
+    result.set_metadata(inf::gdal::warp_raster(raster, raster.metadata(), destCrs, result));
     return result;
 }
 }
