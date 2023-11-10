@@ -41,13 +41,13 @@ if __name__ == "__main__":
             triplet = vcpkg.prompt_for_triplet()
 
         cmake_args = [
-            "-DINFRA_EMBED_GDAL_DATA=ON",
+            "-DINFRA_EMBED_GDAL_DATA=OFF",
             "-DGDX_ENABLE_TESTS=ON",
             "-DGDX_PYTHON_BINDINGS=ON",
             "-DGDX_ENABLE_TOOLS=ON",
             "-DGDX_ENABLE_BENCHMARKS=ON",
             "-DGDX_ENABLE_SIMD=ON",
-            "-DGDX_ENABLE_GEOMETRY=ON"
+            "-DGDX_ENABLE_GEOMETRY=ON",
         ]
 
         if not args.no_avx2 and not "arm" in sys_platform:
@@ -55,11 +55,6 @@ if __name__ == "__main__":
 
         if args.python_path:
             cmake_args.append(f"-DPython3_EXECUTABLE={args.python_path}")
-
-        if args.parent:
-            del vcpkg
-            sys.path.insert(0, os.path.join("..", "vcpkg-ports", "scripts"))
-            from buildtools import vcpkg
 
         if args.build_dist:
             vcpkg.build_project_release(

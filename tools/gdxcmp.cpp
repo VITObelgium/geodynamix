@@ -27,7 +27,7 @@ bool compareRasters(const gdx::Raster& raster1, const gdx::Raster& raster2, floa
     return std::visit([tolerance, verbose](auto&& r1, auto&& r2) {
         auto diff = gdx::diff_rasters(r1, r2, tolerance);
 
-        if (diff.differentCells() == 0) {
+        if (diff.different_cells() == 0) {
             fmt::print(fg(fmt::color::green), "Rasters are equal!\n");
             return true;
         }

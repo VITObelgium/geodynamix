@@ -67,7 +67,7 @@ add_library(gdxalgo
 )
 
 if(TARGET GEOS::geos)
-    target_sources(gdxalgo polygoncoverage.cpp)
+    target_sources(gdxalgo PRIVATE polygoncoverage.cpp)
 endif()
 
 add_library(geodynamix::gdxalgo ALIAS gdxalgo)
@@ -83,27 +83,26 @@ target_link_libraries(gdxalgo PUBLIC
     $<TARGET_NAME_IF_EXISTS:OpenMP::OpenMP_CXX>
 )
 
-if (GDX_ENABLE_GEOMETRY)
+if(GDX_ENABLE_GEOMETRY)
     target_link_libraries(gdxalgo PRIVATE GEOS::geos)
-endif ()
+endif()
 
 set_target_properties(gdxalgo PROPERTIES PUBLIC_HEADER "${GDXALGO_PUBLIC_HEADERS}")
 target_compile_definitions(gdxalgo
-PUBLIC
+    PUBLIC
     $<$<BOOL:${GDX_ENABLE_GEOMETRY}>:GDX_HAVE_GEOS>
-PRIVATE
+    PRIVATE
     $<$<BOOL:${GDX_HAVE_PAR_EXECUTION}>:GDX_HAVE_PAR_EXECUTION>
 )
 
-
-if (GDX_INSTALL_DEVELOPMENT_FILES)
+if(GDX_INSTALL_DEVELOPMENT_FILES)
     install(TARGETS gdxalgo EXPORT geodynamix-targets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx/algo
     )
-endif ()
+endif()
 
-if (GDX_ENABLE_TESTS)
+if(GDX_ENABLE_TESTS)
     add_subdirectory(test)
-endif ()
+endif()
