@@ -11,13 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "windows-latest"]
+        os: ["ubuntu-latest", "windows-2022"]
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: build
@@ -25,7 +25,7 @@ jobs:
       - name: create meta.yaml
         run: python
       - name: Setup conda forge
-        if: ${{ matrix.cfg.os == 'windows-latest' }}
+        if: ${{ matrix.cfg.os == 'windows-2022' }}
         run: |
           conda config --add channels conda-forge
           conda config --set channel_priority strict
