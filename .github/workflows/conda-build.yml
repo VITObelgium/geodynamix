@@ -21,11 +21,10 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: build
-          python-version: 3.8
+          python-version: "3.10"
       - name: create meta.yaml
         run: python
       - name: Setup conda forge
-        if: ${{ matrix.cfg.os == 'windows-2022' }}
         run: |
           conda config --add channels conda-forge
           conda config --set channel_priority strict
