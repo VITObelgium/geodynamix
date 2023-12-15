@@ -15,21 +15,35 @@ TEST_CASE_TEMPLATE("filter", TypeParam, RasterFloatTypes)
 
     SUBCASE("filterConstant")
     {
-        // clang-format off
-        const Raster ras(RasterMetadata(2, 3, -1.0), convertTo<T>(std::vector<double>({
-            1, 1, 1,
-            1, 1, 2,
-        })));
+        const Raster ras(RasterMetadata(2, 3, -1.0), convertTo<T>(std::vector<double>({1, 1, 1,
+                                                                                       1, 1, 2})));
 
-        const Raster expected(ras.metadata(), convertTo<T>(std::vector<double>({
-            1.0/3.0 + 1.0/4.0 + 1.0/3.0, 1.0/3.0 + 1.0/4.0 + 1.0/3.0 + 1.0 / 4.0, 1.0 / 4.0 + 1.0 / 3.0 + 2.0 / 3.0,
-            1.0/3.0 + 1.0/4.0 + 1.0/3.0, 1.0/3.0 + 1.0/4.0 + 2.0/3.0 + 1.0 / 4.0, 1.0 / 4.0 + 2.0 / 3.0 + 1.0 / 3.0,
-        })));
-        // clang-format on
+        SUBCASE("normalize = true")
+        {
+            // clang-format off
+            const Raster expected(ras.metadata(), convertTo<T>(std::vector<double>({
+                1.0/3.0 + 1.0/4.0 + 1.0/3.0, 1.0/3.0 + 1.0/4.0 + 1.0/3.0 + 1.0 / 4.0, 1.0 / 4.0 + 1.0 / 3.0 + 2.0 / 3.0,
+                1.0/3.0 + 1.0/4.0 + 1.0/3.0, 1.0/3.0 + 1.0/4.0 + 2.0/3.0 + 1.0 / 4.0, 1.0 / 4.0 + 2.0 / 3.0 + 1.0 / 3.0
+            })));
+            // clang-format on
 
-        auto actual = filter<Raster>(ras, FilterMode::Constant, 1, false);
-        CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 10e-5);
-        CHECK(sum(actual) == Approx(sum(ras)).epsilon(10e-5));
+            auto actual = filter<Raster>(ras, FilterMode::Constant, 1, true);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 10e-5);
+            CHECK(sum(actual) == Approx(sum(ras)).epsilon(10e-5));
+        }
+
+        SUBCASE("normalize = false")
+        {
+            // clang-format off
+            const Raster expected(ras.metadata(), convertTo<T>(std::vector<double>({
+                1.0 + 1.0 + 1.0, 1.0 + 1.0 + 1.0 + 1.0, 1.0 + 1.0 + 2.0 ,
+                1.0 + 1.0 + 1.0, 1.0 + 1.0 + 2.0 + 1.0, 1.0 + 2.0 + 1.0 
+            })));
+            // clang-format on
+
+            auto actual = filter<Raster>(ras, FilterMode::Constant, 1, false);
+            CHECK_RASTER_NEAR_WITH_TOLERANCE(expected, actual, 10e-5);
+        }
     }
 
     SUBCASE("averageFilterSquare")
