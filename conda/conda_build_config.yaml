@@ -1,5 +1,8 @@
+c_compiler:
+  - vs2022 # [win]
+
 cxx_compiler:
-  - vs2019 # [win]
+  - vs2022 # [win]
 
 target_platform:
   - win-64 # [win]
@@ -8,7 +11,7 @@ vc:
   - 14 # [win]
 
 python:
-  - 3.8
   - 3.9
   - 3.10
+  - 3.11
   
