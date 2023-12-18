@@ -86,6 +86,7 @@ cmake ^
     -Ddate_DIR="%SRC_DIR%\thirdparty\local\CMake" ^
     -Dfmt_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\fmt" ^
     -Dspdlog_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\spdlog" ^
+    -DMicrosoft.GSL_DIR="%SRC_DIR%\thirdparty\local\share\cmake\Microsoft.GSL" ^
     -DGDX_ENABLE_OPENMP=OFF ^
     -DGDX_AVX2=OFF ^
     -DGDX_ENABLE_SIMD=OFF ^
@@ -98,7 +99,7 @@ cmake ^
     -DGDX_INSTALL_DEVELOPMENT_FILES=OFF ^
     -DPython3_ROOT_DIR="%PREFIX%" ^
     -DPython3_FIND_VIRTUALENV=ONLY ^
-    --trace ^
-    ..
+    --debug-find-pkg=Microsoft.GSL ^
+    -S .. -B .
 if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
 cmake --build . --target install
