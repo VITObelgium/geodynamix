@@ -7,7 +7,7 @@ mkdir -p ${SRC_DIR}/thirdparty/local/share/cmake
 
 cd ${SRC_DIR}/thirdparty
 
-git clone --branch 8.1.1 --depth 1 https://github.com/fmtlib/fmt.git
+git clone --branch 9.1.0 --depth 1 https://github.com/fmtlib/fmt.git
 git clone --branch v1.10.0 --depth 1 https://github.com/gabime/spdlog.git
 git clone --branch v4.0.0 --depth 1 https://github.com/Microsoft/GSL.git
 git clone --branch v3.0.1 --depth 1 https://github.com/HowardHinnant/date

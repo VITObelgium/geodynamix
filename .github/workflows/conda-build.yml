@@ -11,22 +11,26 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "windows-latest"]
+        os: ["ubuntu-latest", "windows-2022"]
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           activate-environment: build
-          python-version: 3.8
+          python-version: "3.10"
       - name: create meta.yaml
         run: python
-      - name: Install build requirement
-        run: conda install conda-build jinja2
+      - name: Setup conda forge
+        run: |
+          conda config --add channels conda-forge
+          conda config --set channel_priority strict
+      - name: Install build requirements
+        run: conda install mamba boa jinja2
       - name: Generate package metadata
         run: python ./conda/metagen.py
       - name: Build conda package
-        run: conda build ./conda
+        run: conda mambabuild ./conda

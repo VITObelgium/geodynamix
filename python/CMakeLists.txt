@@ -24,9 +24,9 @@ add_library(gdxpy MODULE
     ${PYTHON_TESTS}
 )
 
-if (WIN32)
+if(WIN32)
     target_sources(gdxpy PRIVATE ${CMAKE_BINARY_DIR}/version.rc)
-endif ()
+endif()
 
 target_include_directories(gdxpy
     PRIVATE ${PYTHON_INCLUDE_DIRS}
@@ -41,17 +41,16 @@ target_link_libraries(gdxpy PRIVATE
     gdxcore
     gdxalgo
     pybind11::module
-    Gsl::Gsl
 )
 
-if (TARGET OpenMP::OpenMP_CXX)
+if(TARGET OpenMP::OpenMP_CXX)
     target_link_libraries(gdxpy PRIVATE OpenMP::OpenMP_CXX)
-endif ()
+endif()
 
-if (MINGW AND NOT PYTHON_MODULE_EXTENSION)
+if(MINGW AND NOT PYTHON_MODULE_EXTENSION)
     # detection of module extension does not seem to work on MINGW
     set(PYTHON_MODULE_EXTENSION -cpython-${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}m.dll)
-endif ()
+endif()
 
 message(STATUS "Python extension: ${PYTHON_MODULE_EXTENSION}")
 
@@ -62,11 +61,11 @@ set_target_properties(gdxpy PROPERTIES
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
 
-if (UNIX)
+if(UNIX)
     set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
-else ()
+else()
     set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
-endif ()
+endif()
 
 install(TARGETS gdxpy
     LIBRARY DESTINATION ${INSTALL_DIR}

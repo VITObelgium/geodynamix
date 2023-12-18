@@ -174,7 +174,7 @@ public:
 
     void set_metadata(RasterMetadata meta)
     {
-        if (meta.rows * meta.cols != ssize()) {
+        if (int64_t(meta.rows) * int64_t(meta.cols) != ssize()) {
             throw InvalidArgument("Cannot change metadata: invalid size");
         }
 
@@ -891,7 +891,7 @@ private:
 
     static void throw_on_datasize_mismatch(int32_t rows, int32_t cols, size_t dataSize)
     {
-        if (static_cast<size_t>(rows * cols) != dataSize) {
+        if (size_t(rows) * size_t(cols) != dataSize) {
             throw InvalidArgument("Raster data size does not match provided dimensions {} vs {}x{}", dataSize, rows, cols);
         }
     }
@@ -905,10 +905,10 @@ private:
             result.set_nodata(static_cast<double>(std::numeric_limits<uint8_t>::max()));
         }
 
-        auto pred          = BinaryPredicate<T>();
-        const int32_t size = static_cast<int32_t>(result.size());
+        auto pred       = BinaryPredicate<T>();
+        const auto size = result.size();
 #pragma omp parallel for
-        for (int32_t i = 0; i < size; ++i) {
+        for (std::size_t i = 0; i < size; ++i) {
             result[i] = pred(_data(i), static_cast<T>(value));
         }
         return result;

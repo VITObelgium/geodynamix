@@ -660,13 +660,13 @@ Raster Raster::read(const fs::path& fileName, const std::type_info& type, const 
 
 Raster Raster::readFromMemory(const fs::path& path, std::span<const uint8_t> data)
 {
-    inf::gdal::MemoryFile memFile(path.u8string(), data);
+    inf::gdal::MemoryFile memFile(path, data);
     return read(path);
 }
 
 Raster Raster::readFromMemory(const fs::path& path, std::span<const uint8_t> data, const std::type_info& type)
 {
-    inf::gdal::MemoryFile memFile(path.u8string(), data);
+    inf::gdal::MemoryFile memFile(path, data);
     return read(path, type);
 }
 

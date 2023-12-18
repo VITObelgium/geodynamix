@@ -8,7 +8,7 @@ mkdir %SRC_DIR%\thirdparty
 
 cd %SRC_DIR%\thirdparty
 
-git clone --branch 8.1.1 --depth 1 https://github.com/fmtlib/fmt.git
+git clone --branch 9.1.0 --depth 1 https://github.com/fmtlib/fmt.git
 git clone --branch v1.10.0 --depth 1 https://github.com/gabime/spdlog.git
 git clone --branch v4.0.0 --depth 1 https://github.com/Microsoft/GSL.git
 git clone --branch v3.0.1 --depth 1 https://github.com/HowardHinnant/date
@@ -86,6 +86,7 @@ cmake ^
     -Ddate_DIR="%SRC_DIR%\thirdparty\local\CMake" ^
     -Dfmt_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\fmt" ^
     -Dspdlog_DIR:PATH="%SRC_DIR%\thirdparty\local\lib\cmake\spdlog" ^
+    -DMicrosoft.GSL_DIR="%SRC_DIR%\thirdparty\local\share\cmake\Microsoft.GSL" ^
     -DGDX_ENABLE_OPENMP=OFF ^
     -DGDX_AVX2=OFF ^
     -DGDX_ENABLE_SIMD=OFF ^
@@ -98,6 +99,7 @@ cmake ^
     -DGDX_INSTALL_DEVELOPMENT_FILES=OFF ^
     -DPython3_ROOT_DIR="%PREFIX%" ^
     -DPython3_FIND_VIRTUALENV=ONLY ^
-    ..
+    --debug-find-pkg=Microsoft.GSL ^
+    -S .. -B .
 if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
 cmake --build . --target install

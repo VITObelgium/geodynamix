@@ -19,14 +19,12 @@ if __name__ == "__main__":
             else args.triplet
         )
 
-        overlay_ports = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "deps", "overlay-ports")
-        )
-
-        if args.parent:
-            del vcpkg
-            sys.path.insert(0, os.path.join("..", "vcpkg-ports", "scripts"))
-            from buildtools import vcpkg
+        build_root = None
+        if platform == "win-amd64":
+            if os.path.isdir("c:/DEV/bld"):
+                build_root = (
+                    "c:/DEV/bld"  # avoid long path issues by using a short build path
+                )
 
         if args.clean:
             vcpkg.clean(triplet=triplet)
@@ -34,7 +32,7 @@ if __name__ == "__main__":
             vcpkg.bootstrap(
                 ports_dir=os.path.join(".", "deps"),
                 triplet=triplet,
-                overlay_ports=overlay_ports,
+                build_root=build_root,
             )
     except KeyboardInterrupt:
         print("\nInterrupted")

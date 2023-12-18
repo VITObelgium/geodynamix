@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <set>
 #include <sstream>
 #include <unordered_set>
 
@@ -80,7 +81,7 @@ RasterStats<HistogramValues> statistics(const RasterType& ras, double maxValue)
         stats.highestValue = std::max(stats.highestValue, static_cast<double>(value));
         stats.lowestValue  = std::min(stats.lowestValue, static_cast<double>(value));
 
-        int32_t intValue = static_cast<int>(value);
+        auto intValue = static_cast<int32_t>(value);
 
         if (intValue < 0) {
             ++stats.negativeValues;
@@ -105,19 +106,31 @@ RasterStats<HistogramValues> statistics(const RasterType& ras, double maxValue)
     return stats;
 }
 
-template <typename RasterType, template <typename> typename ResultType = std::unordered_set>
-auto unique_raster_values(const RasterType& ras)
+template <typename RasterType, typename MapType>
+auto unique_raster_values(const RasterType& ras, MapType& map)
 {
-    ResultType<typename std::decay_t<RasterType>::value_type> result;
-
     for (std::size_t i = 0; i < ras.size(); ++i) {
         if (ras.is_nodata(i)) {
             continue;
         }
 
-        result.insert(ras[i]);
+        map.insert(ras[i]);
     }
+}
 
+template <typename RasterType, template <typename> typename ResultType = std::unordered_set>
+auto unique_raster_values(const RasterType& ras)
+{
+    ResultType<typename std::decay_t<RasterType>::value_type> result;
+    unique_raster_values(ras, result);
+    return result;
+}
+
+template <typename RasterType>
+auto unique_raster_values_set(const RasterType& ras)
+{
+    std::set<typename std::decay_t<RasterType>::value_type> result;
+    unique_raster_values(ras, result);
     return result;
 }
 

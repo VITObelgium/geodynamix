@@ -1,0 +1,45 @@
+name: Publish Release
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build source archive
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install osx dependencies
+        if: ${{ matrix.cfg.os == 'macos-latest' }}
+        run: brew install nasm ninja
+      - name: Cache vcpkg binary
+        id: cache-vcpkg-bin
+        uses: actions/cache@v2
+        with:
+          path: |
+            deps/vcpkg/vcpkg
+            deps/vcpkg/vcpkg.exe
+          key: ${{ runner.os }}-${{ hashFiles('deps/vcpkg/bootstrap.cmake') }}
+      - name: Cache vcpkg packages
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/vcpkg
+            ~/AppData/Local/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.cfg.triplet }}-${{ hashFiles('vcpkg.json', '.git/modules/deps/vcpkg/shallow') }}
+      - name: Bootstrap the ports
+        run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
+      - name: Build the code
+        run: python build.py --dist --triplet ${{ matrix.cfg.triplet }} --no-avx2 --run-tests
+  release:
+    name: Publish the release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/x64-linux/geodynamix-*.*"
+          artifactErrorsFailBuild: true
+          token: ${{ secrets.GITHUB_TOKEN }}

@@ -137,7 +137,7 @@ DenseRaster<T> warp_raster(const DenseRaster<T>& raster, const std::string& dest
     auto destMeta = inf::gdal::warp_metadata(srcMeta, destProjection);
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(*destMeta.nodata));
-    inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
+    inf::gdal::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
     return result;
 }
 
@@ -165,7 +165,7 @@ DenseRaster<T> resample_raster(const DenseRaster<T>& raster, const RasterMetadat
     }
 
     DenseRaster<T> result(destMeta, inf::truncate<T>(destMeta.nodata.value_or(0.0)));
-    inf::gdal::io::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
+    inf::gdal::warp_raster<T, T>(raster, srcMeta, result, result.metadata(), algo);
     result.init_nodata_values();
     return result;
 }

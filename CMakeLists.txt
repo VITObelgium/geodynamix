@@ -1,15 +1,17 @@
 set(PACKAGE_VERSION_COMMITHASH "dev" CACHE STRING "git commit hash")
-if (PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
+
+if(PACKAGE_VERSION_COMMITHASH STREQUAL "dev")
     set(GDX_DEV_BUILD 1)
-else ()
+else()
     set(GDX_DEV_BUILD 0)
-endif ()
+endif()
 
 enable_testing()
 
 include(CTestUseLaunchers)
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
+include(CheckCXXSymbolExists)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
@@ -20,11 +22,12 @@ option(GDX_ENABLE_TOOLS "Build the gdx tools" ON)
 option(GDX_ENABLE_TESTS "Build the c++ unit tests" OFF)
 option(GDX_ENABLE_TEST_UTILS "Build the unit test utilities" ${GDX_ENABLE_TESTS})
 option(GDX_ENABLE_BENCHMARKS "Build the micro benchmarks" OFF)
+option(GDX_ENABLE_GEOMETRY "Build against geos for geometry processing" OFF)
 option(GDX_PYTHON_BINDINGS "Build python bindings" OFF)
 option(GDX_INSOURCE_DEPS "Use submodules for internal dependencies" ON)
 option(GDX_INSTALL_DEVELOPMENT_FILES "Install the gdx development files (headers/libs)" ${GDX_IS_TOPLEVEL})
 
-if (GDX_IS_TOPLEVEL)
+if(GDX_IS_TOPLEVEL)
     option(ENABLE_ADDRESS_SANITIZER "Enable the address sanitizer" OFF)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
 
@@ -34,22 +37,24 @@ if (GDX_IS_TOPLEVEL)
     set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
     project(GeoDynamiX
-        VERSION 0.14.1
+        VERSION 0.14.4
         LANGUAGES C CXX
     )
     set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
     include(GNUInstallDirs)
 
-    set (LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
     message(STATUS "Gdx version: ${GDX_VERSION} (${PACKAGE_VERSION_COMMITHASH})")
     message(STATUS "Unit tests: ${GDX_ENABLE_TESTS}")
     message(STATUS "Address sanitizer: ${ENABLE_ADDRESS_SANITIZER}")
     message(STATUS "Undefined behavior sanitizer: ${ENABLE_UB_SANITIZER}")
 
-    if (MSVC)
+    if(MSVC)
         add_compile_options(/Zc:twoPhase- /permissive- /bigobj /w34100 /w34101 /w35038 /w34127)
+
         # avoid windows specific warnings
         add_compile_definitions(
             _CRT_SECURE_NO_WARNINGS
@@ -64,38 +69,38 @@ if (GDX_IS_TOPLEVEL)
         set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:LIBCMT")
         set(CMAKE_STATIC_LINKER_FLAGS_DEBUG "${CMAKE_STATIC_LINKER_FLAGS_DEBUG} /NODEFAULTLIB:MSVCRT /NODEFAULTLIB:LIBCMT")
 
-        # Enable faster linking for debug builds
-        set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-        set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-        set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
-    else ()
+    # Enable faster linking for debug builds
+    # set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
+    # set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
+    # set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /DEBUG:FASTLINK")
+    else()
         add_compile_options(
             -Wall -Wextra -Wpedantic -Wfatal-errors -Wno-unknown-pragmas
             $<$<CXX_COMPILER_ID:GNU>:-Wno-maybe-uninitialized>
             $<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>
             $<$<CXX_COMPILER_ID:Clang>:-fcolor-diagnostics>
         )
-    endif ()
+    endif()
 
-    if (NOT MSVC AND ENABLE_ADDRESS_SANITIZER)
+    if(NOT MSVC AND ENABLE_ADDRESS_SANITIZER)
         add_compile_options($<$<CONFIG:Debug>:-O1 -fno-optimize-sibling-calls -fno-omit-frame-pointer -fsanitize=address>)
-        set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
-        set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
-        set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
+        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
+        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
+        set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address -fno-optimize-sibling-calls")
 
-        if (${CMAKE_COMPILER_IS_GNUCXX})
-            set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -static-libasan")
-            set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -static-libasan")
-            set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -static-libasan")
-        endif ()
-    endif ()
+        if(${CMAKE_COMPILER_IS_GNUCXX})
+            set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -static-libasan")
+            set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -static-libasan")
+            set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -static-libasan")
+        endif()
+    endif()
 
-    if (NOT MSVC AND ENABLE_UB_SANITIZER)
+    if(NOT MSVC AND ENABLE_UB_SANITIZER)
         add_compile_options($<$<CONFIG:Debug>:-fsanitize=undefined>)
-        set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
-        set (CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
-        set (CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
-    endif ()
+        set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
+        set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
+        set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} -fsanitize=undefined")
+    endif()
 
     write_basic_package_version_file("GeodynamixConfigVersion.cmake"
         VERSION ${GDX_VERSION}
@@ -107,89 +112,98 @@ if (GDX_IS_TOPLEVEL)
         INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
     )
 
-    if (GDX_INSTALL_DEVELOPMENT_FILES)
+    if(GDX_INSTALL_DEVELOPMENT_FILES)
         install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/GeodynamixConfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/GeodynamixConfigVersion.cmake
             DESTINATION ${INSTALL_CONFIGDIR}
         )
-    endif ()
-endif ()
+    endif()
+endif()
 
-if (MINGW OR UNIX)
+if(MINGW OR UNIX)
     set(CMAKE_SHARED_LIBRARY_PREFIX "")
-endif ()
+endif()
 
-if (MINGW)
+if(MINGW)
     add_definitions("-DMINGW_HAS_SECURE_API")
-endif ()
+endif()
 
-find_package(Gsl REQUIRED)
+if(NOT CMAKE_COMPILER_IS_GNUCXX) # gcc pstl is not compatible with recent tbb libraries
+    check_cxx_symbol_exists(std::execution::par "execution" GDX_HAVE_PAR_EXECUTION)
+endif()
+
 find_package(Eigen3 REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-if (GDX_ENABLE_OPENMP)
+if(GDX_ENABLE_GEOMETRY)
+    find_package(GEOS CONFIG REQUIRED)
+endif()
+
+if(GDX_ENABLE_OPENMP)
     find_package(OpenMP)
-endif ()
+endif()
 
 message(STATUS "Gdx OpenMP support: ${OpenMP_FOUND}")
 
-if (GDX_ENABLE_TEST_UTILS OR GDX_ENABLE_TESTS)
+if(GDX_ENABLE_TEST_UTILS OR GDX_ENABLE_TESTS)
     find_package(doctest CONFIG REQUIRED)
-endif ()
+endif()
 
-if (GDX_IS_TOPLEVEL)
-    if (GDX_INSOURCE_DEPS)
+if(GDX_IS_TOPLEVEL)
+    if(GDX_INSOURCE_DEPS)
         # gdx is the toplevel project so include the infra dependency
         set(INFRA_LOGGING ON)
         set(INFRA_GDAL ON)
-        set(INFRA_EMBED_GDAL_DATA ON CACHE BOOL "")
+        set(INFRA_EMBED_GDAL_DATA OFF CACHE BOOL "")
         set(INFRA_ENABLE_TESTS ${GDX_ENABLE_TESTS})
         set(INFRA_ENABLE_TEST_UTILS ${GDX_ENABLE_TEST_UTILS})
         set(INFRA_INSTALL_DEVELOPMENT_FILES ${GDX_INSTALL_DEVELOPMENT_FILES})
         add_subdirectory(deps/infra)
-    else ()
+    else()
         find_package(Infra CONFIG REQUIRED)
-        if (GDX_ENABLE_TEST_UTILS)
-            find_package(Infra CONFIG COMPONENTS testutil REQUIRED)
-        endif ()
-    endif ()
-endif ()
 
-if (GDX_ENABLE_TEST_UTILS)
+        if(GDX_ENABLE_TEST_UTILS)
+            find_package(Infra CONFIG COMPONENTS testutil REQUIRED)
+        endif()
+    endif()
+endif()
+
+if(GDX_ENABLE_TEST_UTILS)
     add_subdirectory(testutil)
-endif ()
+endif()
 
 add_subdirectory(common)
 add_subdirectory(core)
 add_subdirectory(algorithms)
 
-if (GDX_PYTHON_BINDINGS)
+if(GDX_PYTHON_BINDINGS)
     find_package(Python3 COMPONENTS Interpreter Development.Module)
     add_subdirectory(python)
     add_subdirectory(test)
-endif ()
+endif()
 
-if (GDX_ENABLE_TOOLS)
+if(GDX_ENABLE_TOOLS)
     add_subdirectory(tools)
-endif ()
+endif()
 
-if (GDX_ENABLE_BENCHMARKS)
+if(GDX_ENABLE_BENCHMARKS)
     find_package(benchmark REQUIRED)
     add_subdirectory(benchmarks)
-endif ()
+endif()
 
-if (EMSCRIPTEN)
+if(EMSCRIPTEN)
     add_subdirectory(js)
-endif ()
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/gdxconfig.h.in ${CMAKE_BINARY_DIR}/gdx/config.h)
-if (WIN32)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
-endif ()
 
-if (GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
+if(WIN32)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
+endif()
+
+if(GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
     install(FILES ${CMAKE_BINARY_DIR}/gdx/config.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/gdx
     )
@@ -199,7 +213,7 @@ if (GDX_IS_TOPLEVEL AND GDX_INSTALL_DEVELOPMENT_FILES)
         NAMESPACE geodynamix::
         DESTINATION ${INSTALL_CONFIGDIR}
     )
-endif ()
+endif()
 
 if (GDX_IS_TOPLEVEL)
 	add_subdirectory(dist)

@@ -8,6 +8,7 @@
         "fmt",
         "spdlog",
         "eigen3",
+        "geos",
         {
             "name": "gdal",
             "features": [

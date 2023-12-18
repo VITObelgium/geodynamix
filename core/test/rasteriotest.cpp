@@ -376,14 +376,18 @@ TEST_CASE("write raster with nodata float")
 
     std::vector<std::string> expected({
         "ncols        5"s,
-        "nrows        3"s,
-        "xllcorner    1.000000000000"s,
-        "yllcorner    -10.000000000000"s,
-        "cellsize     4.000000000000"s,
-        "NODATA_value  -1"s,
-        "0.0 1 2 3 4"s,
-        "5 6 7 8 9"s,
-        "4 3 2 -1 0"s,
+            "nrows        3"s,
+            "xllcorner    1.000000000000"s,
+            "yllcorner    -10.000000000000"s,
+            "cellsize     4.000000000000"s,
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3, 8, 0)
+            "NODATA_value  -1"s,
+#else
+            "NODATA_value -1"s,
+#endif
+            "0.0 1 2 3 4"s,
+            "5 6 7 8 9"s,
+            "4 3 2 -1 0"s,
     });
 
     std::ifstream str("raster.asc");
@@ -395,7 +399,7 @@ TEST_CASE("write raster with nodata float")
     }
 
     REQUIRE(expected.size() == actual.size());
-    CHECK(std::equal(expected.begin(), expected.end(), actual.begin()));
+    CHECK_CONTAINER_EQ(expected, actual);
 }
 
 TEST_CASE_TEMPLATE("raster io", RasterType, RasterIOTypes)
@@ -553,8 +557,8 @@ TEST_CASE("store double dense raster as float, nodata needs adjustment")
     meta.set_cell_size(50);
 
     gdx::DenseRaster<double> ras(meta, std::vector<double>({-1.7976931348623157e+308, 1.0, -1.7976931348623157e+308,
-                                           1.0, 1.0, 1.0,
-                                           -1.7976931348623157e+308, 1.0, -1.7976931348623157e+308}));
+                                                            1.0, 1.0, 1.0,
+                                                            -1.7976931348623157e+308, 1.0, -1.7976931348623157e+308}));
 
     gdx::write_raster(ras, "/vsimem/infraster_double.tif");
     auto floatRas = gdx::read_dense_raster<float>("/vsimem/infraster_double.tif");
@@ -580,8 +584,8 @@ TEST_CASE("store double masked raster as float, nodata needs adjustment")
     meta.set_cell_size(50.0);
 
     gdx::MaskedRaster<double> ras(meta, std::vector<double>({-1.7976931348623157e+308, 1.0, -1.7976931348623157e+308,
-                                            1.0, 1.0, 1.0,
-                                            -1.7976931348623157e+308, 1.0, -1.7976931348623157e+308}));
+                                                             1.0, 1.0, 1.0,
+                                                             -1.7976931348623157e+308, 1.0, -1.7976931348623157e+308}));
 
     gdx::write_raster(ras, "/vsimem/infraster_double.tif");
     auto floatRas = gdx::read_masked_raster<float>("/vsimem/infraster_double.tif");

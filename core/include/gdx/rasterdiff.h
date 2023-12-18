@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cinttypes>
+#include <limits>
+
+#include "gdx/cpupredicates-private.h"
 
 namespace gdx {
 

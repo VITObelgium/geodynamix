@@ -6,6 +6,8 @@
 
 namespace gdx::test {
 
+using namespace inf;
+
 TEST_CASE_TEMPLATE("cluster_id", TypeParam, UnspecializedRasterTypes)
 {
     using FloatRaster = typename TypeParam::template type<float>;
@@ -78,9 +80,9 @@ TEST_CASE_TEMPLATE("cluster_id", TypeParam, UnspecializedRasterTypes)
     {
         IntRaster categories, expected;
         ByteRaster obstacles;
-        gdx::read_raster(fs::u8path(TEST_DATA_DIR) / "clusteridwithobstacles_categories.tif", categories);
-        gdx::read_raster(fs::u8path(TEST_DATA_DIR) / "clusteridwithobstacles_obstacles.tif", obstacles);
-        gdx::read_raster(fs::u8path(TEST_DATA_DIR) / "reference" / "clusteridwithobstacles.tif", expected);
+        gdx::read_raster(file::u8path(TEST_DATA_DIR) / "clusteridwithobstacles_categories.tif", categories);
+        gdx::read_raster(file::u8path(TEST_DATA_DIR) / "clusteridwithobstacles_obstacles.tif", obstacles);
+        gdx::read_raster(file::u8path(TEST_DATA_DIR) / "reference" / "clusteridwithobstacles.tif", expected);
 
         auto res = cluster_id_with_obstacles(categories, obstacles);
 

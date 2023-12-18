@@ -12,6 +12,7 @@
 #include "gdx/config.h"
 #include "gdx/log.h"
 #include "gdx/raster.h"
+#include "infra/gdalalgo.h"
 #include "infra/gdalio.h"
 #include "infra/span.h"
 #include "pythonutils.h"
@@ -42,14 +43,14 @@ using namespace py::literals;
 using namespace inf;
 
 const std::unordered_map<uint8_t, std::tuple<uint8_t, uint8_t, uint8_t>> cm::ldd{{{1, {50, 136, 189}},
-    {2, {102, 194, 165}},
-    {3, {171, 221, 164}},
-    {4, {230, 245, 152}},
-    {5, {255, 255, 191}},
-    {6, {254, 224, 139}},
-    {7, {253, 174, 97}},
-    {8, {244, 109, 67}},
-    {9, {213, 62, 79}}}};
+                                                                                  {2, {102, 194, 165}},
+                                                                                  {3, {171, 221, 164}},
+                                                                                  {4, {230, 245, 152}},
+                                                                                  {5, {255, 255, 191}},
+                                                                                  {6, {254, 224, 139}},
+                                                                                  {7, {253, 174, 97}},
+                                                                                  {8, {244, 109, 67}},
+                                                                                  {9, {213, 62, 79}}}};
 
 template <typename StorageType>
 static auto convertColorDescription(StorageType desc)
@@ -58,8 +59,8 @@ static auto convertColorDescription(StorageType desc)
     for (auto d : desc) {
         auto tup = d.template cast<py::tuple>();
         result.push_back({tup[0].template cast<float>(),
-            tup[1].template cast<float>(),
-            tup[2].template cast<float>()});
+                          tup[1].template cast<float>(),
+                          tup[2].template cast<float>()});
     }
 
     return result;
@@ -104,8 +105,8 @@ static ColorMap convertMatplotlibColorMapToColorMap(py::object colorMap)
                 for (size_t i = 0; i < cmap.size(); ++i) {
                     float pos = i / 255.f;
                     cmap[i]   = Color(static_cast<uint8_t>(pydict["red"](pos).cast<float>() * 255.f),
-                        static_cast<uint8_t>(pydict["green"](pos).cast<float>() * 255.f),
-                        static_cast<uint8_t>(pydict["blue"](pos).cast<float>() * 255.f));
+                                      static_cast<uint8_t>(pydict["green"](pos).cast<float>() * 255.f),
+                                      static_cast<uint8_t>(pydict["blue"](pos).cast<float>() * 255.f));
                 }
                 return ColorMap(cmap);
             }
@@ -120,8 +121,8 @@ static ColorMap convertMatplotlibColorMapToColorMap(py::object colorMap)
         for (auto color : colors) {
             auto tup = color.cast<py::tuple>();
             clist.push_back(Color(static_cast<uint8_t>(std::round(tup[0].cast<float>() * 255.f)),
-                static_cast<uint8_t>(std::round(tup[1].cast<float>() * 255.f)),
-                static_cast<uint8_t>(std::round(tup[2].cast<float>() * 255.f))));
+                                  static_cast<uint8_t>(std::round(tup[1].cast<float>() * 255.f)),
+                                  static_cast<uint8_t>(std::round(tup[2].cast<float>() * 255.f))));
         }
 
         return ColorMap::qualitative(clist);
@@ -142,7 +143,7 @@ std::tuple<double, double> rowColCenterToXY(const gdx::RasterMetadata& meta, con
     auto topLeftCorner = Point<double>(minX, maxY);
 
     auto point = gdx::Point<double>(topLeftCorner.x + ((std::get<1>(cell) + 0.5) * meta.cellSize.x) /*col*/,
-        topLeftCorner.y - ((std::get<0>(cell) + 0.5) * std::abs(meta.cellSize.y)) /*row*/);
+                                    topLeftCorner.y - ((std::get<0>(cell) + 0.5) * std::abs(meta.cellSize.y)) /*row*/);
     return std::make_tuple(point.x, point.y);
 }
 
@@ -275,7 +276,7 @@ void write_raster(py::object dataType, Raster& raster, const std::string& filepa
         raster.write(fs::u8path(filepath), dtype);
     } else {
         throw RuntimeError("Color maps with custom types currently not supported");
-        //raster.writeColorMapped(filePath, dtype, convertMatplotlibColorMapToColorMap(colorMap));
+        // raster.writeColorMapped(filePath, dtype, convertMatplotlibColorMapToColorMap(colorMap));
     }
 }
 
@@ -501,7 +502,7 @@ py::object showRaster(raster_span<const T> data, py::object colorMap, bool norma
     if (hasProjectionInfo) {
         displayMeta = gdal::warp_metadata(displayMeta, crs::epsg::WGS84WebMercator);
         workRaster  = std::make_unique<std::vector<T>>(displayMeta.rows * displayMeta.cols);
-        inf::gdal::io::warp_raster<T, T>(data, data.metadata(), *workRaster, displayMeta);
+        inf::gdal::warp_raster<T, T>(data, data.metadata(), *workRaster, displayMeta);
         displayData = raster_span<const T>(*workRaster, displayMeta);
     }
 
@@ -525,7 +526,7 @@ py::object showRaster(py::object rasterArg, py::object colorMap, bool normalize)
 
         return createFoliumMap(*displayRaster, displayRaster->metadata(), colorMap, normalize);
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 pybind11::object showRaster(pybind11::array arr, const RasterMetadata& meta, pybind11::object colorMap, bool normalize)
@@ -553,7 +554,7 @@ Raster warp_raster(py::object rasterArg, int32_t epsg)
     return std::visit([&](auto&& raster) {
         return Raster(gdx::warp_raster(raster, epsg));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 
 Raster resample(py::object rasterArg, const RasterMetadata& meta, inf::gdal::ResampleAlgorithm algo)
@@ -562,6 +563,6 @@ Raster resample(py::object rasterArg, const RasterMetadata& meta, inf::gdal::Res
         using T = typename std::decay_t<decltype(raster)>::value_type;
         return Raster(gdx::resample_raster<T>(raster, meta, algo));
     },
-        RasterArgument(rasterArg).variant());
+                      RasterArgument(rasterArg).variant());
 }
 }

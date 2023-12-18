@@ -148,21 +148,21 @@ PYBIND11_MODULE(geodynamix, mod)
     py::class_<Raster>(mod, "raster")
         // Customized init funtions because we need to convert the dataType first
         .def(py::init([](int32_t rows, int32_t cols, py::object dataType) {
-            return Raster(rows, cols, dtypeToRasterType(py::dtype::from_args(dataType)));
-        }),
-            py::arg("rows"), py::arg("cols"), py::arg("dtype") = py::dtype::of<float>())
+                 return Raster(rows, cols, dtypeToRasterType(py::dtype::from_args(dataType)));
+             }),
+             py::arg("rows"), py::arg("cols"), py::arg("dtype") = py::dtype::of<float>())
         .def(py::init([](int32_t rows, int32_t cols, py::object dataType, double assignValue) {
-            return Raster(rows, cols, dtypeToRasterType(py::dtype::from_args(dataType)), assignValue);
-        }),
-            py::arg("rows"), py::arg("cols"), py::arg("dtype") = py::dtype::of<float>(), py::arg("fill"))
+                 return Raster(rows, cols, dtypeToRasterType(py::dtype::from_args(dataType)), assignValue);
+             }),
+             py::arg("rows"), py::arg("cols"), py::arg("dtype") = py::dtype::of<float>(), py::arg("fill"))
         .def(py::init([](const RasterMetadata& meta, py::object dataType) {
-            return Raster(meta, dtypeToRasterType(py::dtype::from_args(dataType)));
-        }),
-            py::arg("metadata"), py::arg("dtype") = py::dtype::of<float>())
+                 return Raster(meta, dtypeToRasterType(py::dtype::from_args(dataType)));
+             }),
+             py::arg("metadata"), py::arg("dtype") = py::dtype::of<float>())
         .def(py::init([](const RasterMetadata& meta, py::object dataType, double assignValue) {
-            return Raster(meta, dtypeToRasterType(py::dtype::from_args(dataType)), assignValue);
-        }),
-            py::arg("metadata"), py::arg("dtype") = py::dtype::of<float>(), py::arg("fill"))
+                 return Raster(meta, dtypeToRasterType(py::dtype::from_args(dataType)), assignValue);
+             }),
+             py::arg("metadata"), py::arg("dtype") = py::dtype::of<float>(), py::arg("fill"))
         .def("__repr__", &rasterRepresentation)
         .def("_repr_html_", [](py::object instance) {
             // use the representation of the foilum map
@@ -245,670 +245,677 @@ PYBIND11_MODULE(geodynamix, mod)
     // Free functions
 
     mod.def("set_log_level",
-        &Log::set_level,
-        "Set the log level (default = Warning)");
+            &Log::set_level,
+            "Set the log level (default = Warning)");
 
     mod.def("read",
-        py::overload_cast<py::object>(&read_raster),
-        "raster_path"_a,
-        "Read a raster from disk");
+            py::overload_cast<py::object>(&read_raster),
+            "raster_path"_a,
+            "Read a raster from disk");
 
     mod.def("read",
-        py::overload_cast<py::object, const RasterMetadata&>(&read_raster),
-        "raster_path"_a,
-        "extent"_a,
-        "Read a raster from disk");
+            py::overload_cast<py::object, const RasterMetadata&>(&read_raster),
+            "raster_path"_a,
+            "extent"_a,
+            "Read a raster from disk");
 
     mod.def("read_as",
-        py::overload_cast<py::object, py::object>(&read_raster),
-        "dtype"_a,
-        "raster_path"_a,
-        "Read a raster from disk and convert to the requested format");
+            py::overload_cast<py::object, py::object>(&read_raster),
+            "dtype"_a,
+            "raster_path"_a,
+            "Read a raster from disk and convert to the requested format");
 
     mod.def("write",
-        py::overload_cast<Raster&, const std::string&, py::object>(&write_raster),
-        "raster"_a,
-        "raster_path"_a,
-        "color_map"_a = py::none(),
-        "Write the provided raster to disk");
+            py::overload_cast<Raster&, const std::string&, py::object>(&write_raster),
+            "raster"_a,
+            "raster_path"_a,
+            "color_map"_a = py::none(),
+            "Write the provided raster to disk");
 
     mod.def("write_as",
-        py::overload_cast<py::object, Raster&, const std::string&, py::object>(&write_raster),
-        "dtype"_a,
-        "raster"_a,
-        "raster_path"_a,
-        "color_map"_a = py::none(),
-        "Write the provided raster to disk and convert to the requested format");
+            py::overload_cast<py::object, Raster&, const std::string&, py::object>(&write_raster),
+            "dtype"_a,
+            "raster"_a,
+            "raster_path"_a,
+            "color_map"_a = py::none(),
+            "Write the provided raster to disk and convert to the requested format");
 
     mod.def("all",
-        &pyalgo::all,
-        "raster"_a,
-        "Returns True if all elements in the raster evaluate to True");
+            &pyalgo::all,
+            "raster"_a,
+            "Returns True if all elements in the raster evaluate to True");
 
     mod.def("any",
-        &pyalgo::any,
-        "raster"_a,
-        "Returns True if any of the elements in the raster evaluate to True");
+            &pyalgo::any,
+            "raster"_a,
+            "Returns True if any of the elements in the raster evaluate to True");
 
     mod.def("cluster_size",
-        &pyalgo::clusterSize,
-        "raster"_a,
-        "include_diagonal"_a = false,
-        "Create a raster containing the clusters, each cluster value is the size of the cluster");
+            &pyalgo::clusterSize,
+            "raster"_a,
+            "include_diagonal"_a = false,
+            "Create a raster containing the clusters, each cluster value is the size of the cluster");
 
     mod.def("cluster_sum",
-        &pyalgo::clusterSum,
-        "raster"_a,
-        "value_to_sum"_a,
-        "include_diagonal"_a = false,
-        "Create a raster containing the clusters, each cluster value is the sum of the cluster");
+            &pyalgo::clusterSum,
+            "raster"_a,
+            "value_to_sum"_a,
+            "include_diagonal"_a = false,
+            "Create a raster containing the clusters, each cluster value is the sum of the cluster");
 
     mod.def("cluster_id",
-        &pyalgo::clusterId,
-        "raster"_a,
-        "include_diagonal"_a = false,
-        "Create a raster containing the clusters, each cluster value is the id of the cluster");
+            &pyalgo::clusterId,
+            "raster"_a,
+            "include_diagonal"_a = false,
+            "Create a raster containing the clusters, each cluster value is the id of the cluster");
 
     mod.def("cluster_id_with_obstacles",
-        &pyalgo::clusterIdWithObstacles,
-        "raster"_a,
-        "obstacles"_a);
+            &pyalgo::clusterIdWithObstacles,
+            "raster"_a,
+            "obstacles"_a);
 
     mod.def("fuzzy_cluster_id",
-        &pyalgo::fuzzyClusterId,
-        "raster"_a,
-        "radius"_a,
-        "Equal items within radius distance (in meters) will get the same cluster id");
+            &pyalgo::fuzzyClusterId,
+            "raster"_a,
+            "radius"_a,
+            "Equal items within radius distance (in meters) will get the same cluster id");
 
     mod.def("fuzzy_cluster_id_with_obstacles",
-        &pyalgo::fuzzyClusterIdWithObstacles,
-        "raster"_a,
-        "obstacles"_a,
-        "radius"_a);
+            &pyalgo::fuzzyClusterIdWithObstacles,
+            "raster"_a,
+            "obstacles"_a,
+            "radius"_a);
 
     mod.def("distance",
-        &pyalgo::distance,
-        "targets"_a,
-        "obstacles"_a        = py::none(),
-        "include_diagonal"_a = false,
-        "Calculate the distance from a cell to the nearest target");
+            &pyalgo::distance,
+            "targets"_a,
+            "obstacles"_a        = py::none(),
+            "include_diagonal"_a = false,
+            "Calculate the distance from a cell to the nearest target");
 
     mod.def("travel_distance",
-        &pyalgo::travelDistance,
-        "targets"_a,
-        "traveltimes"_a,
-        "Calculate the distance from a cell to the nearest target given the travel times");
+            &pyalgo::travelDistance,
+            "targets"_a,
+            "traveltimes"_a,
+            "Calculate the distance from a cell to the nearest target given the travel times");
 
     mod.def("sum_within_travel_distance",
-        &pyalgo::sumWithinTravelDistance,
-        "mask"_a,
-        "resistance"_a,
-        "values"_a,
-        "max_resistance"_a,
-        "include_adjacent"_a,
-        "Calculate the sum of the cells within travel distance given the travel times");
+            &pyalgo::sumWithinTravelDistance,
+            "mask"_a,
+            "resistance"_a,
+            "values"_a,
+            "max_resistance"_a,
+            "include_adjacent"_a,
+            "Calculate the sum of the cells within travel distance given the travel times");
+
+    mod.def("sum_targets_within_travel_distance",
+            &pyalgo::sumTargetsWithinTravelDistance,
+            "targets"_a,
+            "resistance"_a,
+            "max_resistance"_a,
+            "Calculate the sum of the cells within travel distance given the travel times");
 
     mod.def("closest_target",
-        &pyalgo::closestTarget,
-        "targets"_a,
-        "Calculate the nearest target");
+            &pyalgo::closestTarget,
+            "targets"_a,
+            "Calculate the nearest target");
 
     mod.def("value_at_closest_target",
-        &pyalgo::valueAtClosestTarget,
-        "targets"_a,
-        "values"_a,
-        "Calculate the values at the nearest target");
+            &pyalgo::valueAtClosestTarget,
+            "targets"_a,
+            "values"_a,
+            "Calculate the values at the nearest target");
 
     mod.def("value_at_closest_travel_target",
-        &pyalgo::valueAtClosestTravelTarget,
-        "targets"_a,
-        "traveltimes"_a,
-        "values"_a,
-        "Calculate the values at the nearest target given the travel times");
+            &pyalgo::valueAtClosestTravelTarget,
+            "targets"_a,
+            "traveltimes"_a,
+            "values"_a,
+            "Calculate the values at the nearest target given the travel times");
 
     mod.def("value_at_closest_lt_travel_target",
-        &pyalgo::valueAtClosestLessThenTravelTarget,
-        "targets"_a,
-        "traveltimes"_a,
-        "max_traveltime"_a,
-        "values"_a,
-        "Calculate the values at the nearest target, nearer than max_traveltime, given the travel times");
+            &pyalgo::valueAtClosestLessThenTravelTarget,
+            "targets"_a,
+            "traveltimes"_a,
+            "max_traveltime"_a,
+            "values"_a,
+            "Calculate the values at the nearest target, nearer than max_traveltime, given the travel times");
 
     mod.def("node_value_distance_decay",
-        &pyalgo::nodeValueDistanceDecay,
-        "targets"_a,
-        "traveltimes"_a,
-        "max_traveltime"_a,
-        "a_param_s_curve"_a,
-        "b_param_s_curve"_a,
-        "Calculate the distance decay of the node values");
+            &pyalgo::nodeValueDistanceDecay,
+            "targets"_a,
+            "traveltimes"_a,
+            "max_traveltime"_a,
+            "a_param_s_curve"_a,
+            "b_param_s_curve"_a,
+            "Calculate the distance decay of the node values");
 
     mod.def("csum",
-        &pyalgo::categorySum,
-        "clusters"_a,
-        "values"_a,
-        "Create a raster where the clusterids are replaced with the sum of the values in that cluster");
+            &pyalgo::categorySum,
+            "clusters"_a,
+            "values"_a,
+            "Create a raster where the clusterids are replaced with the sum of the values in that cluster");
 
     mod.def("cmin",
-        &pyalgo::categoryMin,
-        "clusters"_a,
-        "values"_a,
-        "Create a raster where the clusterids are replaced with the minimum of the values in that cluster");
+            &pyalgo::categoryMin,
+            "clusters"_a,
+            "values"_a,
+            "Create a raster where the clusterids are replaced with the minimum of the values in that cluster");
 
     mod.def("cmax",
-        &pyalgo::categoryMax,
-        "clusters"_a,
-        "values"_a,
-        "Create a raster where the clusterids are replaced with the maximum of the values in that cluster");
+            &pyalgo::categoryMax,
+            "clusters"_a,
+            "values"_a,
+            "Create a raster where the clusterids are replaced with the maximum of the values in that cluster");
 
     mod.def("cmode",
-        &pyalgo::categoryMode,
-        "clusters"_a,
-        "values"_a,
-        "Create a raster where the clusterids are replaced with the most common values in that cluster");
+            &pyalgo::categoryMode,
+            "clusters"_a,
+            "values"_a,
+            "Create a raster where the clusterids are replaced with the most common values in that cluster");
 
     mod.def("csum_in_buffer",
-        &pyalgo::categorySumInBuffer,
-        "clusters"_a,
-        "values"_a,
-        "radius"_a,
-        "Create a raster where the clusterids are replaced with the sum of the values in that cluster in a given radius (in meter)");
+            &pyalgo::categorySumInBuffer,
+            "clusters"_a,
+            "values"_a,
+            "radius"_a,
+            "Create a raster where the clusterids are replaced with the sum of the values in that cluster in a given radius (in meter)");
 
     mod.def("filter_or",
-        &pyalgo::categoryFilterOr,
-        "clusters"_a,
-        "filter"_a,
-        "Create a raster where the clusterids are filtered based on the filter raster, if no values are true in a cluster the cluster becomes 0");
+            &pyalgo::categoryFilterOr,
+            "clusters"_a,
+            "filter"_a,
+            "Create a raster where the clusterids are filtered based on the filter raster, if no values are true in a cluster the cluster becomes 0");
 
     mod.def("filter_and",
-        &pyalgo::categoryFilterAnd,
-        "clusters"_a,
-        "filter"_a,
-        "Create a raster where the clusterids are filtered based on the filter raster, if a value is false in a cluster the cluster becomes 0");
+            &pyalgo::categoryFilterAnd,
+            "clusters"_a,
+            "filter"_a,
+            "Create a raster where the clusterids are filtered based on the filter raster, if a value is false in a cluster the cluster becomes 0");
 
     mod.def("filter_not",
-        &pyalgo::categoryFilterNot,
-        "clusters"_a,
-        "filter"_a,
-        "Create a raster where the clusterids are filtered based on the filter raster, if a value is true in a cluster the cluster becomes 0");
+            &pyalgo::categoryFilterNot,
+            "clusters"_a,
+            "filter"_a,
+            "Create a raster where the clusterids are filtered based on the filter raster, if a value is true in a cluster the cluster becomes 0");
 
     mod.def("reclass",
-        py::overload_cast<const std::string&, py::object>(&pyalgo::reclass),
-        "mapfile_path"_a,
-        "raster1"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file");
+            py::overload_cast<const std::string&, py::object>(&pyalgo::reclass),
+            "mapfile_path"_a,
+            "raster1"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file");
 
     mod.def("reclass",
-        py::overload_cast<const std::string&, py::object, py::object>(&pyalgo::reclass),
-        "mapfile_path"_a,
-        "raster1"_a,
-        "raster2"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file");
+            py::overload_cast<const std::string&, py::object, py::object>(&pyalgo::reclass),
+            "mapfile_path"_a,
+            "raster1"_a,
+            "raster2"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file");
 
     mod.def("reclass",
-        py::overload_cast<const std::string&, py::object, py::object, py::object>(&pyalgo::reclass),
-        "mapfile_path"_a,
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file");
+            py::overload_cast<const std::string&, py::object, py::object, py::object>(&pyalgo::reclass),
+            "mapfile_path"_a,
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file");
 
     mod.def("reclassi",
-        py::overload_cast<const std::string&, py::object, int>(&pyalgo::reclassi),
-        "mapfile_path"_a,
-        "raster"_a,
-        "index"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
+            py::overload_cast<const std::string&, py::object, int>(&pyalgo::reclassi),
+            "mapfile_path"_a,
+            "raster"_a,
+            "index"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
 
     mod.def("reclassi",
-        py::overload_cast<const std::string&, py::object, py::object, int>(&pyalgo::reclassi),
-        "mapfile_path"_a,
-        "raster1"_a,
-        "raster2"_a,
-        "index"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
+            py::overload_cast<const std::string&, py::object, py::object, int>(&pyalgo::reclassi),
+            "mapfile_path"_a,
+            "raster1"_a,
+            "raster2"_a,
+            "index"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
 
     mod.def("reclassi",
-        py::overload_cast<const std::string&, py::object, py::object, py::object, int>(&pyalgo::reclassi),
-        "mapfile_path"_a,
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "index"_a,
-        "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
+            py::overload_cast<const std::string&, py::object, py::object, py::object, int>(&pyalgo::reclassi),
+            "mapfile_path"_a,
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "index"_a,
+            "Create a raster where the values are remapped based on the mapping in the map file, the given column index in the mapping file is used (1-based)");
 
     mod.def("nreclass",
-        &pyalgo::nreclass,
-        "mapfile_path"_a,
-        "raster"_a,
-        "Create a raster where the values are remapped based on the ranged mapping in the map file");
+            &pyalgo::nreclass,
+            "mapfile_path"_a,
+            "raster"_a,
+            "Create a raster where the values are remapped based on the ranged mapping in the map file");
 
     mod.def("sum_in_buffer",
-        &pyalgo::sumInBuffer,
-        "raster"_a,
-        "radius"_a,
-        "buffer_style"_a = BufferStyle::Circular,
-        "Resulting raster will have per cell the sum of all values within its radius.  Radius is in meters");
+            &pyalgo::sumInBuffer,
+            "raster"_a,
+            "radius"_a,
+            "buffer_style"_a = BufferStyle::Circular,
+            "Resulting raster will have per cell the sum of all values within its radius.  Radius is in meters");
 
     mod.def("max_in_buffer",
-        &pyalgo::maxInBuffer,
-        "raster"_a,
-        "radius"_a,
-        "Resulting raster will have per cell the max of all values within its radius.  Radius is in meters");
+            &pyalgo::maxInBuffer,
+            "raster"_a,
+            "radius"_a,
+            "Resulting raster will have per cell the max of all values within its radius.  Radius is in meters");
 
     mod.def("raster_from_ndarray",
-        &createFromNdArray,
-        "array"_a,
-        "metadata"_a,
-        "Create a raster that contains the data from the python array."
-        "The data will be copied, so modifying the python array will not change the raster");
+            &createFromNdArray,
+            "array"_a,
+            "metadata"_a,
+            "Create a raster that contains the data from the python array."
+            "The data will be copied, so modifying the python array will not change the raster");
 
     mod.def("blur_filter",
-        &pyalgo::blurFilter,
-        "raster"_a,
-        "Apply a blur filter (average in 3x3 window) to the values in the raster");
+            &pyalgo::blurFilter,
+            "raster"_a,
+            "Apply a blur filter (average in 3x3 window) to the values in the raster");
 
     mod.def("majority_filter",
-        &pyalgo::majorityFilter,
-        "raster"_a,
-        "radius"_a,
-        "Apply a majority filter to the values in the raster for the given radius (in meter)");
+            &pyalgo::majorityFilter,
+            "raster"_a,
+            "radius"_a,
+            "Apply a majority filter to the values in the raster for the given radius (in meter)");
 
     mod.def("max",
-        &pyalgo::max,
-        "Returns a raster where each value is the maximum value of the values in the raster arguments");
+            &pyalgo::max,
+            "Returns a raster where each value is the maximum value of the values in the raster arguments");
 
     mod.def("min",
-        &pyalgo::min,
-        "Returns a raster where each value is the maximum value of the values in the raster arguments");
+            &pyalgo::min,
+            "Returns a raster where each value is the maximum value of the values in the raster arguments");
 
     mod.def("clip",
-        &pyalgo::clip,
-        "raster"_a,
-        "low"_a,
-        "high"_a,
-        "Returns a raster where each value is clipped between the low and high value");
+            &pyalgo::clip,
+            "raster"_a,
+            "low"_a,
+            "high"_a,
+            "Returns a raster where each value is clipped between the low and high value");
 
     mod.def("clip_low",
-        &pyalgo::clipLow,
-        "raster"_a,
-        "low"_a,
-        "Returns a raster where each value lower than low is clipped to low");
+            &pyalgo::clipLow,
+            "raster"_a,
+            "low"_a,
+            "Returns a raster where each value lower than low is clipped to low");
 
     mod.def("clip_high",
-        &pyalgo::clipHigh,
-        "raster"_a,
-        "high"_a,
-        "Returns a raster where each value higher than high is clipped to high");
+            &pyalgo::clipHigh,
+            "raster"_a,
+            "high"_a,
+            "Returns a raster where each value higher than high is clipped to high");
 
     mod.def("abs",
-        &pyalgo::abs,
-        "Returns a raster where each value is the absolute value of the provided raster");
+            &pyalgo::abs,
+            "Returns a raster where each value is the absolute value of the provided raster");
 
     mod.def("round",
-        &pyalgo::round,
-        "Returns a raster where each value is the rounded value of the provided raster");
+            &pyalgo::round,
+            "Returns a raster where each value is the rounded value of the provided raster");
 
     mod.def("sin",
-        &pyalgo::sin,
-        "Returns a raster where each value is the sine value of the provided raster");
+            &pyalgo::sin,
+            "Returns a raster where each value is the sine value of the provided raster");
 
     mod.def("cos",
-        &pyalgo::cos,
-        "Returns a raster where each value is the cosine value of the provided raster");
+            &pyalgo::cos,
+            "Returns a raster where each value is the cosine value of the provided raster");
 
     mod.def("log",
-        &pyalgo::log,
-        "Returns a raster where each value is the logarithm value of the provided raster");
+            &pyalgo::log,
+            "Returns a raster where each value is the logarithm value of the provided raster");
 
     mod.def("log10",
-        &pyalgo::log10,
-        "Returns a raster where each value is the base 10 logarithm value of the provided raster");
+            &pyalgo::log10,
+            "Returns a raster where each value is the base 10 logarithm value of the provided raster");
 
     mod.def("exp",
-        &pyalgo::exp,
-        "Returns a raster where each value is the exponent value of the provided raster");
+            &pyalgo::exp,
+            "Returns a raster where each value is the exponent value of the provided raster");
 
     mod.def("pow",
-        &pyalgo::pow,
-        "raster1"_a,
-        "raster2"_a,
-        "Returns a raster where each value is the value of raster1 to the power of the value of raster1");
+            &pyalgo::pow,
+            "raster1"_a,
+            "raster2"_a,
+            "Returns a raster where each value is the value of raster1 to the power of the value of raster1");
 
     mod.def("raster_max",
-        &pyalgo::maximumValue,
-        "Returns the maximum value in the raster");
+            &pyalgo::maximumValue,
+            "Returns the maximum value in the raster");
 
     mod.def("raster_min",
-        &pyalgo::minimumValue,
-        "raster"_a,
-        "Returns the minimum value in the raster");
+            &pyalgo::minimumValue,
+            "raster"_a,
+            "Returns the minimum value in the raster");
 
     mod.def("raster_sum",
-        &pyalgo::sum,
-        "Returns the sum of the values in the raster");
+            &pyalgo::sum,
+            "Returns the sum of the values in the raster");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "Returns the logical and result of the two specfied rasters");
+            py::overload_cast<py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "Returns the logical and result of the two specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "Returns the logical and result of the three specfied rasters");
+            py::overload_cast<py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "Returns the logical and result of the three specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "Returns the logical and result of the four specfied rasters");
+            py::overload_cast<py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "Returns the logical and result of the four specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "Returns the logical and result of the five specfied rasters");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "Returns the logical and result of the five specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "Returns the logical and result of the six specfied rasters");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "Returns the logical and result of the six specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "raster7"_a,
-        "Returns the logical and result of the seven specfied rasters");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "raster7"_a,
+            "Returns the logical and result of the seven specfied rasters");
 
     mod.def("logical_and",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "raster7"_a,
-        "raster8"_a,
-        "Returns the logical and result of the eight specfied rasters");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalAnd),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "raster7"_a,
+            "raster8"_a,
+            "Returns the logical and result of the eight specfied rasters");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "Returns the logical or result of the two specfied rasters.");
+            py::overload_cast<py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "Returns the logical or result of the two specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "Returns the logical or result of the three specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "Returns the logical or result of the three specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "Returns the logical or result of the four specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "Returns the logical or result of the four specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "Returns the logical or result of the five specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "Returns the logical or result of the five specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "Returns the logical or result of the six specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "Returns the logical or result of the six specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "raster7"_a,
-        "Returns the logical or result of the seven specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "raster7"_a,
+            "Returns the logical or result of the seven specfied rasters.");
 
     mod.def("logical_or",
-        py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
-        "raster1"_a,
-        "raster2"_a,
-        "raster3"_a,
-        "raster4"_a,
-        "raster5"_a,
-        "raster6"_a,
-        "raster7"_a,
-        "raster8"_a,
-        "Returns the logical or result of the eight specfied rasters.");
+            py::overload_cast<py::object, py::object, py::object, py::object, py::object, py::object, py::object, py::object>(&pyalgo::logicalOr),
+            "raster1"_a,
+            "raster2"_a,
+            "raster3"_a,
+            "raster4"_a,
+            "raster5"_a,
+            "raster6"_a,
+            "raster7"_a,
+            "raster8"_a,
+            "Returns the logical or result of the eight specfied rasters.");
 
     mod.def("logical_not",
-        &pyalgo::logicalNot,
-        "Returns the logical or result of the specfied raster.");
+            &pyalgo::logicalNot,
+            "Returns the logical or result of the specfied raster.");
 
     mod.def("is_nodata",
-        &pyalgo::is_nodata,
-        "raster"_a,
-        "Returns a raster containing the value 1 for all the cells that are nodata in the provided raster");
+            &pyalgo::is_nodata,
+            "raster"_a,
+            "Returns a raster containing the value 1 for all the cells that are nodata in the provided raster");
 
     mod.def("rc_to_xy",
-        &rowColCenterToXY,
-        "metadata"_a,
-        "cell"_a,
-        "Returns the x-y coordinate of the centre of the row-col raster cell.");
+            &rowColCenterToXY,
+            "metadata"_a,
+            "cell"_a,
+            "Returns the x-y coordinate of the centre of the row-col raster cell.");
 
     mod.def("xy_to_rc",
-        &xYToRowCol,
-        "metadata"_a,
-        "point"_a,
-        "Returns the row-col of the x-y coordinate.  The resulting row-col may be outside the raster, test this with the is_rc_on_raster function.");
+            &xYToRowCol,
+            "metadata"_a,
+            "point"_a,
+            "Returns the row-col of the x-y coordinate.  The resulting row-col may be outside the raster, test this with the is_rc_on_raster function.");
 
     mod.def("is_rc_on_raster",
-        &isRowColOnRaster,
-        "metadata"_a,
-        "cell"_a,
-        "Test if the row-col is on the raster.");
+            &isRowColOnRaster,
+            "metadata"_a,
+            "cell"_a,
+            "Test if the row-col is on the raster.");
 
     mod.def("normalise",
-        &pyalgo::normalise,
-        "raster"_a,
-        "Returns a raster where the values are normalised between 0.0 and 1.0");
+            &pyalgo::normalise,
+            "raster"_a,
+            "Returns a raster where the values are normalised between 0.0 and 1.0");
 
     mod.def("normalise_to_byte",
-        &pyalgo::normaliseToByte,
-        "raster"_a,
-        "Returns a raster where the values are normalised between 0 and 255");
+            &pyalgo::normaliseToByte,
+            "raster"_a,
+            "Returns a raster where the values are normalised between 0 and 255");
 
     mod.def("raster_equal",
-        &pyalgo::rasterEqual,
-        "Returns True if two arrays have the same shape and elements");
+            &pyalgo::rasterEqual,
+            "Returns True if two arrays have the same shape and elements");
 
     mod.def("raster_stats",
-        &pyalgo::statistics,
-        "Returns a raster_stats data structure containing statistics of the provided raster");
+            &pyalgo::statistics,
+            "Returns a raster_stats data structure containing statistics of the provided raster");
 
     mod.def("table_row",
-        &pyalgo::tableRow,
-        "output"_a,
-        "raster"_a,
-        "category_raster"_a,
-        "operation"_a,
-        "label"_a,
-        "append"_a = true,
-        "Create a tab delimeted file that contains the operation result for each category in the raster");
+            &pyalgo::tableRow,
+            "output"_a,
+            "raster"_a,
+            "category_raster"_a,
+            "operation"_a,
+            "label"_a,
+            "append"_a = true,
+            "Create a tab delimeted file that contains the operation result for each category in the raster");
 
     mod.def("raster_equal_one_of",
-        &pyalgo::rasterEqualOneOf,
-        "raster"_a,
-        "values"_a,
-        "Returns a raster with value 1 for the cells in raster that match one of the values in the values array");
+            &pyalgo::rasterEqualOneOf,
+            "raster"_a,
+            "values"_a,
+            "Returns a raster with value 1 for the cells in raster that match one of the values in the values array");
 
     mod.def("allclose",
-        &pyalgo::allClose,
-        "rastera"_a,
-        "rasterb"_a,
-        "tolerance"_a = std::numeric_limits<double>::epsilon(),
-        "Returns True if two arrays are element-wise equal within a tolerance");
+            &pyalgo::allClose,
+            "rastera"_a,
+            "rasterb"_a,
+            "tolerance"_a = std::numeric_limits<double>::epsilon(),
+            "Returns True if two arrays are element-wise equal within a tolerance");
 
     mod.def("isclose",
-        &pyalgo::isClose,
-        "rastera"_a,
-        "rasterb"_a,
-        "tolerance"_a = std::numeric_limits<double>::epsilon(),
-        "Returns a boolean raster where two arrays are element-wise equal within a tolerance");
+            &pyalgo::isClose,
+            "rastera"_a,
+            "rasterb"_a,
+            "tolerance"_a = std::numeric_limits<double>::epsilon(),
+            "Returns a boolean raster where two arrays are element-wise equal within a tolerance");
 
     mod.def("replace_value",
-        &pyalgo::replaceValue,
-        "raster"_a,
-        "search_value"_a,
-        "replace_value"_a,
-        "Returns a raster where occurences of search_value in the raster are replaced by replace_value.");
+            &pyalgo::replaceValue,
+            "raster"_a,
+            "search_value"_a,
+            "replace_value"_a,
+            "Returns a raster where occurences of search_value in the raster are replaced by replace_value.");
 
     mod.def("replace_nodata",
-        &pyalgo::replaceNodata,
-        "raster"_a,
-        "replace_value"_a,
-        "Returns a raster where nodata values in the raster are replaced by replace_value. So the returned raster will not contain nodata values.");
+            &pyalgo::replaceNodata,
+            "raster"_a,
+            "replace_value"_a,
+            "Returns a raster where nodata values in the raster are replaced by replace_value. So the returned raster will not contain nodata values.");
 
     mod.def("draw_shape_on_raster",
-        &pyalgo::drawShapeFileOnRaster,
-        "raster"_a,
-        "shapefile_path"_a,
-        "Draws the shapes in the shapefile onto the supplied raster.");
+            &pyalgo::drawShapeFileOnRaster,
+            "raster"_a,
+            "shapefile_path"_a,
+            "Draws the shapes in the shapefile onto the supplied raster.");
 
     mod.def("if_then_else",
-        &pyalgo::ifThenElse,
-        "if_raster"_a,
-        "then_raster"_a,
-        "else_raster"_a,
-        "Returns a raster that is a result of the evaluation of the provided raster."
-        "All the nonzero values are replaced with the then_raster value, the other values are replaced with the else_raster values.");
+            &pyalgo::ifThenElse,
+            "if_raster"_a,
+            "then_raster"_a,
+            "else_raster"_a,
+            "Returns a raster that is a result of the evaluation of the provided raster."
+            "All the nonzero values are replaced with the then_raster value, the other values are replaced with the else_raster values.");
 
     mod.def("warp_raster",
-        &warp_raster,
-        "raster"_a,
-        "dest_epsg"_a,
-        "Returns a raster that is the provided raster warped to the provided projection.");
+            &warp_raster,
+            "raster"_a,
+            "dest_epsg"_a,
+            "Returns a raster that is the provided raster warped to the provided projection.");
 
     mod.def("resample",
-        &resample,
-        "raster"_a,
-        "metadata"_a,
-        "algoritm"_a = inf::gdal::ResampleAlgorithm::NearestNeighbour,
-        "Returns a raster resampled to the provided metadata.");
+            &resample,
+            "raster"_a,
+            "metadata"_a,
+            "algoritm"_a = inf::gdal::ResampleAlgorithm::NearestNeighbour,
+            "Returns a raster resampled to the provided metadata.");
 
     mod.def("create_map",
-        py::overload_cast<py::object, py::object, bool>(&showRaster),
-        "raster"_a,
-        "color_map"_a = py::none(),
-        "normalize"_a = true,
-        "Create a folium Map instance that displays the raster over open street maps.");
+            py::overload_cast<py::object, py::object, bool>(&showRaster),
+            "raster"_a,
+            "color_map"_a = py::none(),
+            "normalize"_a = true,
+            "Create a folium Map instance that displays the raster over open street maps.");
 
     mod.def("create_map_from_array",
-        py::overload_cast<py::array, const RasterMetadata&, py::object, bool>(&showRaster),
-        "array"_a,
-        "metadata"_a,
-        "color_map"_a = py::none(),
-        "normalize"_a = true,
-        "Create a folium Map instance that displays the numpy array over open street maps.");
+            py::overload_cast<py::array, const RasterMetadata&, py::object, bool>(&showRaster),
+            "array"_a,
+            "metadata"_a,
+            "color_map"_a = py::none(),
+            "normalize"_a = true,
+            "Create a folium Map instance that displays the numpy array over open street maps.");
 
     mod.def("show_in_browser",
-        &showRasterInBrowser,
-        "raster"_a,
-        "color_map"_a = py::none(),
-        "normalize"_a = true,
-        "Opens the system default browser to preview the provided raster.");
+            &showRasterInBrowser,
+            "raster"_a,
+            "color_map"_a = py::none(),
+            "normalize"_a = true,
+            "Opens the system default browser to preview the provided raster.");
 
     mod.def("ldd_fix",
-        &pyalgo::lddFix,
-        "raster"_a,
-        "Tries to fix an invalid ldd map. If it succeeds the fixed map is returned");
+            &pyalgo::lddFix,
+            "raster"_a,
+            "Tries to fix an invalid ldd map. If it succeeds the fixed map is returned");
 
     mod.def("ldd_validate",
-        &pyalgo::lddValidate,
-        "ldd"_a,
-        "loop_cb"_a           = py::none(),
-        "invalid_value_cb"_a  = py::none(),
-        "ends_in_nodata_cb"_a = py::none(),
-        "outside_of_map_cb"_a = py::none(),
-        "Returns true if the ldd is valid, callbacks can be provided for information about the detected errors");
+            &pyalgo::lddValidate,
+            "ldd"_a,
+            "loop_cb"_a           = py::none(),
+            "invalid_value_cb"_a  = py::none(),
+            "ends_in_nodata_cb"_a = py::none(),
+            "outside_of_map_cb"_a = py::none(),
+            "Returns true if the ldd is valid, callbacks can be provided for information about the detected errors");
 
     mod.def("accuflux",
-        &pyalgo::accuflux,
-        "ldd"_a,
-        "freight"_a,
-        "Accumulated material flowing into downstream cell");
+            &pyalgo::accuflux,
+            "ldd"_a,
+            "freight"_a,
+            "Accumulated material flowing into downstream cell");
 
     mod.def("accufractionflux",
-        &pyalgo::accufractionflux,
-        "ldd"_a,
-        "freight"_a,
-        "fraction"_a,
-        "Fractional material transport downstream over local drain direction network");
+            &pyalgo::accufractionflux,
+            "ldd"_a,
+            "freight"_a,
+            "fraction"_a,
+            "Fractional material transport downstream over local drain direction network");
 
     mod.def("flux_origin",
-        &pyalgo::fluxOrigin,
-        "ldd"_a,
-        "freight"_a,
-        "fraction"_a,
-        "station"_a,
-        "The upstream origin of the freight that accumulates in a station.  So if the freight at some cell C is 17, and 10% of it finally arrives in its downstream station, than the result map will contain at cell C the value 1.7");
+            &pyalgo::fluxOrigin,
+            "ldd"_a,
+            "freight"_a,
+            "fraction"_a,
+            "station"_a,
+            "The upstream origin of the freight that accumulates in a station.  So if the freight at some cell C is 17, and 10% of it finally arrives in its downstream station, than the result map will contain at cell C the value 1.7");
 
     mod.def("ldd_cluster",
-        &pyalgo::lddCluster,
-        "ldd"_a,
-        "id"_a,
-        "All cells upstreams of a station will get the id of that station");
+            &pyalgo::lddCluster,
+            "ldd"_a,
+            "id"_a,
+            "All cells upstreams of a station will get the id of that station");
 
     mod.def("ldd_dist",
-        &pyalgo::lddDist,
-        "ldd"_a,
-        "points"_a,
-        "friction"_a,
-        "Friction-distance from the cell under consideration to downstream nearest TRUE cell");
+            &pyalgo::lddDist,
+            "ldd"_a,
+            "points"_a,
+            "friction"_a,
+            "Friction-distance from the cell under consideration to downstream nearest TRUE cell");
 
     mod.def("slopelength",
-        &pyalgo::slopeLength,
-        "ldd"_a,
-        "friction"_a,
-        "Accumulative-friction-distance of the longest accumulative-friction-path upstream over the local drain direction network cells against waterbasin divides");
+            &pyalgo::slopeLength,
+            "ldd"_a,
+            "friction"_a,
+            "Accumulative-friction-distance of the longest accumulative-friction-path upstream over the local drain direction network cells against waterbasin divides");
 
     mod.def("max_upstream_dist",
-        &pyalgo::max_upstream_dist,
-        "ldd"_a,
-        "Calculate the maximum upstream distance for each cell in the ldd");
+            &pyalgo::max_upstream_dist,
+            "ldd"_a,
+            "Calculate the maximum upstream distance for each cell in the ldd");
 
     auto ioMod = mod.def_submodule("io");
     initIoModule(ioMod);

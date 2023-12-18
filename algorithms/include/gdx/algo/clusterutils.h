@@ -91,9 +91,9 @@ inline void insert_cell(const Cell& cell, RasterType<uint8_t>& mark, FiLo<Cell>&
 
 template <template <typename> typename RasterType, typename T>
 void handle_cell(const Cell cell,
-    const T clusterValue, std::vector<Cell>& clusterCells,
-    RasterType<uint8_t>& mark,
-    FiLo<Cell>& border, const RasterType<T>& raster)
+                 const T clusterValue, std::vector<Cell>& clusterCells,
+                 RasterType<uint8_t>& mark,
+                 FiLo<Cell>& border, const RasterType<T>& raster)
 {
     if (raster.is_nodata(cell)) {
         return;
@@ -108,10 +108,10 @@ namespace internal {
 
 template <template <typename> typename RasterType, typename T>
 void handle_time_cell(float deltaD, const Cell& cell, const Cell& newCell,
-    RasterType<float>& distanceToTarget,
-    RasterType<uint8_t>& mark,
-    const RasterType<T>& travelTime,
-    FiLo<Cell>& border)
+                      RasterType<float>& distanceToTarget,
+                      RasterType<uint8_t>& mark,
+                      const RasterType<T>& travelTime,
+                      FiLo<Cell>& border)
 {
     if (distanceToTarget.is_nodata(cell) || distanceToTarget.is_nodata(newCell)) {
         return;
@@ -120,8 +120,8 @@ void handle_time_cell(float deltaD, const Cell& cell, const Cell& newCell,
     const float alternativeDist = static_cast<float>(distanceToTarget[cell] + deltaD * travelTime[newCell]);
     float& d                    = distanceToTarget[newCell];
     if (d > alternativeDist) {
-        d          = alternativeDist;
-        uint8_t& m = mark[newCell];
+        d       = alternativeDist;
+        auto& m = mark[newCell];
         if (m != s_markBorder) {
             m = s_markBorder;
             border.push_back(newCell);

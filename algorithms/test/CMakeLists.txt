@@ -21,6 +21,7 @@ add_executable(gdxalgotest
     nodatatest.cpp
     normalisetest.cpp
     propdisttest.cpp
+    rasterizetest.cpp
     rasterizelineantialiasedtest.cpp
     reclasstest.cpp
     suminbuffertest.cpp

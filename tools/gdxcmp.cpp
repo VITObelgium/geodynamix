@@ -27,7 +27,7 @@ bool compareRasters(const gdx::Raster& raster1, const gdx::Raster& raster2, floa
     return std::visit([tolerance, verbose](auto&& r1, auto&& r2) {
         auto diff = gdx::diff_rasters(r1, r2, tolerance);
 
-        if (diff.differentCells() == 0) {
+        if (diff.different_cells() == 0) {
             fmt::print(fg(fmt::color::green), "Rasters are equal!\n");
             return true;
         }
@@ -76,7 +76,7 @@ bool compareRasters(const gdx::Raster& raster1, const gdx::Raster& raster2, floa
 
         return false;
     },
-        raster1.get(), raster2.get());
+                      raster1.get(), raster2.get());
 }
 
 int main(int argc, char* argv[])
@@ -101,12 +101,12 @@ int main(int argc, char* argv[])
 
         auto result = cli.parse(cli::args(argc, argv));
         if (!result) {
-            fmt::print(fg(fmt::color::red), "Error in command line: {}", result.errorMessage());
+            fmt::print(fg(fmt::color::red), "Error in command line: {}", result.message());
             return EXIT_FAILURE;
         }
 
         if (options.showHelp || argc == 1) {
-            fmt::print("{}", cli);
+            fmt::print("{}", fmt::streamed(cli));
             return EXIT_SUCCESS;
         }
 
