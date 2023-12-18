@@ -29,8 +29,8 @@ jobs:
           conda config --add channels conda-forge
           conda config --set channel_priority strict
       - name: Install build requirements
-        run: conda install conda-build jinja2
+        run: conda install mamba boa jinja2
       - name: Generate package metadata
         run: python ./conda/metagen.py
       - name: Build conda package
-        run: conda build ./conda
+        run: conda mambabuild ./conda
