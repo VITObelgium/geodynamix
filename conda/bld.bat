@@ -98,6 +98,7 @@ cmake ^
     -DGDX_INSTALL_DEVELOPMENT_FILES=OFF ^
     -DPython3_ROOT_DIR="%PREFIX%" ^
     -DPython3_FIND_VIRTUALENV=ONLY ^
+    --trace ^
     ..
 if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
 cmake --build . --target install
