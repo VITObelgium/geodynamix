@@ -37,7 +37,7 @@ if(GDX_IS_TOPLEVEL)
     set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
     project(GeoDynamiX
-        VERSION 0.14.3
+        VERSION 0.14.4
         LANGUAGES C CXX
     )
     set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
