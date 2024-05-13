@@ -146,7 +146,7 @@ auto reclass_to(const MappingData<MappingType>& mapping, const RasterType<T1>& r
 
     for (std::size_t i = 0; i < size; ++i) {
         std::array<std::optional<MappingType>, 2> values = {{ras1.template optional_value_as<MappingType>(i),
-            ras2.template optional_value_as<MappingType>(i)}};
+                                                             ras2.template optional_value_as<MappingType>(i)}};
 
         auto v = internal::reclass_value<MappingType, 2>(values, mapping, warningGiven);
         if (v) {
@@ -177,8 +177,8 @@ auto reclass_to(const MappingData<MappingType>& mapping, const RasterType<T1>& r
 
     for (std::size_t i = 0; i < size; ++i) {
         std::array<std::optional<MappingType>, 3> values = {{ras1.template optional_value_as<MappingType>(i),
-            ras2.template optional_value_as<MappingType>(i),
-            ras3.template optional_value_as<MappingType>(i)}};
+                                                             ras2.template optional_value_as<MappingType>(i),
+                                                             ras3.template optional_value_as<MappingType>(i)}};
 
         auto v = internal::reclass_value<ResultType, 3>(values, mapping, warningGiven);
         if (v) {
@@ -194,7 +194,7 @@ auto reclass_to(const MappingData<MappingType>& mapping, const RasterType<T1>& r
 }
 
 template <typename ResultType, template <typename> typename RasterType, typename T>
-RasterType<ResultType> reclass_to(const std::string& mappingFile, const RasterType<T>& ras)
+RasterType<ResultType> reclass_to(const fs::path& mappingFile, const RasterType<T>& ras)
 {
     auto mappingTableVariant = read_mapping_file(mappingFile, 1, 1);
     if constexpr (std::is_floating_point_v<ResultType>) {
@@ -213,7 +213,7 @@ RasterType<ResultType> reclass_to(const std::string& mappingFile, const RasterTy
 }
 
 template <template <typename> typename RasterType, typename T>
-auto reclass(const std::string& mappingFile, const RasterType<T>& ras)
+auto reclass(const fs::path& mappingFile, const RasterType<T>& ras)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 1, 1);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -221,12 +221,12 @@ auto reclass(const std::string& mappingFile, const RasterType<T>& ras)
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
 template <template <typename> typename RasterType, typename T1, typename T2>
-auto reclass(const std::string& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2)
+auto reclass(const fs::path& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 2, 1);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -234,12 +234,12 @@ auto reclass(const std::string& mappingFile, const RasterType<T1>& ras1, const R
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras1, ras2);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
 template <template <typename> typename RasterType, typename T1, typename T2, typename T3>
-auto reclass(const std::string& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, const RasterType<T3>& ras3)
+auto reclass(const fs::path& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, const RasterType<T3>& ras3)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 3, 1);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -247,12 +247,12 @@ auto reclass(const std::string& mappingFile, const RasterType<T1>& ras1, const R
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras1, ras2, ras3);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
 template <template <typename> typename RasterType, typename T>
-auto reclassi(const std::string& mappingFile, const RasterType<T>& ras, int32_t index)
+auto reclassi(const fs::path& mappingFile, const RasterType<T>& ras, int32_t index)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 1, index);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -260,12 +260,12 @@ auto reclassi(const std::string& mappingFile, const RasterType<T>& ras, int32_t 
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
 template <template <typename> typename RasterType, typename T1, typename T2>
-auto reclassi(const std::string& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, int32_t index)
+auto reclassi(const fs::path& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, int32_t index)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 2, index);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -273,12 +273,12 @@ auto reclassi(const std::string& mappingFile, const RasterType<T1>& ras1, const 
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras1, ras2);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
 template <template <typename> typename RasterType, typename T1, typename T2, typename T3>
-auto reclassi(const std::string& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, const RasterType<T3>& ras3, int32_t index)
+auto reclassi(const fs::path& mappingFile, const RasterType<T1>& ras1, const RasterType<T2>& ras2, const RasterType<T3>& ras3, int32_t index)
 {
     auto mapping_table_variant = read_mapping_file(mappingFile, 3, index);
     std::variant<RasterType<int32_t>, RasterType<float>> result;
@@ -286,7 +286,7 @@ auto reclassi(const std::string& mappingFile, const RasterType<T1>& ras1, const 
         using MappingType = typename std::decay_t<decltype(mappingTable.front())>::value_type;
         result            = reclass_to<MappingType>(mappingTable, ras1, ras2, ras3);
     },
-        mapping_table_variant);
+               mapping_table_variant);
     return result;
 }
 
