@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gdx/algo/algorithm.h"
+#include "gdx/rastermetadata.h"
 #include "infra/cast.h"
 
 #include <cmath>
@@ -59,6 +60,17 @@ void make_nodata(RasterType& ras)
 {
     using T = typename RasterType::value_type;
     std::fill(optional_value_begin(ras), optional_value_end(ras), std::optional<T>());
+}
+
+// Fills the provided raster completely with nodata
+template <typename RasterType>
+RasterType make_nodata_raster(const RasterMetadata& extent)
+{
+    using T = typename RasterType::value_type;
+
+    RasterType result(extent);
+    make_nodata(result);
+    return result;
 }
 
 template <typename RasterType>
