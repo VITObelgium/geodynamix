@@ -165,7 +165,7 @@ table_row_impl(
 }
 
 template <template <typename> typename RasterType, typename T, typename TCat>
-void table_row(const RasterType<T>& ras, const RasterType<TCat>& categoryRaster, Operation op, const fs::path& outputPath, const std::string& label, bool append)
+void table_row(const RasterType<T>& ras, const RasterType<TCat>& categoryRaster, Operation op, const fs::path& outputPath, const std::string_view label, bool append)
 {
     auto result = table_row_impl(ras, categoryRaster, op);
 
