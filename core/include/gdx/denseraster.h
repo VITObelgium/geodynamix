@@ -521,6 +521,13 @@ public:
         return perform_unary_operation<nodata::not_equal_to>(value);
     }
 
+    template <typename TValue>
+    DenseRaster<uint8_t> equals(TValue value) const
+    {
+        static_assert(std::is_scalar_v<TValue>, "Arithmetic operation called with non scalar type");
+        return perform_unary_operation<nodata::equal_to>(value);
+    }
+
     template <typename TOther>
     auto operator+(const DenseRaster<TOther>& other) const
     {
