@@ -5,13 +5,13 @@
 #include "infra/cast.h"
 
 #include <cmath>
-#include <optional>
 #include <limits>
+#include <optional>
 
 namespace gdx {
 
 /*! Make sure the nodata value fits in the output data type
- * if it does not fix the max value of the resulting datatype is used 
+ * if it does not fix the max value of the resulting datatype is used
  */
 
 template <typename T>
@@ -21,7 +21,7 @@ T nodata_cast(double nodata)
         !inf::fits_in_type<T>(nodata)) {
         return std::numeric_limits<T>::max();
     }
-    
+
     return inf::truncate<T>(nodata);
 }
 
@@ -32,7 +32,7 @@ std::optional<double> nodata_cast(std::optional<double> nodata)
     if (nodata.has_value()) {
         result = nodata_cast<T>(*nodata);
     }
-    
+
     return result;
 }
 
@@ -67,6 +67,10 @@ template <typename RasterType>
 RasterType make_nodata_raster(const RasterMetadata& extent)
 {
     using T = typename RasterType::value_type;
+
+    if (!extent.nodata.has_value()) {
+        throw InvalidArgument("No nodata value defined for nodata raster");
+    }
 
     RasterType result(extent);
     make_nodata(result);
