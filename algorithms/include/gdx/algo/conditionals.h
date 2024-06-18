@@ -11,8 +11,8 @@ RasterType2<T2> if_then(const RasterType1<T1>& condition, const RasterType2<T2>&
 {
     if (condition.size() != thenRaster.size()) {
         throw RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{}",
-            condition.rows(), condition.cols(),
-            thenRaster.rows(), thenRaster.cols());
+                           condition.rows(), condition.cols(),
+                           thenRaster.rows(), thenRaster.cols());
     }
 
     RasterType2<T2> result = thenRaster.copy();
@@ -39,9 +39,9 @@ auto if_then_else(const RasterType1<T1>& condition, const RasterType2<T2>& thenR
 
     if (condition.size() != thenRaster.size() || condition.size() != elseRaster.size()) {
         throw RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{} else {}x{}",
-            condition.rows(), condition.cols(),
-            thenRaster.rows(), thenRaster.cols(),
-            elseRaster.rows(), elseRaster.cols());
+                           condition.rows(), condition.cols(),
+                           thenRaster.rows(), thenRaster.cols(),
+                           elseRaster.rows(), elseRaster.cols());
     }
 
     auto meta = thenRaster.metadata();
@@ -72,6 +72,45 @@ auto if_then_else(const RasterType1<T1>& condition, const RasterType2<T2>& thenR
                 result.mark_as_nodata(i);
             } else {
                 result[i] = static_cast<ResultType>(elseRaster[i]);
+            }
+        }
+    }
+
+    return result;
+}
+
+template <
+    template <typename> typename RasterType, typename T1,
+    typename T2,
+    typename T3>
+auto if_then_else(const RasterType<T1>& condition, std::optional<T2> thenValue, std::optional<T3> elseValue)
+{
+    using ResultType = std::common_type_t<T2, T3>;
+
+    auto meta = condition.metadata();
+
+    RasterType<ResultType> result(meta);
+    if (!meta.nodata.has_value() && (!thenValue.has_value() || !elseValue.has_value())) {
+        meta.nodata = inf::truncate<double>(std::numeric_limits<ResultType>::max());
+    }
+
+    for (std::size_t i = 0; i < condition.size(); ++i) {
+        if (condition.is_nodata(i)) {
+            result.mark_as_nodata(i);
+            continue;
+        }
+
+        if (condition[i]) {
+            if (thenValue.has_value()) {
+                result[i] = static_cast<ResultType>(*thenValue);
+            } else {
+                result.mark_as_nodata(i);
+            }
+        } else {
+            if (elseValue.has_value()) {
+                result[i] = static_cast<ResultType>(*elseValue);
+            } else {
+                result.mark_as_nodata(i);
             }
         }
     }
