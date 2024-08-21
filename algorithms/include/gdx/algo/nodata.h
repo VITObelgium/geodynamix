@@ -66,8 +66,6 @@ void make_nodata(RasterType& ras)
 template <typename RasterType>
 RasterType make_nodata_raster(const RasterMetadata& extent)
 {
-    using T = typename RasterType::value_type;
-
     if (!extent.nodata.has_value()) {
         throw InvalidArgument("No nodata value defined for nodata raster");
     }
