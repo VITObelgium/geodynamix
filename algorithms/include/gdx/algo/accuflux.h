@@ -220,10 +220,10 @@ void traverse_ldd_upstream(const Cell cell, const RasterType<uint8_t>& lddMap, s
 
 template <template <typename> typename RasterType, typename VisitCb1, typename VisitCb2, typename VisitCb3, typename VisitCb4>
 void traverseInvalidLdd(Cell cell, const RasterType<uint8_t>& lddMap,
-    VisitCb1&& loopCb,
-    VisitCb2&& invalidValueCb,
-    VisitCb3&& endsInNodataCb,
-    VisitCb4&& outsideOfMapCb)
+                        VisitCb1&& loopCb,
+                        VisitCb2&& invalidValueCb,
+                        VisitCb3&& endsInNodataCb,
+                        VisitCb4&& outsideOfMapCb)
 {
     assert(!lddMap.is_nodata(cell));
     uint8_t dir  = lddMap[cell];
@@ -296,10 +296,10 @@ constexpr Offset neighbourLookup[8] = {
 
 template <template <typename> typename RasterType>
 double calculateSlopeLength(const int row, const int col,
-    RasterType<int32_t>& calcMap,
-    const RasterType<uint8_t>& lddMap,
-    const RasterType<float>& frictionMap,
-    RasterType<float>& result)
+                            RasterType<int32_t>& calcMap,
+                            const RasterType<uint8_t>& lddMap,
+                            const RasterType<float>& frictionMap,
+                            RasterType<float>& result)
 {
     if (calcMap(row, col) == 1) {
         return result(row, col);
@@ -366,10 +366,10 @@ double calculateSlopeLength(const int row, const int col,
 
 template <template <typename> typename RasterType>
 bool validate_ldd(const RasterType<uint8_t>& lddMap,
-    std::function<void(int32_t, int32_t)> loopCb,
-    std::function<void(int32_t, int32_t)> invalidValueCb,
-    std::function<void(int32_t, int32_t)> endsInNodataCb,
-    std::function<void(int32_t, int32_t)> outsideOfMapCb)
+                  std::function<void(int32_t, int32_t)> loopCb,
+                  std::function<void(int32_t, int32_t)> invalidValueCb,
+                  std::function<void(int32_t, int32_t)> endsInNodataCb,
+                  std::function<void(int32_t, int32_t)> outsideOfMapCb)
 {
     const int rows = lddMap.rows();
     const int cols = lddMap.cols();
@@ -429,8 +429,6 @@ RasterType<uint8_t> fix_ldd(const RasterType<uint8_t>& lddMap, std::set<Cell>& e
 
     RasterType<uint8_t> result = lddMap.copy();
     auto nodata                = lddMap.metadata().nodata;
-
-    int32_t fixes = 0;
 
     for (int32_t r = 0; r < rows; ++r) {
         for (int32_t c = 0; c < cols; ++c) {
@@ -515,7 +513,6 @@ RasterType<uint8_t> fix_ldd(const RasterType<uint8_t>& lddMap, std::set<Cell>& e
                             auto value = lddMap(neighbourNeighbour.r, neighbourNeighbour.c);
                             if (value != 5 && value != 0) {
                                 result[cell] = detail::getDirectionToNeighbour(cell, neighbourNeighbour);
-                                ++fixes;
                                 return;
                             }
                         }
@@ -628,9 +625,9 @@ RasterType<float> accufractionflux(
 
 template <template <typename> typename RasterType>
 RasterType<float> flux_origin(const RasterType<uint8_t>& lddMap,
-    const RasterType<float>& freightMap,
-    const RasterType<float>& fractionMap,
-    const RasterType<int32_t>& stationMap)
+                              const RasterType<float>& freightMap,
+                              const RasterType<float>& fractionMap,
+                              const RasterType<int32_t>& stationMap)
 {
     if (lddMap.size() != freightMap.size() ||
         lddMap.size() != fractionMap.size() ||
