@@ -14,7 +14,7 @@ jobs:
         run: brew install nasm ninja
       - name: Cache vcpkg binary
         id: cache-vcpkg-bin
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             deps/vcpkg/vcpkg
@@ -22,7 +22,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('deps/vcpkg/bootstrap.cmake') }}
       - name: Cache vcpkg packages
         id: cache-vcpkg
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/vcpkg
