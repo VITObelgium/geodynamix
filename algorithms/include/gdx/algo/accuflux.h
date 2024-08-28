@@ -1,16 +1,16 @@
 #pragma once
 
-#include "gdx/algo/cast.h"
 #include "gdx/cell.h"
-#include "infra/log.h"
+#include "infra/cast.h"
+#include "infra/exception.h"
 
-#include <array>
+#include <cassert>
 #include <cmath>
 #include <functional>
 #include <mutex>
 #include <optional>
 #include <set>
-#include <tuple>
+#include <utility>
 #include <vector>
 
 namespace gdx {
@@ -72,14 +72,14 @@ void traverse_ldd(const Cell cell, const RasterType<uint8_t>& lddMap, VisitCb&& 
         traversedCells.insert(curCell);
 
         if (9 < dir) {
-            throw RuntimeError("ldd map is unsound: ldd value outside [0..9] {}", curCell);
+            throw inf::RuntimeError("ldd map is unsound: ldd value outside [0..9] {}", curCell);
         }
 
         const Offset& offset = lookupOffsets[dir];
         const auto destCell  = Cell(curCell.r + offset.y, curCell.c + offset.x);
 
         if (!lddMap.metadata().is_on_map(destCell)) {
-            throw RuntimeError("ldd map is unsound : it has flows out of the map {}", curCell); // throw == pcraster behaviour
+            throw inf::RuntimeError("ldd map is unsound : it has flows out of the map {}", curCell); // throw == pcraster behaviour
         }
 
         if (!visitCb(curCell, destCell)) {
@@ -87,14 +87,14 @@ void traverse_ldd(const Cell cell, const RasterType<uint8_t>& lddMap, VisitCb&& 
         }
 
         if (lddMap.is_nodata(destCell)) {
-            throw RuntimeError("ldd map is unsound : it has flows into NODATA ldd cells {}", curCell); // throw == pcraster behaviour
+            throw inf::RuntimeError("ldd map is unsound : it has flows into NODATA ldd cells {}", curCell); // throw == pcraster behaviour
         }
 
         dir     = lddMap[destCell];
         curCell = destCell;
 
         if (traversedCells.find(destCell) != traversedCells.end()) {
-            throw RuntimeError("lddMap contains a loop at cell {}", curCell);
+            throw inf::RuntimeError("lddMap contains a loop at cell {}", curCell);
         }
     }
 }
@@ -533,7 +533,7 @@ RasterType<uint8_t> fix_ldd(const RasterType<uint8_t>& lddMap, std::set<Cell>& e
                 [&](Cell /*cell*/) {
                     // ldd runs outside of the map
                     // cannot fix this
-                    throw RuntimeError("Ldd runs outside of the map, this cannot be fixed");
+                    throw inf::RuntimeError("Ldd runs outside of the map, this cannot be fixed");
                 });
         }
     }
@@ -545,7 +545,7 @@ template <template <typename> typename RasterType>
 RasterType<float> accuflux(const RasterType<uint8_t>& lddMap, const RasterType<float>& freightMap)
 {
     if (lddMap.size() != freightMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     const int rows = lddMap.rows();
@@ -580,7 +580,7 @@ RasterType<float> accufractionflux(
     if (lddMap.size() != freightMap.size() ||
         lddMap.size() != freightMap.size() ||
         lddMap.size() != fractionMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     const int rows = lddMap.rows();
@@ -632,7 +632,7 @@ RasterType<float> flux_origin(const RasterType<uint8_t>& lddMap,
     if (lddMap.size() != freightMap.size() ||
         lddMap.size() != fractionMap.size() ||
         lddMap.size() != stationMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     auto nan       = std::numeric_limits<double>::quiet_NaN();
@@ -693,7 +693,7 @@ template <template <typename> typename RasterType>
 RasterType<int32_t> ldd_cluster(const RasterType<uint8_t>& lddMap, const RasterType<int32_t>& idMap)
 {
     if (lddMap.size() != idMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     const int rows = lddMap.rows();
@@ -739,7 +739,7 @@ RasterType<float> ldd_dist(
 {
     if (lddMap.size() != pointsMap.size() ||
         lddMap.size() != frictionMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     auto nan       = std::numeric_limits<float>::quiet_NaN();
@@ -816,7 +816,7 @@ RasterType<float> slope_length(
     const RasterType<float>& frictionMap)
 {
     if (lddMap.size() != frictionMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     auto nan       = std::numeric_limits<float>::quiet_NaN();
@@ -841,7 +841,7 @@ template <typename StationIdType, template <typename> typename RasterType>
 RasterType<StationIdType> catchment(const RasterType<uint8_t>& lddMap, const RasterType<StationIdType>& stationMap, std::function<void(float)> progressCb = nullptr)
 {
     if (lddMap.size() != stationMap.size()) {
-        throw InvalidArgument("Raster sizes should match");
+        throw inf::InvalidArgument("Raster sizes should match");
     }
 
     const int rows = lddMap.rows();
