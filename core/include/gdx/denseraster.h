@@ -308,7 +308,7 @@ public:
                     v(v != nod) = value;
                 });
             } else {
-                std::for_each(begin(), end(), [=](auto& v) {
+                std::for_each(begin(), end(), [this, value](auto& v) {
                     if (!is_nodata_value(v)) {
                         v = value;
                     }
