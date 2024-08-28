@@ -849,8 +849,8 @@ RasterType<StationIdType> catchment(const RasterType<uint8_t>& lddMap, const Ras
 
     RasterType<StationIdType> result(stationMap.metadata(), 0);
 
-    const float total = inf::truncate<float>(rows * cols);
-    std::atomic<int> processed(0);
+    const float total  = inf::truncate<float>(rows * cols);
+    uint32_t processed = 0;
 
     for (int r = 0; r < rows; ++r) {
         for (int c = 0; c < cols; ++c) {
@@ -903,8 +903,8 @@ RasterType<float> max_upstream_dist(const RasterType<uint8_t>& ldd, std::functio
 
     RasterType<float> result(meta, 0.f);
 
-    auto total    = rows * cols;
-    int processed = 0;
+    auto total         = rows * cols;
+    uint32_t processed = 0;
 
     for (int r = 0; r < rows; ++r) {
         for (int c = 0; c < cols; ++c) {
