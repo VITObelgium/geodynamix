@@ -9,6 +9,7 @@
 namespace gdx {
 
 using namespace inf;
+namespace gdal = inf::gdal;
 
 static void process_points_from_line(gdal::LineCRef line, std::vector<Line<double>>& lines)
 {
@@ -21,8 +22,8 @@ static void process_points_from_line(gdal::LineCRef line, std::vector<Line<doubl
 }
 
 void read_shape_file(const fs::path& fileName,
-    std::vector<Point<double>>& points,
-    std::vector<Line<double>>& lines)
+                     std::vector<Point<double>>& points,
+                     std::vector<Line<double>>& lines)
 {
     auto dataSet = gdal::VectorDataSet::open(fileName, gdal::VectorType::ShapeFile);
     if (dataSet.layer_count() == 0) {

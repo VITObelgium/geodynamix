@@ -19,6 +19,7 @@
 namespace gdx::test {
 
 using namespace doctest;
+namespace gdal = inf::gdal;
 
 static const uint32_t s_rows = 80;
 static const uint32_t s_cols = 60;

@@ -41,6 +41,7 @@ namespace gdx {
 namespace py = pybind11;
 using namespace py::literals;
 using namespace inf;
+namespace gdal = inf::gdal;
 
 const std::unordered_map<uint8_t, std::tuple<uint8_t, uint8_t, uint8_t>> cm::ldd{{{1, {50, 136, 189}},
                                                                                   {2, {102, 194, 165}},
