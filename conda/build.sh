@@ -10,26 +10,6 @@ cd ${SRC_DIR}/thirdparty
 git clone --branch v4.0.0 --depth 1 https://github.com/Microsoft/GSL.git
 git clone --branch v3.0.1 --depth 1 https://github.com/HowardHinnant/date
 
-cd ${SRC_DIR}/thirdparty/fmt
-cmake -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DFMT_TEST=OFF \
-    -DFMT_DOC=OFF \
-    -DCMAKE_INSTALL_PREFIX=../local \
-    -S . -B .
-cmake --build . --target install
-
-cd ${SRC_DIR}/thirdparty/spdlog
-cmake -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DSPDLOG_BUILD_BENCH=OFF \
-    -DSPDLOG_BUILD_EXAMPLE=OFF \
-    -DSPDLOG_BUILD_TESTS=OFF \
-    -DSPDLOG_FMT_EXTERNAL=ON \
-    -DCMAKE_INSTALL_PREFIX=../local \
-    -S . -B .
-cmake --build . --target install
-
 cd ${SRC_DIR}/thirdparty/GSL
 cmake -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
