@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       GIT_HASH: ${{ github.sha }}
-      GDX_VERSION: 0.11.8
+      GDX_VERSION: 0.14.4
     strategy:
       fail-fast: false
       matrix:
@@ -21,7 +21,7 @@ jobs:
         with:
           auto-update-conda: true
           activate-environment: build
-          python-version: "3.10"
+          python-version: "3.12"
       - name: create meta.yaml
         run: python
       - name: Setup conda forge
