@@ -8,8 +8,6 @@ mkdir %SRC_DIR%\thirdparty
 
 cd %SRC_DIR%\thirdparty
 
-git clone --branch 10.2.1 --depth 1 https://github.com/fmtlib/fmt.git
-git clone --branch v1.13.0 --depth 1 https://github.com/gabime/spdlog.git
 git clone --branch v4.0.0 --depth 1 https://github.com/Microsoft/GSL.git
 git clone --branch v3.0.1 --depth 1 https://github.com/HowardHinnant/date
 
@@ -22,30 +20,6 @@ cmake -G Ninja ^
     -DBUILD_TZ_LIB=ON ^
     -DUSE_SYSTEM_TZ_DB=ON ^
     -DENABLE_DATE_TESTING=OFF ^
-    -DCMAKE_INSTALL_PREFIX=../local ^
-    -S . -B .
-if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-cmake --build . --target install
-if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-
-cd %SRC_DIR%/thirdparty/fmt
-cmake -G Ninja ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DFMT_TEST=OFF ^
-    -DFMT_DOC=OFF ^
-    -DCMAKE_INSTALL_PREFIX=../local ^
-    -S . -B .
-if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-cmake --build . --target install
-if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
-
-cd %SRC_DIR%/thirdparty/spdlog
-cmake -G Ninja ^
-    -DCMAKE_BUILD_TYPE=Release ^
-    -DSPDLOG_BUILD_BENCH=OFF ^
-    -DSPDLOG_BUILD_EXAMPLE=OFF ^
-    -DSPDLOG_BUILD_TESTS=OFF ^
-    -DSPDLOG_FMT_EXTERNAL=ON ^
     -DCMAKE_INSTALL_PREFIX=../local ^
     -S . -B .
 if %ERRORLEVEL% NEQ 0 exit %ERRORLEVEL%
