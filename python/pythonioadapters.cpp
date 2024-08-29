@@ -29,6 +29,8 @@ namespace gdx {
 namespace py = pybind11;
 using namespace py::literals;
 
+namespace gdal = inf::gdal;
+
 template <typename T>
 using EigenArray = Eigen::Array<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
@@ -157,30 +159,30 @@ static void writeArray(py::array data, const RasterMetadata& meta, py::object pa
 void initIoModule(py::GDX_PYBIND_MODULE& ioMod)
 {
     ioMod.def("read_metadata",
-        &read_metadata,
-        "raster_path"_a,
-        "Read the metadata from a raster on disk, returns the gdx.raster_metadata instance");
+              &read_metadata,
+              "raster_path"_a,
+              "Read the metadata from a raster on disk, returns the gdx.raster_metadata instance");
 
     ioMod.def("read_array",
-        &readArray,
-        "raster_path"_a,
-        "dtype"_a  = py::none(),
-        "extent"_a = py::none(),
-        "Read a raster from disk, returns a (gdx.raster_metadata, np.ndarray) tuple");
+              &readArray,
+              "raster_path"_a,
+              "dtype"_a  = py::none(),
+              "extent"_a = py::none(),
+              "Read a raster from disk, returns a (gdx.raster_metadata, np.ndarray) tuple");
 
     ioMod.def("read_maskedarray",
-        &readMaskedArray,
-        "raster_path"_a,
-        "dtype"_a  = py::none(),
-        "extent"_a = py::none(),
-        "Read a raster from disk, returns a (gdx.raster_metadata, np.ma.MaskedArray) tuple");
+              &readMaskedArray,
+              "raster_path"_a,
+              "dtype"_a  = py::none(),
+              "extent"_a = py::none(),
+              "Read a raster from disk, returns a (gdx.raster_metadata, np.ma.MaskedArray) tuple");
 
     ioMod.def("write_array",
-        &writeArray,
-        "data"_a,
-        "metadata"_a,
-        "raster_path"_a,
-        "dtype"_a = py::none(),
-        "Write a numpy array to disk");
+              &writeArray,
+              "data"_a,
+              "metadata"_a,
+              "raster_path"_a,
+              "dtype"_a = py::none(),
+              "Write a numpy array to disk");
 }
 }

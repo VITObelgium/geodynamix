@@ -36,6 +36,8 @@ namespace pyalgo {
 namespace py = pybind11;
 using namespace inf;
 
+namespace gdal = inf::gdal;
+
 template <typename T>
 using value_type = typename std::remove_cv_t<std::remove_reference_t<T>>::value_type;
 
