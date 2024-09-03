@@ -11,8 +11,6 @@
 
 namespace gdx {
 
-namespace gdal = inf::gdal;
-
 template <typename T>
 struct RasterizeOptions
 {
@@ -39,14 +37,14 @@ RasterType<T> translate(const RasterType<T>& ras, const TranslateOptions<T>& opt
 {
     auto& meta = ras.metadata();
 
-    auto memDriver = gdal::RasterDriver::create(gdal::RasterType::Memory);
-    gdal::RasterDataSet memDataSet(memDriver.create_dataset<T>(meta.rows, meta.cols, 0));
+    auto memDriver = inf::gdal::RasterDriver::create(inf::gdal::RasterType::Memory);
+    inf::gdal::RasterDataSet memDataSet(memDriver.create_dataset<T>(meta.rows, meta.cols, 0));
     memDataSet.add_band(ras.data());
     memDataSet.set_geotransform(inf::metadata_to_geo_transform(meta));
     memDataSet.set_nodata_value(1, meta.nodata);
     memDataSet.set_projection(meta.projection);
 
-    auto dataPair = gdal::translate<T>(memDataSet, options.meta);
+    auto dataPair = inf::gdal::translate<T>(memDataSet, options.meta);
     return RasterType<T>(dataPair.first, dataPair.second);
 }
 
@@ -90,14 +88,14 @@ RasterType rasterize(const inf::gdal::VectorDataSet& shapeDataSet, const Rasteri
         gdalOpts.push_back(options.values[i]);
     }
 
-    auto datasetDataPair = gdal::rasterize<T>(shapeDataSet, options.meta, gdalOpts);
+    auto datasetDataPair = inf::gdal::rasterize<T>(shapeDataSet, options.meta, gdalOpts);
     return RasterType(datasetDataPair.first, datasetDataPair.second);
 }
 
 template <typename RasterType>
 RasterType rasterize(const fs::path& shapePath, const RasterizeOptions<typename RasterType::value_type>& options)
 {
-    return rasterize<RasterType>(gdal::VectorDataSet::open(shapePath), options);
+    return rasterize<RasterType>(inf::gdal::VectorDataSet::open(shapePath), options);
 }
 
 struct RasterizePolygonOptions
@@ -139,7 +137,7 @@ RasterType rasterize_polygons(inf::gdal::VectorDataSet& vectorDs, const Rasteriz
 template <typename RasterType>
 RasterType rasterize_polygons(const fs::path& vector, const RasterizePolygonOptions& options)
 {
-    auto ds = gdal::VectorDataSet::open(vector);
+    auto ds = inf::gdal::VectorDataSet::open(vector);
     return rasterize_polygons<RasterType>(ds, options);
 }
 
