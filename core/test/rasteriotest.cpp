@@ -72,7 +72,7 @@ TEST_CASE("read metadata")
 
 TEST_CASE("read metadata with projection")
 {
-    auto meta = inf::gdal::io::read_metadata(fs::u8path(TEST_DATA_DIR) / "../../../test/mapdata/landusebyte.tif");
+    auto meta = inf::gdal::io::read_metadata(file::u8path(TEST_DATA_DIR) / "../../../test/mapdata/landusebyte.tif");
     CHECK(meta.projection_frienly_name() == "EPSG:31370");
 }
 
@@ -286,7 +286,7 @@ template <typename T>
 void testRaster(std::string_view filename)
 {
     MaskedRaster<int32_t> referenceRaster;
-    referenceRaster.set_metadata(read_raster(fs::u8path(TEST_DATA_DIR) / std::string(filename), referenceRaster));
+    referenceRaster.set_metadata(read_raster(file::u8path(TEST_DATA_DIR) / std::string(filename), referenceRaster));
     write_raster(referenceRaster, "raster.asc");
 
     MaskedRaster<int32_t> writtenRaster;
@@ -376,18 +376,18 @@ TEST_CASE("write raster with nodata float")
 
     std::vector<std::string> expected({
         "ncols        5"s,
-            "nrows        3"s,
-            "xllcorner    1.000000000000"s,
-            "yllcorner    -10.000000000000"s,
-            "cellsize     4.000000000000"s,
+        "nrows        3"s,
+        "xllcorner    1.000000000000"s,
+        "yllcorner    -10.000000000000"s,
+        "cellsize     4.000000000000"s,
 #if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3, 8, 0)
-            "NODATA_value  -1"s,
+        "NODATA_value  -1"s,
 #else
-            "NODATA_value -1"s,
+        "NODATA_value -1"s,
 #endif
-            "0.0 1 2 3 4"s,
-            "5 6 7 8 9"s,
-            "4 3 2 -1 0"s,
+        "0.0 1 2 3 4"s,
+        "5 6 7 8 9"s,
+        "4 3 2 -1 0"s,
     });
 
     std::ifstream str("raster.asc");
@@ -612,7 +612,7 @@ TEST_CASE("Write raster with different data type")
 
     auto path = fs::temp_directory_path() / "rasterio" / "int32.tif";
 
-    auto ras = read_masked_raster<uint32_t>(fs::u8path(TEST_DATA_DIR) / "testraster.asc", extent);
+    auto ras = read_masked_raster<uint32_t>(file::u8path(TEST_DATA_DIR) / "testraster.asc", extent);
     gdx::write_raster(ras, path, typeid(int32_t));
 
     CHECK(inf::type_name(gdal::io::get_raster_type(path)) == inf::type_name(typeid(int32_t)));

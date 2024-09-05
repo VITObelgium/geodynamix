@@ -20,6 +20,7 @@ add_executable(gdxalgotest
     maximumtest.cpp
     nodatatest.cpp
     normalisetest.cpp
+    $<$<BOOL:${GDX_ENABLE_GEOMETRY}>:polygoncoveragetest.cpp>
     propdisttest.cpp
     rasterizetest.cpp
     rasterizelineantialiasedtest.cpp
