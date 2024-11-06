@@ -10,7 +10,7 @@ template <
 RasterType2<T2> if_then(const RasterType1<T1>& condition, const RasterType2<T2>& thenRaster)
 {
     if (condition.size() != thenRaster.size()) {
-        throw RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{}",
+        throw inf::RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{}",
                            condition.rows(), condition.cols(),
                            thenRaster.rows(), thenRaster.cols());
     }
@@ -38,7 +38,7 @@ auto if_then_else(const RasterType1<T1>& condition, const RasterType2<T2>& thenR
     using ResultType = std::common_type_t<T2, T3>;
 
     if (condition.size() != thenRaster.size() || condition.size() != elseRaster.size()) {
-        throw RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{} else {}x{}",
+        throw inf::RuntimeError("If: Incompatible raster sizes if {}x{} then {}x{} else {}x{}",
                            condition.rows(), condition.cols(),
                            thenRaster.rows(), thenRaster.cols(),
                            elseRaster.rows(), elseRaster.cols());
