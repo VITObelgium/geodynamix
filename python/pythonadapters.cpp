@@ -263,7 +263,7 @@ Raster read_raster(py::object dataType, py::object fileName)
 void write_raster(Raster& raster, const std::string& filepath, py::object colorMap)
 {
     if (colorMap.is_none()) {
-        raster.write(fs::u8path(filepath));
+        raster.write(file::u8path(filepath));
     } else {
         raster.writeColorMapped(filepath, convertMatplotlibColorMapToColorMap(colorMap));
     }
@@ -274,7 +274,7 @@ void write_raster(py::object dataType, Raster& raster, const std::string& filepa
     auto& dtype = dtypeToRasterType(py::dtype::from_args(dataType));
 
     if (colorMap.is_none()) {
-        raster.write(fs::u8path(filepath), dtype);
+        raster.write(file::u8path(filepath), dtype);
     } else {
         throw RuntimeError("Color maps with custom types currently not supported");
         // raster.writeColorMapped(filePath, dtype, convertMatplotlibColorMapToColorMap(colorMap));

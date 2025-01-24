@@ -6,6 +6,7 @@
 namespace gdx {
 
 namespace py = pybind11;
+using namespace inf;
 
 RasterArgument::RasterArgument(pybind11::object ob)
 : _ob(ob)
@@ -18,7 +19,7 @@ Raster& RasterArgument::raster()
         return _ob.cast<Raster&>();
     } else if (py::isinstance<py::str>(_ob)) {
         if (!_raster) {
-            auto path = fs::u8path(_ob.cast<std::string>());
+            auto path = file::u8path(_ob.cast<std::string>());
             if (!fs::exists(path)) {
                 throw InvalidArgument("Provided raster path is not valid: {}", _ob.cast<std::string>());
             }
