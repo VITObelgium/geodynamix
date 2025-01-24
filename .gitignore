@@ -22,3 +22,8 @@ compile_commands.json
 .DS_Store
 vcpkg_installed
 standalone
+
+# pixi environments
+.pixi
+*.egg-info
+pixi.lock

@@ -15,10 +15,10 @@ include(CheckCXXSymbolExists)
 
 string(COMPARE EQUAL "${CMAKE_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" GDX_IS_TOPLEVEL)
 
-option(GDX_ENABLE_SIMD "Build with simd support for DenseRaster (default = sse instructions)" ON)
+option(GDX_ENABLE_SIMD "Build with simd support for DenseRaster (default = sse instructions)" OFF)
 cmake_dependent_option(GDX_AVX2 "Build with avx2 simd instructions support" OFF "GDX_ENABLE_SIMD" OFF)
 option(GDX_ENABLE_OPENMP "Build without openmp acceleration support" OFF)
-option(GDX_ENABLE_TOOLS "Build the gdx tools" ON)
+option(GDX_ENABLE_TOOLS "Build the gdx tools" OFF)
 option(GDX_ENABLE_TESTS "Build the c++ unit tests" OFF)
 option(GDX_ENABLE_TEST_UTILS "Build the unit test utilities" ${GDX_ENABLE_TESTS})
 option(GDX_ENABLE_BENCHMARKS "Build the micro benchmarks" OFF)
@@ -31,8 +31,8 @@ if(GDX_IS_TOPLEVEL)
     option(ENABLE_ADDRESS_SANITIZER "Enable the address sanitizer" OFF)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
 
-    cmake_minimum_required(VERSION 3.19)
-    set(CMAKE_CXX_STANDARD 17)
+    cmake_minimum_required(VERSION 3.20)
+    set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_EXTENSIONS OFF)
     set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
