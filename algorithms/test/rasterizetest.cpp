@@ -102,7 +102,7 @@ TEST_CASE_TEMPLATE("RasterizePolygons", TypeParam, UnspecializedRasterTypes)
                                                    polygon1Val, polygon1Val + polygon3Val,
                                                    polygon1Val + polygon2Val, polygon1Val});
 
-        auto jsonPath = fs::u8path(geoJson);
+        auto jsonPath = file::u8path(geoJson);
         auto ds       = gdal::VectorDataSet::open(jsonPath, gdal::VectorType::GeoJson);
         auto actual   = gdx::rasterize_polygons<DoubleRaster>(ds, opts);
 
