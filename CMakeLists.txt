@@ -31,8 +31,8 @@ if(GDX_IS_TOPLEVEL)
     option(ENABLE_ADDRESS_SANITIZER "Enable the address sanitizer" OFF)
     option(ENABLE_UB_SANITIZER "Enable the undefined behavior sanitizer" OFF)
 
-    cmake_minimum_required(VERSION 3.19)
-    set(CMAKE_CXX_STANDARD 17)
+    cmake_minimum_required(VERSION 3.20)
+    set(CMAKE_CXX_STANDARD 20)
     set(CMAKE_CXX_EXTENSIONS OFF)
     set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/geodynamix)
 
