@@ -1,0 +1,35 @@
+[package]
+name    = "geodynamix"
+version = "0.16.0"
+edition = "2021"
+
+[workspace]
+members = ["../geo", "../inf"]
+
+[lib]
+name       = "geodynamix"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3     = { version = "0.23", features = ["extension-module"] }
+pyo3-log = "0.12"
+numpy    = "0.23"
+inf      = { path = "../inf" }
+geo      = { path = "../geo", features = ["gdal", "python"] }
+
+[features]
+default      = []
+static_build = ["geo/gdal-static"]
+
+[package.metadata.vcpkg]
+git = "https://github.com/microsoft/vcpkg"
+rev = "10b7a17"
+overlay-triplets-path = "vcpkg-triplets"
+dependencies = [
+    "gdal[core,netcdf]",
+    "netcdf-c[core,netcdf-4,hdf5]",
+] # needed to run the geo tests
+
+[patch.crates-io]
+# more recent geozero to avoid multiple gdal copies
+geozero = { git = "https://github.com/georust/geozero.git", rev = "97b143716dcb6331ba259f9c98b1af9a6c325739" }
