@@ -1,4 +1,5 @@
 import os
+import sys
 import geodynamix as gdx
 import copy
 import unittest
@@ -140,8 +141,7 @@ class TestGdx(unittest.TestCase):
         raster = gdx.read(
             Path(os.path.realpath(__file__)).parent
             / ".."
-            / ".."
-            / ".."
+            / "infra-rs"
             / "tests"
             / "data"
             / "landusebyte.tif"
@@ -162,12 +162,12 @@ class TestGdx(unittest.TestCase):
         create_test_file("raster.asc", test_raster)
         raster = gdx.read("raster.asc")
         gdx.write(raster, "writtenraster.asc")
+        raster = raster.array
+        raster[raster == -1] = np.iinfo(np.int32).min
 
         written_raster = gdx.read("writtenraster.asc")
         os.remove("writtenraster.asc")
-        print(raster.array)
-        print(written_raster.array)
-        self.assertTrue(np.allclose(raster.array, written_raster.array, equal_nan=True))
+        self.assertTrue(np.allclose(raster, written_raster.array, equal_nan=True))
 
     # def test_modify_raster_using_numpy(self):
     #     # modify the raster data using the ndarry accessor

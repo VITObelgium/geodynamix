@@ -7,12 +7,6 @@
         "**/deps/vcpkg/buildtrees": true,
         "**/deps/vcpkg/packages": true,
     },
-    "python.autoComplete.extraPaths": [
-        "${workspaceRoot}/build/gdx/Release"
-    ],
-    "python.linting.pylintArgs": [
-        "--init-hook='import sys; sys.path.append(\"${workspaceRoot}/build/gdx/Release\")'"
-    ],
     "C_Cpp.autocomplete": "Disabled",
     "C_Cpp.formatting": "Disabled",
     "C_Cpp.errorSquiggles": "Disabled",
@@ -25,8 +19,5 @@
     "cmake.copyCompileCommands": "${workspaceRoot}/compile_commands.json",
     "clangd.arguments": [
         "-header-insertion=never"
-    ],
-    "python.analysis.extraPaths": [
-        "${workspaceRoot}/build/gdx/Release"
     ]
 }

@@ -1,6 +1,9 @@
-[submodule "deps/infra"]
-	path = deps/infra
+[submodule "infra-rs"]
+	path = infra-rs
+	url = https://git.vito.be/scm/marvin/infra-rs.git
+[submodule "cpp/deps/infra"]
+	path = cpp/deps/infra
 	url = https://github.com/VITObelgium/cpp-infra.git
-[submodule "deps/vcpkg"]
-	path = deps/vcpkg
+[submodule "cpp/deps/vcpkg"]
+	path = cpp/deps/vcpkg
 	url = https://github.com/VITObelgium/vcpkg-ports.git

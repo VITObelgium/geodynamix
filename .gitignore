@@ -22,3 +22,6 @@ compile_commands.json
 .DS_Store
 vcpkg_installed
 standalone
+target
+*.so
+python/geodynamix.data/data/share/geodynamix/proj.db

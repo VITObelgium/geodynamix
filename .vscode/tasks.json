@@ -1,6 +1,38 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
-    "tasks": []
+    "tasks": [
+        {
+            "type": "process",
+            "command": "pixi",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "args": [
+                "run",
+                "maturin",
+                "develop"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "rust: maturin develop"
+        },
+        {
+            "type": "process",
+            "command": "pixi",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "args": [
+                "run",
+                "test"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "label": "rust: maturin test"
+        }
+    ]
 }
