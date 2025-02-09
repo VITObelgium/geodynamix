@@ -1,0 +1,18 @@
+[
+    {
+        "label": "Gdx build wheel",
+        "command": "just",
+        "args": ["wheel_develop"],
+        "use_new_terminal": false,
+        "allow_concurrent_runs": false,
+        "reveal": "always"
+    },
+    {
+        "label": "Gdx test wheel",
+        "command": "just",
+        "args": ["test"],
+        "use_new_terminal": false,
+        "allow_concurrent_runs": false,
+        "reveal": "always"
+    }
+]

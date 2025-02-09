@@ -1,16 +1,20 @@
+use geo::AnyDenseArray;
 use pyo3::prelude::*;
-use std::path::PathBuf;
 
-mod pyio;
-mod pyraster;
-pub(crate) mod pyutils;
+mod io;
+mod nodata;
+mod raster;
+mod rasterargument;
+mod rastermetadata;
+pub(crate) mod utils;
 
-#[pyfunction]
-fn version() -> String {
-    env!("CARGO_PKG_VERSION").to_string()
-}
+pub use nodata::Nodata;
+pub use raster::Raster;
+pub use rastermetadata::RasterMetadata;
+pub type PythonDenseArray = AnyDenseArray<RasterMetadata>;
 
-/// A Python module implemented in Rust.
+/// The main geodynamix module
+/// Typically imported as `import geodynamix as gdx`
 #[pymodule]
 fn geodynamix(m: &Bound<'_, PyModule>) -> PyResult<()> {
     pyo3_log::init();
@@ -18,17 +22,20 @@ fn geodynamix(m: &Bound<'_, PyModule>) -> PyResult<()> {
     #[cfg(feature = "static_build")]
     configure_proj_data()?;
 
-    m.add_class::<pyraster::RasterMetadata>()?;
-    m.add_class::<pyraster::Raster>()?;
-    m.add_function(wrap_pyfunction!(version, m)?)?;
-    m.add_function(wrap_pyfunction!(pyio::read, m)?)?;
-    m.add_function(wrap_pyfunction!(pyio::read_as, m)?)?;
-    m.add_function(wrap_pyfunction!(pyio::write, m)?)?;
+    m.add_class::<RasterMetadata>()?;
+    m.add_class::<raster::Raster>()?;
+    m.add_function(wrap_pyfunction!(io::read, m)?)?;
+    m.add_function(wrap_pyfunction!(io::read_as, m)?)?;
+    m.add_function(wrap_pyfunction!(io::write, m)?)?;
+    m.add_function(wrap_pyfunction!(raster::raster_equal, m)?)?;
+    m.add("nodata", Nodata::default())?;
     Ok(())
 }
 
 #[cfg(feature = "static_build")]
 fn configure_proj_data() -> PyResult<()> {
+    use std::path::PathBuf;
+
     // If we are using a static build, we are responsible for shipping the proj.db
     // So make sure gdal can find it
     let python_exe = std::env::current_exe()?;

@@ -1,5 +1,5 @@
 [package]
-name    = "geodynamix"
+name = "geodynamix"
 version = "0.16.0"
 edition = "2021"
 
@@ -7,18 +7,18 @@ edition = "2021"
 members = ["infra-rs/crates/geo", "infra-rs/crates/inf"]
 
 [lib]
-name       = "geodynamix"
+name = "geodynamix"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3     = { version = "0.23", features = ["extension-module"] }
+pyo3 = { version = "0.23", features = ["extension-module"] }
 pyo3-log = "0.12"
-numpy    = "0.23"
-inf      = { path = "infra-rs/crates/inf" }
-geo      = { path = "infra-rs/crates/geo", features = ["gdal", "python"] }
+numpy = "0.23"
+inf = { path = "infra-rs/crates/inf" }
+geo = { path = "infra-rs/crates/geo", features = ["gdal", "python"] }
 
 [features]
-default      = []
+default = []
 static_build = ["geo/gdal-static"]
 
 [package.metadata.vcpkg]

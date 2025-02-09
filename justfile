@@ -21,7 +21,7 @@ cargo-config-gen:
   cp infra-rs/.cargo/config.toml.in .cargo/config.toml
   sd @CARGO_VCPKG_TRIPLET@ {{VCPKG_DEFAULT_TRIPLET}} .cargo/config.toml
   sd @PYTHON_EXE@ {{PYTHON_EXE}} .cargo/config.toml
-  
+
 bootstrap: cargo-config-gen
   echo "Bootstrapping vcpkg:{{VCPKG_DEFAULT_TRIPLET}}..."
   cargo vcpkg -v build
@@ -34,7 +34,7 @@ bootstrap: cargo-config-gen
   cp ./target/data/proj.db ./target/release/
   cp ./target/data/proj.db ./python/geodynamix.data/data/share/geodynamix/
   pixi install
-  
+
 doc:
   cargo doc --workspace --exclude='infra-rs' --exclude='vector_derive' --no-deps --all-features --open
 
@@ -48,10 +48,10 @@ build_release:
   cargo build --workspace --release
 
 test_debug:
-  cargo nextest run --profile ci --workspace --features=static_build
+    cargo nextest run --profile ci --workspace --features=static_build
 
-build: build_release
+wheel_develop:
+    pixi run maturin develop
 
-test:
-  pixi run maturin develop; pixi run test
-
+test: wheel_develop
+    pixi run test

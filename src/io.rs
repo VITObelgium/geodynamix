@@ -1,9 +1,6 @@
 use pyo3::prelude::*;
 
-use crate::{
-    pyraster::{PythonDenseArray, Raster},
-    pyutils,
-};
+use crate::{utils, PythonDenseArray, Raster};
 
 #[pyfunction]
 pub fn read(path: std::path::PathBuf) -> PyResult<Raster> {
@@ -12,7 +9,7 @@ pub fn read(path: std::path::PathBuf) -> PyResult<Raster> {
 
 #[pyfunction]
 pub fn read_as(dtype: &Bound<'_, PyAny>, path: std::path::PathBuf) -> PyResult<Raster> {
-    let dtype = pyutils::convert_data_type(dtype)?;
+    let dtype = utils::convert_data_type(dtype)?;
     Ok(PythonDenseArray::read_as(dtype, &path)?.into())
 }
 

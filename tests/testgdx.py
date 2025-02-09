@@ -1,5 +1,4 @@
 import os
-import sys
 import geodynamix as gdx
 import copy
 import unittest
@@ -73,21 +72,26 @@ class TestGdx(unittest.TestCase):
         ras = gdx.raster(rows=3, cols=4, dtype=int)
         self.assertEqual(np.dtype("int32"), ras.dtype)
 
-    # def test_expand_integer_to_raster(self):
-    #     meta = gdx.raster_metadata(rows=3, cols=4)
+    def test_expand_integer_to_raster(self):
+        meta = gdx.raster_metadata(rows=3, cols=4)
+        ras = gdx.raster(meta, dtype=float, fill=42.0)
 
-    #     ras = gdx.raster(meta, dtype=float, fill=42.0)
-    #     self.assertTrue(gdx.raster_equal(ras, 42.0))
-    #     self.assertTrue(gdx.raster_equal(ras, 42))
-    #     self.assertFalse(gdx.raster_equal(ras, 6.0))
+        self.assertTrue(gdx.raster_equal(ras, 42.0))
+        self.assertTrue(gdx.raster_equal(ras, 42))
+        self.assertFalse(gdx.raster_equal(ras, 6.0))
 
-    #     ras = gdx.raster(meta, dtype=float, fill=42)
-    #     self.assertTrue(gdx.raster_equal(ras, 42.0))
-    #     self.assertTrue(gdx.raster_equal(ras, 42))
+        ras = gdx.raster(meta, dtype=float, fill=42)
+        self.assertTrue(gdx.raster_equal(ras, 42.0))
+        self.assertTrue(gdx.raster_equal(ras, 42))
 
-    #     ras = gdx.raster(meta, dtype=int, fill=42)
-    #     self.assertTrue(gdx.raster_equal(ras, 42))
-    #     self.assertTrue(gdx.raster_equal(ras, 42.0))
+        ras = gdx.raster(meta, dtype=int, fill=42)
+        self.assertTrue(gdx.raster_equal(ras, 42))
+        self.assertTrue(gdx.raster_equal(ras, 42.0))
+
+    def test_expand_nodata_to_raster(self):
+        meta = gdx.raster_metadata(rows=3, cols=4)
+        ras = gdx.raster(meta, dtype=float)
+        self.assertTrue(gdx.raster_equal(ras, gdx.nodata))
 
     def test_metadata_init(self):
         meta = gdx.raster_metadata()
