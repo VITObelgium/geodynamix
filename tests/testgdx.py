@@ -1,6 +1,5 @@
 import os
 import geodynamix as gdx
-import copy
 import unittest
 import numpy as np
 from pathlib import Path

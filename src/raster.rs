@@ -19,13 +19,13 @@ pub struct Raster {
 #[pymethods]
 impl Raster {
     #[new]
-    #[pyo3(signature = (georef = None, /, rows = 0, cols = 0, dtype = None, fill = None))]
+    #[pyo3(signature = (georef = None, /, dtype = None, fill = None, rows = 0, cols = 0))]
     pub fn new(
         georef: Option<&RasterMetadata>,
-        rows: i32,
-        cols: i32,
         dtype: Option<Bound<'_, PyAny>>,
         fill: Option<f64>,
+        rows: i32,
+        cols: i32,
     ) -> PyResult<Self> {
         let meta = if let Some(georef) = georef {
             georef.to_owned()
@@ -104,7 +104,5 @@ pub fn raster_equal(
     let array1 = raster1.raster(py)?;
     let array2 = raster2.raster_compatible_with(array1, py)?;
 
-    dbg!(array1);
-    dbg!(array2);
     Ok(array1 == array2)
 }

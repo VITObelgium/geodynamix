@@ -27,17 +27,17 @@ impl RasterArgument {
         }
     }
 
-    fn store_raster<'py>(&mut self, raster: Raster) -> Result<&PythonDenseArray> {
+    fn store_raster(&mut self, raster: Raster) -> Result<&PythonDenseArray> {
         self.raster = Some(raster);
         Ok(&(*self.raster.as_ref().unwrap().raster))
     }
 
-    fn store_bound_raster<'py>(&mut self, raster: Bound<'py, Raster>) -> Result<&PythonDenseArray> {
+    fn store_bound_raster(&mut self, raster: Bound<'_, Raster>) -> Result<&PythonDenseArray> {
         self.raster = Some(raster.extract()?);
         Ok(&(*self.raster.as_ref().unwrap().raster))
     }
 
-    pub fn raster<'py>(&mut self, py: Python<'py>) -> Result<&PythonDenseArray> {
+    pub fn raster(&mut self, py: Python) -> Result<&PythonDenseArray> {
         let ob = self.ob.clone_ref(py).into_bound(py);
 
         if let Ok(raster) = ob.downcast::<Raster>() {
@@ -51,10 +51,10 @@ impl RasterArgument {
         }
     }
 
-    pub fn raster_compatible_with<'py>(
+    pub fn raster_compatible_with(
         &mut self,
         context: &PythonDenseArray,
-        py: Python<'py>,
+        py: Python,
     ) -> Result<&PythonDenseArray> {
         let ob = self.ob.clone_ref(py).into_bound(py);
 
@@ -66,7 +66,7 @@ impl RasterArgument {
             self.store_raster(RasterArgument::from_float(val, context, py)?)
         } else if let Ok(val) = ob.downcast::<PyInt>() {
             self.store_raster(RasterArgument::from_int(val, context, py)?)
-        } else if let Ok(_) = ob.downcast::<Nodata>() {
+        } else if ob.downcast::<Nodata>().is_ok() {
             self.store_raster(RasterArgument::from_nodata(context, py)?)
         } else {
             return Err(Error::InvalidArgument(
@@ -95,7 +95,7 @@ impl RasterArgument {
             PythonDenseArray::F64(_) => Some(PyArrayDescr::of::<f64>(py).into_any()),
         };
 
-        Ok(Raster::new(Some(&georef), 0, 0, dtype, Some(fill_value))?)
+        Ok(Raster::new(Some(georef), dtype, Some(fill_value), 0, 0)?)
     }
 
     fn from_int(val: &Bound<'_, PyInt>, context: &PythonDenseArray, py: Python) -> Result<Raster> {
@@ -115,11 +115,11 @@ impl RasterArgument {
         };
 
         Ok(Raster::new(
-            Some(&georef),
-            0,
-            0,
+            Some(georef),
             dtype,
             Some(fill_value as f64),
+            0,
+            0,
         )?)
     }
 
@@ -138,7 +138,7 @@ impl RasterArgument {
             PythonDenseArray::F64(_) => Some(PyArrayDescr::of::<f64>(py).into_any()),
         };
 
-        Ok(Raster::new(Some(&georef), 0, 0, dtype, None)?)
+        Ok(Raster::new(Some(georef), dtype, None, 0, 0)?)
     }
 
     fn from_string(path_string: &Bound<'_, PyString>) -> Result<Raster> {
