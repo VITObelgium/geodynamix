@@ -310,52 +310,52 @@ class TestGdx(unittest.TestCase):
         result = gdx.raster_from_ndarray(array == 0, meta)
         np.testing.assert_array_equal(result.array, np.ones((2, 2)))
 
-    # def test_create_from_float_array_bad_dimension(self):
-    #     array = np.array(
-    #         [[0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
-    #         dtype="f",
-    #     )
+    def test_create_from_float_array_bad_dimension(self):
+        array = np.array(
+            [[0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
+            dtype="f",
+        )
 
-    #     meta = gdx.raster_metadata()
-    #     meta.rows = 5
-    #     meta.cols = 4
+        meta = gdx.raster_metadata()
+        meta.rows = 5
+        meta.cols = 4
 
-    #     with self.assertRaises(RuntimeError):
-    #         gdx.raster_from_ndarray(array, meta)
+        with self.assertRaises(ValueError):
+            gdx.raster_from_ndarray(array, meta)
 
-    # def test_create_from_int_array(self):
-    #     array = np.array(
-    #         [[0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
-    #         dtype="i",
-    #     )
+    def test_create_from_int_array(self):
+        array = np.array(
+            [[0, 0, 0, 0, 0], [0, 1, 1, 1, 1], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]],
+            dtype="i",
+        )
 
-    #     meta = gdx.raster_metadata(rows=4, cols=5)
-    #     result = gdx.raster_from_ndarray(array, meta)
+        meta = gdx.raster_metadata(rows=4, cols=5)
+        result = gdx.raster_from_ndarray(array, meta)
 
-    #     self.assertTrue(np.allclose(array, result.array))
+        self.assertTrue(np.allclose(array, result.array))
 
-    # def test_operators_int_raster(self):
-    #     array1 = np.array(
-    #         [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]],
-    #         dtype="i",
-    #     )
+    def test_operators_int_raster(self):
+        array1 = np.array(
+            [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]],
+            dtype="i",
+        )
 
-    #     array2 = np.array(
-    #         [[1, 1, 1, 1, 1], [0, 1, 0, 1, 0], [0, 0, 0, 0, 1], [1, 1, 1, 1, 1]],
-    #         dtype="i",
-    #     )
+        array2 = np.array(
+            [[1, 1, 1, 1, 1], [0, 1, 0, 1, 0], [0, 0, 0, 0, 1], [1, 1, 1, 1, 1]],
+            dtype="i",
+        )
 
-    #     array3 = np.array(
-    #         [[0, 0, 0, 0, 0], [0, 1, 0, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 0]],
-    #         dtype="i",
-    #     )
+        array3 = np.array(
+            [[0, 0, 0, 0, 0], [0, 1, 0, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 0]],
+            dtype="i",
+        )
 
-    #     # no need to check the values, already tested in c++
-    #     # just check if the binding works
-    #     ras1 = gdx.raster_from_ndarray(array1, gdx.raster_metadata(rows=4, cols=5))
-    #     ras2 = gdx.raster_from_ndarray(array2, gdx.raster_metadata(rows=4, cols=5))
-    #     ras3 = gdx.raster_from_ndarray(array3, gdx.raster_metadata(rows=4, cols=5))
-    #     self.assertEqual(array1.dtype, ras1.dtype)
+        # no need to check the values, already tested in rust
+        # just check if the binding works
+        ras1 = gdx.raster_from_ndarray(array1, gdx.raster_metadata(rows=4, cols=5))
+        ras2 = gdx.raster_from_ndarray(array2, gdx.raster_metadata(rows=4, cols=5))
+        ras3 = gdx.raster_from_ndarray(array3, gdx.raster_metadata(rows=4, cols=5))
+        self.assertEqual(array1.dtype, ras1.dtype)
 
     #     self.assertEqual((ras1 * 1).dtype, ras1.dtype)
     #     self.assertEqual((ras1 + 1).dtype, ras1.dtype)

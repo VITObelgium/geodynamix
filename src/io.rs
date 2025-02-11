@@ -1,5 +1,5 @@
 use geo::{Array, ArrayNum, DenseArray};
-use numpy::{PyArray2, PyArrayMethods};
+use numpy::{PyArray2, PyArrayMethods, PyUntypedArrayMethods};
 use pyo3::{exceptions::PyValueError, prelude::*};
 
 use crate::{utils, PythonDenseArray, Raster, RasterMetadata};
@@ -54,8 +54,16 @@ pub fn dense_array_from_ndarray<T: numpy::Element + ArrayNum<T>>(
     ndarray: &Bound<'_, PyArray2<T>>,
     meta: &RasterMetadata,
 ) -> PyResult<DenseArray<T, RasterMetadata>> {
+    if ndarray.shape()[0] != meta.get_rows() as usize
+        || ndarray.shape()[1] != meta.get_cols() as usize
+    {
+        return Err(PyValueError::new_err(
+            "Array shape does not match raster metadata",
+        ));
+    }
+
     Ok(DenseArray::<T, RasterMetadata>::new_process_nodata(
         meta.clone(),
         ndarray.to_vec()?,
-    ))
+    )?)
 }
