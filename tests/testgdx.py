@@ -231,6 +231,8 @@ class TestGdx(unittest.TestCase):
         intras = ras.astype("int32")
 
         expected = test_array.astype("int32")
+        expected[np.isnan(test_array)] = np.iinfo(np.int32).min
+
         self.assertEqual(np.dtype("int32"), intras.dtype)
         np.testing.assert_array_equal(intras.array, expected)
 
