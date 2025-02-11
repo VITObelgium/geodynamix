@@ -72,6 +72,10 @@ impl geo::ArrayMetadata for RasterMetadata {
         self.0.size()
     }
 
+    fn nodata(&self) -> Option<f64> {
+        self.0.nodata()
+    }
+
     fn geo_reference(&self) -> geo::GeoReference {
         self.0.clone()
     }

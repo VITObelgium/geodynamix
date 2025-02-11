@@ -67,6 +67,15 @@ class TestGdx(unittest.TestCase):
         self.assertEqual(4, ras.metadata.cols)
         self.assertTrue(np.all(ras.array == 4))
 
+    def test_masked_array(self):
+        ras = gdx.raster_from_ndarray(
+            test_array, gdx.raster_metadata(rows=4, cols=5, nodata=float("NaN"))
+        )
+
+        masked = ras.masked_array
+        np.testing.assert_array_equal(masked.data, test_array)
+        np.testing.assert_array_equal(masked.mask, np.isnan(test_array))
+
     def test_raster_creation_with_dtype(self):
         ras = gdx.raster(rows=3, cols=4, dtype=int)
         self.assertEqual(np.dtype("int32"), ras.dtype)
@@ -198,24 +207,31 @@ class TestGdx(unittest.TestCase):
 
     #     self.assertTrue(np.allclose(expected, written_raster.array, equal_nan=True))
 
-    # def test_method_chain(self):
-    #     expected = np.array(
-    #         [[0, 1, 2, 3, 4], [5, 11, 12, 8, 9], [0, 0, 0, 0, 0], [0, 0, 9, 9, 0]],
-    #         dtype=int,
-    #     )
+    def test_replace_value(self):
+        expected = np.array(
+            [
+                [0, 1, 2, 3, 4],
+                [5, 11, 12, 8, 9],
+                [0, 0, 0, 0, 0],
+                [0, 0, float("NaN"), float("NaN"), 0],
+            ],
+            dtype=float,
+        )
 
-    #     ras = gdx.raster_from_ndarray(
-    #         test_array, gdx.raster_metadata(rows=4, cols=5, nodata=float("NaN"))
-    #     )
-    #     ras = ras.replace_value(6, 11).replace_value(7, 12)
-    #     np.testing.assert_array_equal(expected, ras.array)
+        ras = gdx.raster_from_ndarray(
+            test_array, gdx.raster_metadata(rows=4, cols=5, nodata=float("NaN"))
+        )
+        ras.replace_value(6, 11)
+        ras.replace_value(7, 12)
+        np.testing.assert_array_equal(ras.array, expected)
 
-    # def test_astype(self):
-    #     ras = gdx.raster_from_ndarray(test_array, gdx.raster_metadata(rows=4, cols=5))
-    #     intras = ras.astype(int)
+    def test_astype(self):
+        ras = gdx.raster_from_ndarray(test_array, gdx.raster_metadata(rows=4, cols=5))
+        intras = ras.astype(int)
 
-    #     expected = test_array.astype("int32")
-    #     np.testing.assert_array_equal(expected, intras.array)
+        expected = test_array.astype("int32")
+        self.assertEqual(np.dtype("int32"), intras.dtype)
+        np.testing.assert_array_equal(expected, intras.array)
 
     # def test_astype_float_and_back(self):
     #     byte_array = np.array([[255, 1, 2], [5, 6, 7], [0, 0, 255]], dtype="B")

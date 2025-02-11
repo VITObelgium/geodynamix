@@ -5,6 +5,7 @@ use std::sync::Arc;
 use geo::{AnyDenseArray, Columns, Error, RasterSize, Rows};
 
 use crate::{
+    algoadapters,
     rasterargument::RasterArgument,
     utils::{self, array_type_to_numpy_dtype},
     PythonDenseArray, RasterMetadata,
@@ -62,6 +63,23 @@ impl Raster {
     #[getter]
     pub fn array<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         utils::raster_array(py, &self.raster)
+    }
+
+    #[getter]
+    pub fn masked_array<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+        utils::raster_masked_array(py, &self.raster)
+    }
+
+    pub fn astype(&mut self, dtype: Bound<'_, PyAny>) -> PyResult<Raster> {
+        let dtype = utils::convert_data_type(&dtype)?;
+        Ok(self.raster.cast(dtype).into())
+    }
+
+    pub fn replace_value(&mut self, value: f64, new_value: f64) -> PyResult<()> {
+        let raster = Arc::get_mut(&mut self.raster)
+            .ok_or_else(|| Error::Runtime("Failed to get mutable reference".into()))?;
+        algoadapters::replace_value(raster, value, new_value);
+        Ok(())
     }
 
     pub fn write(&mut self, path: std::path::PathBuf) -> PyResult<()> {

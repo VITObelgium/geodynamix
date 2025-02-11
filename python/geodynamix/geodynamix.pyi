@@ -99,7 +99,27 @@ class raster:
     @property
     def dtype(self) -> np.dtype: ...
     @property
-    def array(self) -> np.ndarray: ...
+    def array(self) -> np.ndarray:
+        """
+        Returns the raster as a numpy array. Data is copied so changes to the array will not affect the raster.
+        """
+        ...
+    @property
+    def masked_array(self) -> np.ma.masked_array:
+        """
+        Returns the raster as a numpy masked array for easier nodata handling at the cost of additional memory usage. Data is copied so changes to the array will not affect the raster.
+        """
+        ...
+    def replace_value(self, search: int | float, replace: int | float):
+        """
+        Replace all values in the raster that are equal to search with replace.
+        """
+        ...
+    def astype(self, dtype: DTypeLike) -> raster:
+        """
+        Convert the raster to the requested data type.
+        """
+        ...
 
 def raster_equal(lhs: RasterLike, rhs: RasterLike) -> bool:
     """
@@ -115,6 +135,54 @@ def raster_equal(lhs: RasterLike, rhs: RasterLike) -> bool:
     """
     ...
 
-def read(path: PathLike | str) -> raster: ...
-def read_as(dtype: DTypeLike, path: PathLike | str) -> raster: ...
-def write(raster: raster, path: PathLike | str) -> raster: ...
+def read(path: PathLike | str) -> raster:
+    """
+    Read a raster from disk in the data format of the file
+
+    Parameters
+    ----------
+    path : PathLike | str
+    The path to the raster file. Can be anything that is supported by gdal.
+    """
+    ...
+
+def read_as(dtype: DTypeLike, path: PathLike | str) -> raster:
+    """
+    Read a raster from disk and convert the data format to the requested data type
+
+    Parameters
+    ----------
+    dtype : DTypeLike
+    The data type to wich the raster data will be converted.
+    path : PathLike | str
+    The path to the raster file. Can be anything that is supported by gdal.
+    """
+    ...
+
+def write(raster: raster, path: PathLike | str) -> raster:
+    """
+    Write the raster raster to disk. The file file format is determined by the file extension.
+
+    Parameters
+    ----------
+    raster : raster
+    The raster to store.
+    path : PathLike | str
+    The storage location on disk.
+    """
+    ...
+
+def raster_from_ndarray(array: np.ndarray, metadata: raster_metadata) -> raster:
+    """
+    Create a raster from the data in the ndarray and spatially reference it using the provided metadata.
+    The ndarray will be copied in the raster so further changes to the ndarray will not affect the raster.
+    The values in the ndarray that match the nodata value in the metadata will be set to nodata in the raster.
+
+    Parameters
+    ----------
+    array : np.ndarray
+    The numpy array.
+    metadata : raster_metadata
+    The raster metadata.
+    """
+    ...

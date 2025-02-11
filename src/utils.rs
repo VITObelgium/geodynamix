@@ -1,7 +1,11 @@
 use numpy::{PyArray, PyArrayDescr, PyArrayMethods};
-use pyo3::{exceptions::PyValueError, prelude::*, types::PyType};
+use pyo3::{
+    exceptions::PyValueError,
+    prelude::*,
+    types::{IntoPyDict, PyType},
+};
 
-use geo::{Array, ArrayDataType, ArrayNum, DenseArray};
+use geo::{raster::algo, Array, ArrayDataType, ArrayMetadata, ArrayNum, DenseArray};
 
 use crate::{PythonDenseArray, RasterMetadata};
 
@@ -30,6 +34,42 @@ pub fn raster_array<'py>(
         PythonDenseArray::I64(array) => convert_array(py, array),
         PythonDenseArray::U64(array) => convert_array(py, array),
     }
+}
+
+pub fn raster_mask<'py>(py: Python<'py>, raster: &PythonDenseArray) -> PyResult<Bound<'py, PyAny>> {
+    match raster {
+        PythonDenseArray::F32(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::F64(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::I8(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::U8(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::I16(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::U16(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::I32(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::U32(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::I64(array) => convert_array(py, &algo::is_nodata(array)),
+        PythonDenseArray::U64(array) => convert_array(py, &algo::is_nodata(array)),
+    }
+}
+
+pub fn raster_masked_array<'py>(
+    py: Python<'py>,
+    raster: &PythonDenseArray,
+) -> PyResult<Bound<'py, PyAny>> {
+    let ma = PyModule::import(py, "numpy.ma")?;
+    let data = raster_array(py, raster)?;
+    let mask = raster_mask(py, raster)?;
+
+    let nodata_fill_value = raster
+        .metadata()
+        .nodata()
+        .unwrap_or(0.0)
+        .into_pyobject(py)?
+        .into_any();
+
+    let kwargs = vec![("mask", mask), ("fill_value", nodata_fill_value)];
+
+    ma.getattr("array")?
+        .call((data,), Some(&kwargs.into_py_dict(py)?))
 }
 
 pub fn convert_data_type(data_type: &Bound<'_, PyAny>) -> PyResult<ArrayDataType> {

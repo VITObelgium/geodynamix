@@ -16,6 +16,7 @@ pyo3-log = "0.12"
 numpy = "0.23"
 inf = { path = "infra-rs/crates/inf" }
 geo = { path = "infra-rs/crates/geo", features = ["gdal", "python"] }
+num = "0.4"
 
 [features]
 default = []

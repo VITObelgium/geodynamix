@@ -3,6 +3,7 @@
     "files.exclude": {
         "**/.git": true,
         "**/.clangd": true,
+        "**/__pycache__": true,
         "**/.DS_Store": true,
         "**/deps/vcpkg/buildtrees": true,
         "**/deps/vcpkg/packages": true,

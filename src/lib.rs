@@ -1,6 +1,7 @@
 use geo::AnyDenseArray;
 use pyo3::prelude::*;
 
+mod algoadapters;
 mod io;
 mod nodata;
 mod raster;
@@ -27,6 +28,7 @@ fn geodynamix(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(io::read, m)?)?;
     m.add_function(wrap_pyfunction!(io::read_as, m)?)?;
     m.add_function(wrap_pyfunction!(io::write, m)?)?;
+    m.add_function(wrap_pyfunction!(io::raster_from_ndarray, m)?)?;
     m.add_function(wrap_pyfunction!(raster::raster_equal, m)?)?;
     m.add("nodata", Nodata::default())?;
     Ok(())
