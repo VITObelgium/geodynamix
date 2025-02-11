@@ -22,9 +22,25 @@ pub fn write(pyraster: &mut Raster, path: std::path::PathBuf) -> PyResult<()> {
 
 #[pyfunction]
 pub fn raster_from_ndarray(ndarray: &Bound<'_, PyAny>, meta: &RasterMetadata) -> PyResult<Raster> {
-    if let Ok(ndarray) = ndarray.downcast_exact::<PyArray2<f32>>() {
+    if let Ok(ndarray) = ndarray.downcast::<PyArray2<u8>>() {
+        Ok(PythonDenseArray::U8(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<u16>>() {
+        Ok(PythonDenseArray::U16(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<u32>>() {
+        Ok(PythonDenseArray::U32(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<u64>>() {
+        Ok(PythonDenseArray::U64(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<i8>>() {
+        Ok(PythonDenseArray::I8(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<i16>>() {
+        Ok(PythonDenseArray::I16(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<i32>>() {
+        Ok(PythonDenseArray::I32(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<i64>>() {
+        Ok(PythonDenseArray::I64(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<f32>>() {
         Ok(PythonDenseArray::F32(dense_array_from_ndarray(ndarray, meta)?).into())
-    } else if let Ok(ndarray) = ndarray.downcast_exact::<PyArray2<f64>>() {
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<f64>>() {
         Ok(PythonDenseArray::F64(dense_array_from_ndarray(ndarray, meta)?).into())
     } else {
         Err(PyValueError::new_err("Invalid numpy array type"))

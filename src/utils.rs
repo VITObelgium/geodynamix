@@ -1,9 +1,5 @@
 use numpy::{PyArray, PyArrayDescr, PyArrayMethods};
-use pyo3::{
-    exceptions::PyValueError,
-    prelude::*,
-    types::{IntoPyDict, PyType},
-};
+use pyo3::{exceptions::PyValueError, prelude::*, types::IntoPyDict};
 
 use geo::{raster::algo, Array, ArrayDataType, ArrayMetadata, ArrayNum, DenseArray};
 
@@ -73,15 +69,12 @@ pub fn raster_masked_array<'py>(
 }
 
 pub fn convert_data_type(data_type: &Bound<'_, PyAny>) -> PyResult<ArrayDataType> {
-    if let Ok(dtype) = data_type.downcast::<PyArrayDescr>() {
+    if let Ok(dtype) = data_type.downcast_exact::<PyArrayDescr>() {
+        // The provided type is a numpy data type object
         convert_numpy_dtype(dtype)
-    } else if let Ok(pytype) = data_type.downcast_exact::<PyType>() {
-        convert_py_type(pytype)
     } else {
-        Err(PyValueError::new_err(format!(
-            "Invalid data type: {:?}",
-            data_type
-        )))
+        // The provided type is some python object, try to convert it to a numpy data type (e.g. int, float, 'B', ...)
+        convert_numpy_dtype(&PyArrayDescr::new(data_type.py(), data_type)?)
     }
 }
 
@@ -103,26 +96,15 @@ pub fn array_type_to_numpy_dtype(
     }
 }
 
-fn convert_py_type(pytype: &Bound<'_, PyType>) -> PyResult<ArrayDataType> {
-    match pytype.name()?.to_string_lossy().as_ref() {
-        "int" => Ok(ArrayDataType::Int32),
-        "float" => Ok(ArrayDataType::Float64),
-        _ => Err(PyValueError::new_err(format!(
-            "Unsupported python data type: {:?}",
-            pytype.name()
-        ))),
-    }
-}
-
 fn convert_numpy_dtype(dtype: &Bound<'_, PyArrayDescr>) -> PyResult<ArrayDataType> {
     match dtype.str()?.to_string_lossy().as_ref() {
         "uint8" | "bool" => Ok(ArrayDataType::Uint8),
-        "int16" => Ok(ArrayDataType::Int16),
         "uint16" => Ok(ArrayDataType::Uint16),
-        // when saying int as datatype it is translated to int64 on 64bit linux
-        // assume the client simply wants a 32bit integer
-        "int32" | "int64" => Ok(ArrayDataType::Int32),
-        "uint32" | "uint64" => Ok(ArrayDataType::Uint32),
+        "uint32" => Ok(ArrayDataType::Uint32),
+        "uint64" => Ok(ArrayDataType::Uint64),
+        "int16" => Ok(ArrayDataType::Int16),
+        "int32" => Ok(ArrayDataType::Int32),
+        "int64" => Ok(ArrayDataType::Int64),
         "float32" => Ok(ArrayDataType::Float32),
         "float64" => Ok(ArrayDataType::Float64),
         _ => Err(PyValueError::new_err(format!(
