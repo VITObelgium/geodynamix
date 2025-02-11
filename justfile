@@ -53,5 +53,8 @@ test_debug:
 wheel_develop:
     pixi run maturin develop
 
+wheel:
+    pixi run maturin build
+
 test: wheel_develop
     pixi run test
