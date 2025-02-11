@@ -42,6 +42,9 @@ pub fn raster_from_ndarray(ndarray: &Bound<'_, PyAny>, meta: &RasterMetadata) ->
         Ok(PythonDenseArray::F32(dense_array_from_ndarray(ndarray, meta)?).into())
     } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<f64>>() {
         Ok(PythonDenseArray::F64(dense_array_from_ndarray(ndarray, meta)?).into())
+    } else if let Ok(ndarray) = ndarray.downcast::<PyArray2<bool>>() {
+        let u8_array = ndarray.cast::<u8>(false)?;
+        Ok(PythonDenseArray::U8(dense_array_from_ndarray(&u8_array, meta)?).into())
     } else {
         Err(PyValueError::new_err("Invalid numpy array type"))
     }

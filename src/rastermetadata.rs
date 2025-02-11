@@ -36,9 +36,19 @@ impl RasterMetadata {
         self.0.columns().count()
     }
 
+    #[setter]
+    pub fn set_cols(&mut self, cols: i32) {
+        self.0.set_columns(Columns(cols));
+    }
+
     #[getter]
     pub fn get_rows(&self) -> i32 {
         self.0.rows().count()
+    }
+
+    #[setter]
+    pub fn set_rows(&mut self, rows: i32) {
+        self.0.set_rows(Rows(rows));
     }
 
     #[getter]

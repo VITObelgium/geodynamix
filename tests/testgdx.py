@@ -2,6 +2,7 @@ import os
 import geodynamix as gdx
 import unittest
 import numpy as np
+import copy
 from pathlib import Path
 
 
@@ -286,34 +287,28 @@ class TestGdx(unittest.TestCase):
 
     #     np.testing.assert_array_equal(expected, result.array)
 
-    # def test_create_from_float_array(self):
-    #     array = np.array(
-    #         [
-    #             [1, 0, 0, 0, 0],
-    #             [0, 1, 1, 1, 1],
-    #             [0, 0, 0, 0, 0],
-    #             [0, 0, float("nan"), float("nan"), 0],
-    #         ],
-    #         dtype="f",
-    #     )
+    def test_create_from_float_array(self):
+        array = np.array(
+            [
+                [1, 0, 0, 0, 0],
+                [0, 1, 1, 1, 1],
+                [0, 0, 0, 0, 0],
+                [0, 0, float("nan"), float("nan"), 0],
+            ],
+            dtype="f",
+        )
 
-    #     meta = gdx.raster_metadata()
-    #     meta.rows = 4
-    #     meta.cols = 5
+        meta = gdx.raster_metadata(rows=4, cols=5)
+        result = gdx.raster_from_ndarray(array, meta)
 
-    #     result = gdx.raster_from_ndarray(array, meta)
+        self.assertTrue(np.allclose(array, result.array, equal_nan=True))
 
-    #     self.assertTrue(np.allclose(array, result.array, equal_nan=True))
+    def test_create_from_bool_array(self):
+        array = np.zeros((2, 2))
+        meta = gdx.raster_metadata(rows=2, cols=2)
 
-    # def test_create_from_bool_array(self):
-    #     array = np.zeros((2, 2))
-
-    #     meta = gdx.raster_metadata()
-    #     meta.rows = 2
-    #     meta.cols = 2
-
-    #     result = gdx.raster_from_ndarray(array == 0, meta)
-    #     np.testing.assert_array_equal(result.array, np.ones((2, 2)))
+        result = gdx.raster_from_ndarray(array == 0, meta)
+        np.testing.assert_array_equal(result.array, np.ones((2, 2)))
 
     # def test_create_from_float_array_bad_dimension(self):
     #     array = np.array(
