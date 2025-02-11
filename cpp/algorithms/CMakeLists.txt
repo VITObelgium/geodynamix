@@ -64,11 +64,8 @@ add_library(gdxalgo
     shape.cpp
     suminbuffer.cpp
     categoryio.cpp
+    polygoncoverage.cpp
 )
-
-if(TARGET GEOS::geos)
-    target_sources(gdxalgo PRIVATE polygoncoverage.cpp)
-endif()
 
 add_library(geodynamix::gdxalgo ALIAS gdxalgo)
 
