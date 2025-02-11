@@ -46,7 +46,11 @@ jobs:
             - name: Bootstrap the ports
               working-directory: ./cpp
               run: just bootstrap
+              env:
+                  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
             - name: Build the code
+              working-directory: ./cpp
               run: just build
             - name: Run the unit tests
+              working-directory: ./cpp
               run: just test
