@@ -70,5 +70,7 @@ jobs:
               working-directory: ./cpp
               run: just build
             - name: Run the unit tests
+              env:
+                  VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
               working-directory: ./cpp
               run: just test
