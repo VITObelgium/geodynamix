@@ -32,11 +32,11 @@ jobs:
               run: |
                   git clone --depth 1 --branch ${{ env.VCPKG_TAG }} https://github.com/microsoft/vcpkg "${{ runner.TEMP }}/vcpkg"
             - name: Bootstrap vcpkg windows
-              if: ${{ startsWith(matrix.cfg.os, 'windows') }}
+              if: ${{ runner.os == 'Windows' }}
               run: |
                   ${{ runner.TEMP }}/vcpkg/bootstrap-vcpkg.bat
             - name: Bootstrap vcpkg unix
-              if: ${{ startsWith(matrix.cfg.os, 'ubuntu') || startsWith(matrix.cfg.os, 'mac') }}
+              if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
               run: |
                   sh ${{ runner.TEMP }}/vcpkg/bootstrap-vcpkg.sh
             - uses: taiki-e/install-action@v2
@@ -52,10 +52,10 @@ jobs:
                   python3 -m pip install --upgrade pip
                   pip3 install numpy
             - name: Install linux dependencies
-              if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
+              if: ${{ runner.os == 'Linux' }}
               run: sudo apt-get install nasm openssl
             - name: Install osx dependencies
-              if: ${{ matrix.cfg.os == 'macos-latest' }}
+              if: ${{ runner.os == 'macOS' }}
               run: |
                   brew install nasm
             - name: Bootstrap the ports
