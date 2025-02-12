@@ -155,7 +155,6 @@ endif ()
 if (MSVC)
     # add debugger visualisers for improved debugging info
     target_sources(gdxcore PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../GSL.natvis
         ${CMAKE_CURRENT_SOURCE_DIR}/../Eigen.natvis
     )
 endif ()
