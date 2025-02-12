@@ -13,7 +13,7 @@
             "name": "default",
             "binaryDir": "${sourceDir}/build",
             "inherits": "vcpkg",
-            "generator": "Ninja",
+            "generator": "Ninja Multi-Config",
             "cacheVariables": {
                 "GDX_ENABLE_TESTS": "ON",
                 "GDX_PYTHON_BINDINGS": "OFF",
