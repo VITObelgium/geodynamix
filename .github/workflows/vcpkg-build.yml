@@ -12,7 +12,7 @@ jobs:
                 cfg:
                     - { os: ubuntu-latest, triplet: x64-linux }
                     - { os: windows-2022, triplet: x64-windows-static-vs2022 }
-                    - { os: macos-13, triplet: x64-osx }
+                    - { os: macos-latest, triplet: x64-osx }
 
         steps:
             - name: Clone repository
@@ -25,6 +25,7 @@ jobs:
                   script: |
                       core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
                       core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+            - uses: seanmiddleditch/gha-setup-ninja@master
             - uses: taiki-e/install-action@v2
               with:
                 tool: just
@@ -39,10 +40,13 @@ jobs:
                   pip3 install numpy
             - name: Install linux dependencies
               if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
-              run: sudo apt-get install nasm openssl ninja-build
+              run: sudo apt-get install nasm openssl
             - name: Install osx dependencies
               if: ${{ matrix.cfg.os == 'macos-latest' }}
-              run: brew install nasm ninja
+              run: |
+                  brew install nasm vcpkg
+                  git clone https://github.com/microsoft/vcpkg "$HOME/vcpkg"
+                  export VCPKG_ROOT="$HOME/vcpkg"
             - name: Bootstrap the ports
               working-directory: ./cpp
               run: just bootstrap
