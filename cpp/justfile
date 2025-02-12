@@ -18,7 +18,7 @@ cmake_preset := if os_family() == "windows" {
     "linux"
 }
 
-export VCPKG_ROOT := env('VCPKG_ROOT', env('VCPKG_INSTALLATION_ROOT', "../../vcpkg"))
+export VCPKG_ROOT := env('VCPKG_ROOT', "../../vcpkg")
 
 bootstrap:
     '{{VCPKG_ROOT}}/vcpkg' install --allow-unsupported --triplet {{VCPKG_DEFAULT_TRIPLET}}

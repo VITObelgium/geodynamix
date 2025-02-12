@@ -10,10 +10,12 @@ jobs:
             fail-fast: false
             matrix:
                 cfg:
-                    - { os: ubuntu-latest, triplet: x64-linux }
-                    - { os: windows-2022, triplet: x64-windows-static-vs2022 }
-                    - { os: macos-latest, triplet: x64-osx }
-
+                    - { os: ubuntu-latest }
+                    - { os: windows-latest }
+                    - { os: macos-latest }
+        env:
+          VCPKG_TAG: 2025.01.13
+        
         steps:
             - name: Clone repository
               uses: actions/checkout@v4
@@ -26,6 +28,17 @@ jobs:
                       core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
                       core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
             - uses: seanmiddleditch/gha-setup-ninja@master
+            - name: Install vcpkg
+              run: |
+                  git clone --depth 1 --branch ${{ env.VCPKG_TAG }} https://github.com/microsoft/vcpkg "${{ runner.TEMP }}/vcpkg"
+            - name: Bootstrap vcpkg windows
+              if: ${{ startsWith(matrix.cfg.os, 'windows') }}
+              run: |
+                  ${{ runner.TEMP }}/vcpkg/bootstrap-vcpkg.bat
+            - name: Bootstrap vcpkg unix
+              if: ${{ startsWith(matrix.cfg.os, 'ubuntu') || startsWith(matrix.cfg.os, 'mac') }}
+              run: |
+                  sh ${{ runner.TEMP }}/vcpkg/bootstrap-vcpkg.sh
             - uses: taiki-e/install-action@v2
               with:
                 tool: just
@@ -44,15 +57,16 @@ jobs:
             - name: Install osx dependencies
               if: ${{ matrix.cfg.os == 'macos-latest' }}
               run: |
-                  brew install nasm vcpkg
-                  git clone https://github.com/microsoft/vcpkg "$HOME/vcpkg"
-                  export VCPKG_ROOT="$HOME/vcpkg"
+                  brew install nasm
             - name: Bootstrap the ports
               working-directory: ./cpp
               run: just bootstrap
               env:
+                  VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
                   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
             - name: Build the code
+              env:
+                  VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
               working-directory: ./cpp
               run: just build
             - name: Run the unit tests
