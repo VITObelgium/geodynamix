@@ -1,7 +1,8 @@
 set export
 # detect the vcpkg triplet based on the system information
+windows_triplet := "x64-windows-static"
 VCPKG_DEFAULT_TRIPLET := if os_family() == "windows" {
-  "x64-windows-static-vs2022"
+  windows_triplet
   } else if os() == "macos" {
     if arch() == "aarch64" {
       "arm64-osx"
@@ -43,7 +44,7 @@ cargo-config-gen:
 bootstrap $VCPKG_ROOT=rust_vcpkg_root $VCPKG_DEFAULT_HOST_TRIPLET=RUST_TRIPLET : cargo-config-gen
   echo "Bootstrapping vcpkg:{{RUST_TRIPLET}}..."
   cargo vcpkg -v build
-  -cp target/vcpkg/installed/x64-windows-static-vs2022-release/lib/gdal.lib target/vcpkg/installed/x64-windows-static-vs2022-release/lib/gdal_i.lib
+  -cp target/vcpkg/installed/{{windows_triplet}}-release/lib/gdal.lib target/vcpkg/installed/{{windows_triplet}}-release/lib/gdal_i.lib
   fd --base-directory target/vcpkg/installed -g gdal.pc --exec sd -F -- '-l-framework' '-framework'
   -mkdir -p target/data && mkdir -p target/debug && mkdir -p target/release
   -mkdir -p ./python/geodynamix.data/data/share/geodynamix/

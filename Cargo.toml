@@ -35,4 +35,7 @@ dependencies = [
 geozero = { git = "https://github.com/georust/geozero.git", rev = "66583383b995925c3eef0a01cd5781b1d59e8209" }
 
 [package.metadata.vcpkg.target]
-x86_64-pc-windows-msvc = { triplet = "x64-windows-static-vs2022-release" }
+x86_64-pc-windows-msvc   = { triplet = "x64-windows-static-release" }
+x86_64-apple-darwin      = { triplet = "x64-osx-release" }
+aarch64-apple-darwin     = { triplet = "arm64-osx-release" }
+x86_64-unknown-linux-gnu = { triplet = "x64-linux-release" }
