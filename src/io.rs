@@ -50,7 +50,7 @@ pub fn raster_from_ndarray(ndarray: &Bound<'_, PyAny>, meta: &RasterMetadata) ->
     }
 }
 
-pub fn dense_array_from_ndarray<T: numpy::Element + ArrayNum<T>>(
+pub fn dense_array_from_ndarray<T: numpy::Element + ArrayNum>(
     ndarray: &Bound<'_, PyArray2<T>>,
     meta: &RasterMetadata,
 ) -> PyResult<DenseArray<T, RasterMetadata>> {

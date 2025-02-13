@@ -5,7 +5,7 @@ use geo::{raster::algo, Array, ArrayDataType, ArrayMetadata, ArrayNum, DenseArra
 
 use crate::{PythonDenseArray, RasterMetadata};
 
-fn convert_array<'py, T: ArrayNum<T> + numpy::Element>(
+fn convert_array<'py, T: ArrayNum + numpy::Element>(
     py: Python<'py>,
     arr: &DenseArray<T, RasterMetadata>,
 ) -> PyResult<Bound<'py, PyAny>> {
