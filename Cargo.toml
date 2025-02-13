@@ -1,5 +1,5 @@
 [package]
-name = "geodynamix"
+name    = "geodynamix"
 version = "0.16.0"
 edition = "2021"
 
@@ -7,19 +7,19 @@ edition = "2021"
 members = ["infra-rs/crates/geo", "infra-rs/crates/inf"]
 
 [lib]
-name = "geodynamix"
+name       = "geodynamix"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.23", features = ["extension-module"] }
+pyo3     = { version = "0.23", features = ["extension-module"] }
 pyo3-log = "0.12"
-numpy = "0.23"
-inf = { path = "infra-rs/crates/inf" }
-geo = { path = "infra-rs/crates/geo", features = ["gdal", "python"] }
-num = "0.4"
+numpy    = "0.23"
+inf      = { path = "infra-rs/crates/inf" }
+geo      = { path = "infra-rs/crates/geo", features = ["gdal", "python"] }
+num      = "0.4"
 
 [features]
-default = []
+default      = []
 static_build = ["geo/gdal-static"]
 
 [package.metadata.vcpkg]
@@ -33,3 +33,6 @@ dependencies = [
 [patch.crates-io]
 # more recent geozero to avoid multiple gdal copies
 geozero = { git = "https://github.com/georust/geozero.git", rev = "66583383b995925c3eef0a01cd5781b1d59e8209" }
+
+[package.metadata.vcpkg.target]
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-vs2022" }

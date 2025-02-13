@@ -1,7 +1,7 @@
 set export
 # detect the vcpkg triplet based on the system information
 VCPKG_DEFAULT_TRIPLET := if os_family() == "windows" {
-  "x64-windows-static-release"
+  "x64-windows-static-vs2022"
   } else if os() == "macos" {
     if arch() == "aarch64" {
       "arm64-osx-release"
@@ -14,7 +14,23 @@ PYTHON_EXE := if os_family() == "windows" {
   } else {
     "bin/python3"
   }
+
+cmake_preset := if os_family() == "windows" {
+    "windows"
+} else if os() == "macos" {
+    if arch() == "aarch64" {
+        "mac-arm"
+    } else { "mac-intel" }
+} else {
+    "linux"
+}
 VCPKG_DEFAULT_HOST_TRIPLET := VCPKG_DEFAULT_TRIPLET
+
+cpp_vcpkg_root := env('VCPKG_ROOT', "../vcpkg")
+rust_vcpkg_root := join(justfile_directory(), "target", "vcpkg")
+
+export VCPKG_OVERLAY_TRIPLETS := join(justfile_directory(), "cpp", "deps", "infra", "vcpkg_overlay", "triplets")
+export VCPKG_OVERLAY_PORTS := join(justfile_directory(), "cpp", "deps", "infra", "vcpkg_overlay", "ports")
 
 cargo-config-gen:
   mkdir -p .cargo
@@ -22,10 +38,10 @@ cargo-config-gen:
   sd @CARGO_VCPKG_TRIPLET@ {{VCPKG_DEFAULT_TRIPLET}} .cargo/config.toml
   sd @PYTHON_EXE@ {{PYTHON_EXE}} .cargo/config.toml
 
-bootstrap: cargo-config-gen
+bootstrap $VCPKG_ROOT=rust_vcpkg_root $VCPKG_FEATURE_FLAGS="-manifestmode": cargo-config-gen
   echo "Bootstrapping vcpkg:{{VCPKG_DEFAULT_TRIPLET}}..."
   cargo vcpkg -v build
-  -cp target/vcpkg/installed/x64-windows-static/lib/gdal.lib target/vcpkg/installed/x64-windows-static/lib/gdal_i.lib
+  -cp target/vcpkg/installed/x64-windows-static-vs2022/lib/gdal.lib target/vcpkg/installed/x64-windows-static-vs2022/lib/gdal_i.lib
   fd --base-directory target/vcpkg/installed -g gdal.pc --exec sd -F -- '-l-framework' '-framework'
   -mkdir -p target/data && mkdir -p target/debug && mkdir -p target/release
   -mkdir -p ./python/geodynamix.data/data/share/geodynamix/
@@ -58,3 +74,25 @@ wheel:
 
 test: wheel_develop
     pixi run test
+
+cpp_bootstrap $VCPKG_ROOT=cpp_vcpkg_root:
+    '{{cpp_vcpkg_root}}/vcpkg' install --x-manifest-root='{{join(justfile_directory(), "cpp")}}' --allow-unsupported --triplet {{VCPKG_DEFAULT_TRIPLET}}
+
+cpp_configure $VCPKG_ROOT=cpp_vcpkg_root: cpp_bootstrap
+    cmake --preset {{cmake_preset}}
+
+cpp_build_debug: cpp_configure
+    cmake --build ./build --config Debug
+
+cpp_build_release: cpp_configure
+    cmake --build ./build --config Release
+
+cpp_build: cpp_build_release
+
+cpp_test_debug: cpp_build
+    ctest --test-dir ./build --output-on-failure -C Debug
+
+cpp_test_release: cpp_build
+    ctest --test-dir ./build --output-on-failure -C Release
+
+cpp_test: cpp_test_release

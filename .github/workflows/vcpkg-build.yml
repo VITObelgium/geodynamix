@@ -59,18 +59,15 @@ jobs:
               run: |
                   brew install nasm
             - name: Bootstrap the ports
-              working-directory: ./cpp
-              run: just bootstrap
+              run: just cpp_bootstrap
               env:
                   VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
                   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
             - name: Build the code
               env:
                   VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
-              working-directory: ./cpp
-              run: just build
+              run: just cpp_build
             - name: Run the unit tests
               env:
                   VCPKG_ROOT: "${{ runner.temp }}/vcpkg"
-              working-directory: ./cpp
-              run: just test
+              run: just cpp_test
