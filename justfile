@@ -4,10 +4,10 @@ VCPKG_DEFAULT_TRIPLET := if os_family() == "windows" {
   "x64-windows-static-vs2022"
   } else if os() == "macos" {
     if arch() == "aarch64" {
-      "arm64-osx-release"
-    } else { "x64-osx-release" }
+      "arm64-osx"
+    } else { "x64-osx" }
   } else {
-    "x64-linux-release"
+    "x64-linux"
   }
 PYTHON_EXE := if os_family() == "windows" {
     "python.exe"
@@ -24,6 +24,8 @@ cmake_preset := if os_family() == "windows" {
 } else {
     "linux"
 }
+
+RUST_TRIPLET := VCPKG_DEFAULT_TRIPLET + "-release"
 VCPKG_DEFAULT_HOST_TRIPLET := VCPKG_DEFAULT_TRIPLET
 
 cpp_vcpkg_root := env('VCPKG_ROOT', "../vcpkg")
@@ -35,13 +37,13 @@ export VCPKG_OVERLAY_PORTS := join(justfile_directory(), "cpp", "deps", "infra",
 cargo-config-gen:
   mkdir -p .cargo
   cp infra-rs/.cargo/config.toml.in .cargo/config.toml
-  sd @CARGO_VCPKG_TRIPLET@ {{VCPKG_DEFAULT_TRIPLET}} .cargo/config.toml
+  sd @CARGO_VCPKG_TRIPLET@ {{VCPKG_DEFAULT_TRIPLET}}-release .cargo/config.toml
   sd @PYTHON_EXE@ {{PYTHON_EXE}} .cargo/config.toml
 
-bootstrap $VCPKG_ROOT=rust_vcpkg_root $VCPKG_FEATURE_FLAGS="-manifestmode": cargo-config-gen
-  echo "Bootstrapping vcpkg:{{VCPKG_DEFAULT_TRIPLET}}..."
+bootstrap $VCPKG_ROOT=rust_vcpkg_root $VCPKG_DEFAULT_HOST_TRIPLET=RUST_TRIPLET : cargo-config-gen
+  echo "Bootstrapping vcpkg:{{RUST_TRIPLET}}..."
   cargo vcpkg -v build
-  -cp target/vcpkg/installed/x64-windows-static-vs2022/lib/gdal.lib target/vcpkg/installed/x64-windows-static-vs2022/lib/gdal_i.lib
+  -cp target/vcpkg/installed/x64-windows-static-vs2022-release/lib/gdal.lib target/vcpkg/installed/x64-windows-static-vs2022-release/lib/gdal_i.lib
   fd --base-directory target/vcpkg/installed -g gdal.pc --exec sd -F -- '-l-framework' '-framework'
   -mkdir -p target/data && mkdir -p target/debug && mkdir -p target/release
   -mkdir -p ./python/geodynamix.data/data/share/geodynamix/

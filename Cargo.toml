@@ -35,4 +35,4 @@ dependencies = [
 geozero = { git = "https://github.com/georust/geozero.git", rev = "66583383b995925c3eef0a01cd5781b1d59e8209" }
 
 [package.metadata.vcpkg.target]
-x86_64-pc-windows-msvc = { triplet = "x64-windows-static-vs2022" }
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-vs2022-release" }
