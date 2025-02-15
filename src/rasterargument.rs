@@ -29,12 +29,12 @@ impl RasterArgument {
 
     fn store_raster(&mut self, raster: Raster) -> Result<&PythonDenseArray> {
         self.raster = Some(raster);
-        Ok(&(*self.raster.as_ref().unwrap().raster))
+        Ok(&self.raster.as_ref().unwrap().raster)
     }
 
     fn store_bound_raster(&mut self, raster: Bound<'_, Raster>) -> Result<&PythonDenseArray> {
         self.raster = Some(raster.extract()?);
-        Ok(&(*self.raster.as_ref().unwrap().raster))
+        Ok(&self.raster.as_ref().unwrap().raster)
     }
 
     pub fn raster(&mut self, py: Python) -> Result<&PythonDenseArray> {

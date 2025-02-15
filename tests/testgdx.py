@@ -359,13 +359,21 @@ class TestGdx(unittest.TestCase):
         ras3 = gdx.raster_from_ndarray(array3, gdx.raster_metadata(rows=4, cols=5))
         self.assertEqual(array1.dtype, ras1.dtype)
 
-    #     self.assertEqual((ras1 * 1).dtype, ras1.dtype)
-    #     self.assertEqual((ras1 + 1).dtype, ras1.dtype)
-    #     self.assertEqual((ras1 / 1).dtype, ras1.dtype)
-    #     self.assertEqual((ras1 - 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 + ras2).dtype, ras1.dtype)
+        self.assertEqual((ras1 - ras2).dtype, ras1.dtype)
+        self.assertEqual((ras1 * ras2).dtype, ras1.dtype)
+        self.assertEqual((ras1 / ras2).dtype, ras1.dtype)
 
-    #     self.assertEqual((1 * ras1).dtype, ras1.dtype)
-    #     self.assertEqual((1 + ras1).dtype, ras1.dtype)
+        #     self.assertEqual((ras1 * 1).dtype, ras1.dtype)
+        # self.assertEqual((ras1 + 1).dtype, ras1.dtype)
+
+        #     self.assertEqual((ras1 / 1).dtype, ras1.dtype)
+        #     self.assertEqual((ras1 - 1).dtype, ras1.dtype)
+
+        # self.assertEqual((1 * ras1).dtype, ras1.dtype)
+
+        # self.assertEqual((1 + ras1).dtype, ras1.dtype)
+
     #     self.assertEqual((1 / ras1).dtype, np.dtype("float32"))
     #     self.assertEqual((1 - ras1).dtype, ras1.dtype)
 

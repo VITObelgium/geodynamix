@@ -1,8 +1,11 @@
 use numpy::PyArrayDescr;
 use pyo3::prelude::*;
-use std::sync::Arc;
+use std::ops::Add;
+use std::ops::Div;
+use std::ops::Mul;
+use std::ops::Sub;
 
-use geo::{AnyDenseArray, Columns, Error, RasterSize, Rows};
+use geo::{AnyDenseArray, Columns, RasterSize, Rows};
 
 use crate::{
     algoadapters,
@@ -14,7 +17,16 @@ use crate::{
 #[pyclass(name = "raster", str)]
 #[derive(Clone)]
 pub struct Raster {
-    pub raster: Arc<PythonDenseArray>,
+    pub raster: PythonDenseArray,
+}
+
+macro_rules! impl_raster_op {
+    ( $op:ident, $lhs:expr, $rhs_object:ident ) => {{
+        let py = $rhs_object.py();
+        let mut rhs = RasterArgument::new($rhs_object);
+        let rhs = rhs.raster_compatible_with(&$lhs, py)?;
+        Ok((&$lhs).$op(rhs).into())
+    }};
 }
 
 #[pymethods]
@@ -45,9 +57,7 @@ impl Raster {
 
         let raster = AnyDenseArray::<RasterMetadata>::filled_with(fill, meta, dtype);
 
-        Ok(Self {
-            raster: Arc::new(raster),
-        })
+        Ok(Self { raster })
     }
 
     #[getter]
@@ -76,24 +86,34 @@ impl Raster {
     }
 
     pub fn replace_value(&mut self, value: f64, new_value: f64) -> PyResult<()> {
-        let raster = Arc::get_mut(&mut self.raster)
-            .ok_or_else(|| Error::Runtime("Failed to get mutable reference".into()))?;
-        algoadapters::replace_value(raster, value, new_value);
+        algoadapters::replace_value(&mut self.raster, value, new_value);
         Ok(())
     }
 
     pub fn write(&mut self, path: std::path::PathBuf) -> PyResult<()> {
-        let raster = Arc::get_mut(&mut self.raster)
-            .ok_or_else(|| Error::Runtime("Failed to get mutable reference".into()))?;
-        Ok(raster.write(&path)?)
+        Ok(self.raster.write(&path)?)
+    }
+
+    pub fn __add__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op!(add, self.raster, rhs_object)
+    }
+
+    pub fn __sub__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op!(sub, self.raster, rhs_object)
+    }
+
+    pub fn __mul__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op!(mul, self.raster, rhs_object)
+    }
+
+    pub fn __truediv__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op!(div, self.raster, rhs_object)
     }
 }
 
 impl From<PythonDenseArray> for Raster {
     fn from(raster: PythonDenseArray) -> Self {
-        Self {
-            raster: Arc::new(raster),
-        }
+        Self { raster }
     }
 }
 
