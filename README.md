@@ -1,5 +1,6 @@
-[![Build](https://github.com/VITObelgium/geodynamix/actions/workflows/vcpkg-build.yml/badge.svg?branch=main)](https://github.com/VITObelgium/geodynamix/actions/workflows/vcpkg-build.yml)
-[![Anaconda build](https://github.com/VITObelgium/geodynamix/actions/workflows/conda-build.yml/badge.svg?branch=main)](https://github.com/VITObelgium/geodynamix/actions/workflows/conda-build.yml)
+[![Vcpkg build](https://github.com/VITObelgium/geodynamix/actions/workflows/vcpkg-build.yml/badge.svg?branch=rust)](https://github.com/VITObelgium/geodynamix/actions/workflows/vcpkg-build.yml)
+[![Python wheel](https://github.com/VITObelgium/geodynamix/actions/workflows/wheel.yaml/badge.svg?branch=rust)](https://github.com/VITObelgium/geodynamix/actions/workflows/wheel.yaml)
+[![Docs](https://github.com/VITObelgium/geodynamix/actions/workflows/docs.yaml/badge.svg?branch=rust)](https://vitobelgium.github.io/geodynamix/)
 
 
 A toolbox for spatial analysis.
