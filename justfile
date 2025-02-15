@@ -57,6 +57,9 @@ bootstrap $VCPKG_ROOT=rust_vcpkg_root $VCPKG_DEFAULT_HOST_TRIPLET=RUST_TRIPLET :
 doc:
   cargo doc --workspace --exclude='infra-rs' --exclude='vector_derive' --no-deps --all-features --open
 
+pydoc: wheel_develop
+  pixi run -e docs docs
+
 docdeps:
   cargo doc --workspace --exclude='infra-rs' --exclude='vector_derive' --all-features --open
 

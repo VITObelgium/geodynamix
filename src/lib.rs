@@ -14,8 +14,6 @@ pub use raster::Raster;
 pub use rastermetadata::RasterMetadata;
 pub type PythonDenseArray = AnyDenseArray<RasterMetadata>;
 
-/// The main geodynamix module
-/// Typically imported as `import geodynamix as gdx`
 #[pymodule]
 fn geodynamix(m: &Bound<'_, PyModule>) -> PyResult<()> {
     pyo3_log::init();

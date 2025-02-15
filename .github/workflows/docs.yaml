@@ -1,0 +1,59 @@
+name: Docs
+on:
+  push:
+    branches: [rust]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: prefix-dev/setup-pixi@v0.8.0
+      - uses: taiki-e/install-action@v2
+        with:
+            tool: just,sd,fd-find,cargo-vcpkg,cargo-nextest
+      - name: Build the C++ dependencies using vcpkg
+        env:
+            VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+        run: just bootstrap
+      - name: Build the wheel in develop mode and run the unit tests
+        run: just test
+      - name: Build docs
+        run: just pydoc
+      - name: Force correct file permissions
+        run: |
+          chmod -c +rX "target/doc/.lock" &
+          chmod -c -R +rX "target/doc" |
+          while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: doc/_build/html
+  deploy:
+    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

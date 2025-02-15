@@ -1,19 +1,7 @@
 from os import PathLike
-from typing import Optional, TypeAlias, Type
+from typing import Optional, TypeAlias, Type, Self
 import numpy as np
 from numpy.typing import DTypeLike
-
-RasterLike: TypeAlias = (
-    raster
-    # a raster object
-    | PathLike
-    # the path to a raster file
-    | float
-    | int
-    # a scalar value that will be exapnded to a raster with the same metadata
-    | Type[nodata]
-    # the nodata value that will be exapnded to a raster with the same metadata
-)
 
 class nodata:
     """
@@ -71,9 +59,9 @@ class raster:
     - This a dense raster where all the pixels are stored row by row in contiguous memory
     - The format of the pixel type can be chosen at creation
     - The nodata value is fixed per data Type
-        - NAN for floating point types
-        - The maximum value of the data type for unsigned types
-        - The minimum value of the data type for signed types
+    NAN for floating point types
+    The maximum value of the data type for unsigned types
+    The minimum value of the data type for signed types
 
     Keyword arguments:
     :param georef: an existing raster_metadata object (when provided rows, cols, nodata, cell_size, xll, yll should be omitted)
@@ -119,25 +107,23 @@ class raster:
         Replace all values in the raster that are equal to search with replace.
         """
         ...
-    def astype(self, dtype: DTypeLike) -> raster:
+    def astype(self, dtype: DTypeLike) -> Self:
         """
         Convert the raster to the requested data type.
         """
         ...
 
-def raster_equal(lhs: RasterLike, rhs: RasterLike) -> bool:
-    """
-    Compare the two provided rasters for equaliy. Both the metadata and the pixel values are compared.
-    The data types of the rasters must be the same.
-
-    Parameters
-    ----------
-    lhs : RasterLike
-    The left hand side raster.
-    rhs : RasterLike
-    The right hand side raster.
-    """
-    ...
+RasterLike: TypeAlias = (
+    raster
+    # a raster object
+    | PathLike
+    # the path to a raster file
+    | float
+    | int
+    # a scalar value that will be exapnded to a raster with the same metadata
+    | Type[nodata]
+    # the nodata value that will be exapnded to a raster with the same metadata
+)
 
 def read(path: PathLike | str) -> raster:
     """
@@ -190,3 +176,18 @@ def raster_from_ndarray(array: np.ndarray, metadata: raster_metadata) -> raster:
     The raster metadata.
     """
     ...
+
+def raster_equal(lhs: RasterLike, rhs: RasterLike) -> bool:
+    """
+    Compare the two provided rasters for equaliy. Both the metadata and the pixel values are compared.
+    The data types of the rasters must be the same.
+
+    Parameters
+    ----------
+    lhs : RasterLike
+    The left hand side raster.
+    rhs : RasterLike
+    The right hand side raster.
+    """
+
+...

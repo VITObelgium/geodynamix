@@ -35,3 +35,5 @@ jobs:
               run: just bootstrap
             - name: Build the wheel in develop mode and run the unit tests
               run: just test
+            - name: Generate python binding docs
+              run: just pydoc
