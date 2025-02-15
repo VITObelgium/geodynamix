@@ -11,9 +11,7 @@ copyright = "2025, VITO"
 author = "VITO"
 version = "0.16.0"
 
-extensions = [
-    "sphinx.ext.autodoc",
-]
+extensions = ["sphinx.ext.autodoc", "sphinx_design"]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 autodoc_mock_imports = ["numpy"]

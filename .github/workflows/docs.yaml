@@ -39,15 +39,15 @@ jobs:
         run: just pydoc
       - name: Force correct file permissions
         run: |
-          chmod -c +rX "target/doc/.lock" &
-          chmod -c -R +rX "target/doc" |
+          chmod -c +rX "target/pydoc/.lock" &
+          chmod -c -R +rX "target/pydoc" |
           while read line; do
             echo "::warning title=Invalid file permissions automatically fixed::$line"
           done
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: doc/_build/html
+          path: target/pydoc/html
   deploy:
     name: Deploy
     needs: build
