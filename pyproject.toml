@@ -15,7 +15,6 @@ dependencies = ["numpy"]
 
 [project.optional-dependencies]
 test = ["pytest"]
-docs = ["sphinx"]
 all  = ["my_project[docs]", "my_project[test]"]
 
 [tool.maturin]
@@ -53,13 +52,16 @@ livedocs = "sphinx-autobuild -M html doc target/pydoc"
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 [tool.pixi.feature.docs.dependencies]
-sphinx           = "*"
-furo             = ">=2024.8.6,<2025"
-sphinx-autobuild = ">=2024.10.3,<2025"
-sphinx-design    = ">=0.6.1,<0.7"
+#sphinx           = "*"
+#furo             = ">=2024.8.6,<2025"
+#sphinx-autobuild = ">=2024.10.3,<2025"
+#sphinx-design    = ">=0.6.1,<0.7"
 
 [tool.pixi.dependencies]
 numpy = ">=2.2.2,<3"
 
 [tool.pixi.environments]
 docs = ["docs"]
+
+[dependency-groups]
+docs = ["sphinx==8.2.0rc1", "furo>=2024.8.6,<2025", "sphinx-design>=0.6.1,<0.7", "sphinx-autobuild>=2024.10.3,<2025"]

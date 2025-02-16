@@ -39,8 +39,8 @@ The data type of the internal raster will match the data type of the input raste
    import geodynamix as gdx
    import numpy as np
    
-   raster = gdx.read_as(np.dtype("int32"), "path/to/raster.tif")
-   assert raster.dtype == np.dtype("int32")
+   raster = gdx.read_as(np.int32, "path/to/raster.tif")
+   assert raster.dtype == np.int32
 
 Operations
 ----------

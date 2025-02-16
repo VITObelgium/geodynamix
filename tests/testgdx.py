@@ -233,7 +233,7 @@ class TestGdx(unittest.TestCase):
         expected = test_array.astype("int32")
         expected[np.isnan(test_array)] = np.iinfo(np.int32).min
 
-        self.assertEqual(np.dtype("int32"), intras.dtype)
+        self.assertEqual(np.int32, intras.dtype)
         np.testing.assert_array_equal(intras.array, expected)
 
     def test_astype_float_and_back(self):
