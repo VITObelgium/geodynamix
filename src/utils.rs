@@ -3,7 +3,7 @@ use pyo3::{exceptions::PyValueError, prelude::*, types::IntoPyDict};
 
 use geo::{raster::algo, Array, ArrayDataType, ArrayMetadata, ArrayNum, DenseArray};
 
-use crate::{PythonDenseArray, RasterMetadata};
+use crate::{PythonDenseArray, Raster, RasterMetadata};
 
 fn convert_array<'py, T: ArrayNum + numpy::Element>(
     py: Python<'py>,
@@ -45,6 +45,27 @@ pub fn raster_mask<'py>(py: Python<'py>, raster: &PythonDenseArray) -> PyResult<
         PythonDenseArray::I64(array) => convert_array(py, &algo::is_nodata(array)),
         PythonDenseArray::U64(array) => convert_array(py, &algo::is_nodata(array)),
     }
+}
+
+pub fn raster_buffer_array<'py>(
+    py: Python<'py>,
+    raster: Bound<'py, Raster>,
+) -> PyResult<Bound<'py, PyAny>> {
+    let np = PyModule::import(py, "numpy")?;
+
+    let shape = [
+        raster.borrow().raster.rows().count(),
+        raster.borrow().raster.columns().count(),
+    ];
+    let dtype =
+        array_type_to_numpy_dtype(py, raster.borrow().raster.data_type()).into_pyobject(py)?;
+    let kwargs = vec![
+        ("dtype", dtype.into_pyobject(py)?.into_any()),
+        ("buffer", raster.into_pyobject(py)?.into_any()),
+    ];
+
+    np.getattr("ndarray")?
+        .call((shape.into_pyobject(py)?,), Some(&kwargs.into_py_dict(py)?))
 }
 
 pub fn raster_masked_array<'py>(

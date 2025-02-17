@@ -1,5 +1,9 @@
 use numpy::PyArrayDescr;
+use pyo3::exceptions::PyBufferError;
+use pyo3::ffi;
 use pyo3::prelude::*;
+use std::ffi::c_void;
+use std::ffi::CString;
 use std::ops::Add;
 use std::ops::Div;
 use std::ops::Mul;
@@ -71,8 +75,9 @@ impl Raster {
     }
 
     #[getter]
-    pub fn array<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
-        utils::raster_array(py, &self.raster)
+    pub fn array<'py>(slf: Bound<'py, Self>, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
+        //utils::raster_array(py, &slf.borrow().raster)
+        utils::raster_buffer_array(py, slf)
     }
 
     #[getter]
@@ -109,6 +114,26 @@ impl Raster {
     pub fn __truediv__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
         impl_raster_op!(div, self.raster, rhs_object)
     }
+    /// # Safety
+    /// This function is unsafe because it exposes a raw pointer to the Python buffer protocol.
+    pub unsafe fn __getbuffer__(
+        slf: Bound<'_, Self>,
+        view: *mut ffi::Py_buffer,
+        flags: std::ffi::c_int,
+    ) -> PyResult<()> {
+        fill_view_from_data(
+            view,
+            flags,
+            slf.borrow().raster.raw_data_u8_slice(),
+            slf.into_any(),
+        )
+    }
+
+    /// # Safety
+    /// This function is unsafe because it exposes a raw pointer to the Python buffer protocol.
+    pub unsafe fn __releasebuffer__(&self, _buffer: *mut ffi::Py_buffer) {
+        // No need to release, the raster still owns the data
+    }
 }
 
 impl From<PythonDenseArray> for Raster {
@@ -143,4 +168,51 @@ pub fn raster_equal(
     let array2 = raster2.raster_compatible_with(array1, py)?;
 
     Ok(array1 == array2)
+}
+
+/// # Safety
+///
+/// `view` must be a valid pointer to `ffi::Py_buffer`, or null
+/// `data` must outlive the Python lifetime of `owner` (i.e. data must be owned by owner, or data
+/// must be static data)
+unsafe fn fill_view_from_data(
+    view: *mut ffi::Py_buffer,
+    flags: std::ffi::c_int,
+    data: &[u8],
+    owner: Bound<'_, PyAny>,
+) -> PyResult<()> {
+    if view.is_null() {
+        return Err(PyBufferError::new_err("View is null"));
+    }
+
+    (*view).obj = owner.into_ptr();
+    (*view).buf = data.as_ptr() as *mut c_void;
+    (*view).len = data.len() as isize;
+    (*view).readonly = 0;
+    (*view).itemsize = 1;
+
+    (*view).format = if (flags & ffi::PyBUF_FORMAT) == ffi::PyBUF_FORMAT {
+        let msg = CString::new("B").unwrap();
+        msg.into_raw()
+    } else {
+        std::ptr::null_mut()
+    };
+
+    (*view).ndim = 1;
+    (*view).shape = if (flags & ffi::PyBUF_ND) == ffi::PyBUF_ND {
+        &mut (*view).len
+    } else {
+        std::ptr::null_mut()
+    };
+
+    (*view).strides = if (flags & ffi::PyBUF_STRIDES) == ffi::PyBUF_STRIDES {
+        &mut (*view).itemsize
+    } else {
+        std::ptr::null_mut()
+    };
+
+    (*view).suboffsets = std::ptr::null_mut();
+    (*view).internal = std::ptr::null_mut();
+
+    Ok(())
 }

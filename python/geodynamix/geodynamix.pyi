@@ -87,13 +87,18 @@ class raster:
         yll: float = 0.0,
     ) -> None: ...
     @property
-    def metadata(self) -> raster_metadata: ...
+    def metadata(self) -> raster_metadata:
+        """Returns the metadata of the raster."""
+        ...
     @property
-    def dtype(self) -> np.dtype: ...
+    def dtype(self) -> np.dtype:
+        """Returns the data type of the raster as a numpy dtype."""
+        ...
     @property
     def array(self) -> np.ndarray:
         """
-        Returns the raster as a numpy array. Data is copied so changes to the array will not affect the raster.
+        Returns the raster as a numpy ndarray. The data in the array is a view into the raster data so changes to the array will affect the raster.
+        The array cannot be changed in size or data type, only in content.
         """
         ...
     @property
@@ -103,14 +108,10 @@ class raster:
         """
         ...
     def replace_value(self, search: int | float, replace: int | float):
-        """
-        Replace all values in the raster that are equal to search with replace.
-        """
+        """Replace all values in the raster that are equal to search with replace."""
         ...
     def astype(self, dtype: DTypeLike) -> Self:
-        """
-        Convert the raster to the requested data type.
-        """
+        """Convert the raster to the requested data type."""
         ...
 
     def __add__(self, other: Self) -> Self: ...

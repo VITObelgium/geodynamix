@@ -182,31 +182,31 @@ class TestGdx(unittest.TestCase):
         os.remove("writtenraster.asc")
         self.assertTrue(np.allclose(raster, written_raster.array, equal_nan=True))
 
-    # def test_modify_raster_using_numpy(self):
-    #     # modify the raster data using the ndarry accessor
-    #     # verify that the internal raster data has changed by writing it to disk
-    #     # and comparing the result
+    def test_modify_raster_using_numpy(self):
+        # modify the raster data using the ndarry accessor
+        # verify that the internal raster data has changed by writing it to disk
+        # and comparing the result
 
-    #     create_test_file("raster.asc", test_raster)
-    #     raster = gdx.read("raster.asc")
+        create_test_file("raster.asc", test_raster)
+        raster = gdx.read("raster.asc")
 
-    #     raster.array.fill(44)
+        raster.array.fill(44)
 
-    #     gdx.write(raster, "writtenraster.asc")
-    #     written_raster = gdx.read("writtenraster.asc")
-    #     os.remove("writtenraster.asc")
+        gdx.write(raster, "writtenraster.asc")
+        written_raster = gdx.read("writtenraster.asc")
+        os.remove("writtenraster.asc")
 
-    #     expected = np.array(
-    #         [
-    #             [44, 44, 44, 44, 44],
-    #             [44, 44, 44, 44, 44],
-    #             [44, 44, 44, 44, 44],
-    #             [44, 44, 44, 44, 44],
-    #         ],
-    #         dtype="f",
-    #     )
+        expected = np.array(
+            [
+                [44, 44, 44, 44, 44],
+                [44, 44, 44, 44, 44],
+                [44, 44, 44, 44, 44],
+                [44, 44, 44, 44, 44],
+            ],
+            dtype="f",
+        )
 
-    #     self.assertTrue(np.allclose(expected, written_raster.array, equal_nan=True))
+        self.assertTrue(np.allclose(expected, written_raster.array, equal_nan=True))
 
     def test_replace_value(self):
         expected = np.array(
