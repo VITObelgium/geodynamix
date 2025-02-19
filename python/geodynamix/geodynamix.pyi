@@ -101,7 +101,6 @@ class raster:
         The array cannot be changed in size or data type, only in content.
         """
         ...
-    @property
     def masked_array(self) -> np.ma.masked_array:
         """
         Returns the raster as a numpy masked array for easier nodata handling at the cost of additional memory usage. Data is copied so changes to the array will not affect the raster.

@@ -80,7 +80,6 @@ impl Raster {
         utils::raster_buffer_array(py, slf)
     }
 
-    #[getter]
     pub fn masked_array<'py>(&self, py: Python<'py>) -> PyResult<Bound<'py, PyAny>> {
         utils::raster_masked_array(py, &self.raster)
     }

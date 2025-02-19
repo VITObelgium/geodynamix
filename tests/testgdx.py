@@ -73,7 +73,7 @@ class TestGdx(unittest.TestCase):
             test_array, gdx.raster_metadata(rows=4, cols=5, nodata=float("NaN"))
         )
 
-        masked = ras.masked_array
+        masked = ras.masked_array()
         np.testing.assert_array_equal(masked.data, test_array)
         np.testing.assert_array_equal(masked.mask, np.isnan(test_array))
 
