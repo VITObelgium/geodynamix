@@ -64,4 +64,9 @@ numpy = ">=2.2.2,<3"
 docs = ["docs"]
 
 [dependency-groups]
-docs = ["sphinx==8.2.0rc1", "furo>=2024.8.6,<2025", "sphinx-design>=0.6.1,<0.7", "sphinx-autobuild>=2024.10.3,<2025"]
+docs = [
+    "furo>=2024.8.6,<2025",
+    "sphinx-autobuild>=2024.10.3,<2025",
+    "sphinx-design>=0.6.1,<0.7",
+    "sphinx==8.2.0",
+]
