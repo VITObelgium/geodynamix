@@ -1,4 +1,4 @@
-if (GDX_ENABLE_SIMD)
+﻿if (GDX_ENABLE_SIMD)
     # do no use the provided Vc cmake module
     # it will just autodetect the host machine and enable everything that is supported
     # this is not the behaviour we want
@@ -10,8 +10,8 @@ if (GDX_ENABLE_SIMD)
         HINTS ${Vc_ROOT_DIR}/include ${Vc_INCLUDEDIR}
     )
 
-    find_library(Vc_LIBRARY NAMES Vc HINTS ${Vc_ROOT_DIR}/lib)
-    find_library(Vc_LIBRARY_DEBUG NAMES Vcd HINTS ${Vc_ROOT_DIR}/lib)
+    find_library(Vc_LIBRARY NAMES Vc PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib" NO_DEFAULT_PATH)
+    find_library(Vc_LIBRARY_DEBUG NAMES Vc PATHS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/debug/lib" NO_DEFAULT_PATH)
 
     find_package_handle_standard_args(Vc
         FOUND_VAR Vc_FOUND
