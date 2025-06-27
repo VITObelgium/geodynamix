@@ -49,8 +49,8 @@ template <typename InputRaster, typename OutputRaster>
 void is_data(const InputRaster& input, OutputRaster& result)
 {
     using TDest = typename OutputRaster::value_type;
-    std::transform(optional_value_begin(input), optional_value_end(input), optional_value_begin(result), [](auto& value) {
-        return TDest(value ? 1 : 0);
+    std::transform(optional_value_begin(input), optional_value_end(input), result.begin(), [](auto& value) {
+        return TDest(value.has_value() ? 1 : 0);
     });
 }
 
