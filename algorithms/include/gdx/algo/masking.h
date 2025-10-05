@@ -31,19 +31,19 @@ template <typename RasterType, typename MaskType>
 template <typename RasterType, typename MaskType>
 void erase_outside_mask(RasterType& ras, const MaskType& mask)
 {
-    int size = int(mask.size());
+    auto size = mask.size();
     if (size != ras.size()) {
         throw InvalidArgument("erase outside mask : size of mask {} should match size of raster {}", size, ras.size());
     }
     if (ras.nodata().has_value()) {
-        for (int32_t j = 0; j < size; ++j) {
+        for (int32_t j = 0; j < inf::truncate<int32_t>(size); ++j) {
             if (mask[j] == 0 || mask.is_nodata(j)) {
                 ras[j] = ras.NaN;
                 ras.mark_as_nodata(j);
             }
         }
     } else {
-        for (int32_t j = 0; j < size; ++j) {
+        for (int32_t j = 0; j < inf::truncate<int32_t>(size); ++j) {
             if (mask[j] == 0 || mask.is_nodata(j)) {
                 ras[j] = 0;
             }
