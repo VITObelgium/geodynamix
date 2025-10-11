@@ -46,7 +46,7 @@
 
         if (GDX_AVX2)
             set_target_properties(Vc::Vc PROPERTIES
-                INTERFACE_COMPILE_DEFINITIONS Vc_IMPL=AVX2
+                INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=AVX2;Vc_NO_STD_FUNCTIONS"
             )
             if (MSVC)
                 set_target_properties(Vc::Vc PROPERTIES
@@ -60,16 +60,16 @@
         else ()
             if (MSVC)
                 set_target_properties(Vc::Vc PROPERTIES
-                    INTERFACE_COMPILE_DEFINITIONS Vc_IMPL=SSE2
+                    INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=SSE2;Vc_NO_STD_FUNCTIONS"
                 )
             elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
                 set_target_properties(Vc::Vc PROPERTIES
-                    INTERFACE_COMPILE_DEFINITIONS Vc_IMPL=Scalar
+                    INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=Scalar;Vc_NO_STD_FUNCTIONS"
                 )
             else ()
                 set_target_properties(Vc::Vc PROPERTIES
                     INTERFACE_COMPILE_OPTIONS -msse4.2
-                    INTERFACE_COMPILE_DEFINITIONS Vc_IMPL=SSE4_2
+                    INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=SSE4_2;Vc_NO_STD_FUNCTIONS"
                 )
             endif ()
         endif ()

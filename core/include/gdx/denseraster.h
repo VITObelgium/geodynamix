@@ -234,7 +234,7 @@ public:
             if (auto nod = nodata(); nod.has_value() && !std::isnan(*nod)) {
                 if constexpr (simd_supported()) {
                     simd::for_each(begin(), end(), [nodata = *nod](auto& value) {
-                        value(std::isnan(value)) = nodata;
+                        value(Vc::isnan(value)) = nodata;
                     });
                 } else {
                     std::transform(begin(), end(), begin(), [nodata = *nod](T value) {
