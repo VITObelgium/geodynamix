@@ -2,6 +2,7 @@
 
 #include "gdx/algo/algorithm.h"
 #include "gdx/exception.h"
+#include "infra/cast.h"
 #include "infra/span.h"
 
 #include <algorithm>
