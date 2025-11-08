@@ -2,7 +2,6 @@ import os
 import geodynamix as gdx
 import unittest
 import numpy as np
-import copy
 from pathlib import Path
 
 
@@ -364,18 +363,16 @@ class TestGdx(unittest.TestCase):
         self.assertEqual((ras1 * ras2).dtype, ras1.dtype)
         self.assertEqual((ras1 / ras2).dtype, ras1.dtype)
 
-        #     self.assertEqual((ras1 * 1).dtype, ras1.dtype)
-        # self.assertEqual((ras1 + 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 * 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 + 1).dtype, ras1.dtype)
 
-        #     self.assertEqual((ras1 / 1).dtype, ras1.dtype)
-        #     self.assertEqual((ras1 - 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 / 1).dtype, ras1.dtype)
+        self.assertEqual((ras1 - 1).dtype, ras1.dtype)
 
         # self.assertEqual((1 * ras1).dtype, ras1.dtype)
-
         # self.assertEqual((1 + ras1).dtype, ras1.dtype)
-
-    #     self.assertEqual((1 / ras1).dtype, np.dtype("float32"))
-    #     self.assertEqual((1 - ras1).dtype, ras1.dtype)
+        # self.assertEqual((1 / ras1).dtype, np.float32)
+        # self.assertEqual((1 - ras1).dtype, ras1.dtype)
 
     #     self.assertEqual(gdx.logical_not(ras1).dtype, np.dtype("B"))
     #     self.assertEqual(gdx.logical_and(ras1, ras2).dtype, np.dtype("B"))

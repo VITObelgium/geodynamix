@@ -1,4 +1,4 @@
-use geo::{CellSize, Columns, Point, RasterSize, Rows};
+use geo::{ArrayDataType, CellSize, Columns, Point, RasterSize, Rows};
 use pyo3::prelude::*;
 
 #[pyclass(name = "raster_metadata", str)]
@@ -17,7 +17,7 @@ impl RasterMetadata {
         xll: f64,
         yll: f64,
     ) -> Self {
-        Self(geo::GeoReference::with_origin(
+        Self(geo::GeoReference::with_bottom_left_origin(
             "",
             RasterSize::with_rows_cols(Rows(rows), Columns(cols)),
             Point::new(xll, yll),
@@ -27,7 +27,7 @@ impl RasterMetadata {
     }
 
     #[getter]
-    pub fn get_projected_epsg(&self) -> Option<u32> {
+    pub fn get_projected_epsg(&self) -> Option<u16> {
         self.0.projected_epsg().map(|x| x.into())
     }
 
@@ -90,14 +90,17 @@ impl geo::ArrayMetadata for RasterMetadata {
         self.0.clone()
     }
 
-    fn with_size(size: geo::RasterSize) -> Self {
-        Self(geo::GeoReference::without_spatial_reference(size, None))
+    fn sized(raster_size: RasterSize, data_type: ArrayDataType) -> Self {
+        Self(geo::GeoReference::without_spatial_reference(
+            raster_size,
+            Some(data_type.default_nodata_value()),
+        ))
     }
 
-    fn with_rows_cols(rows: geo::Rows, cols: geo::Columns) -> Self {
+    fn sized_with_nodata(raster_size: RasterSize, nodata: Option<f64>) -> Self {
         Self(geo::GeoReference::without_spatial_reference(
-            RasterSize::with_rows_cols(rows, cols),
-            None,
+            raster_size,
+            nodata,
         ))
     }
 

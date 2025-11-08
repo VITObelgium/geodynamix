@@ -25,6 +25,5 @@ standalone
 target
 *.so
 python/geodynamix.data/data/share/geodynamix/proj.db
-.cargo/config.toml
 *.pyd
 doc/_build

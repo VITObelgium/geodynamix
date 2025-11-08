@@ -1,4 +1,4 @@
-use geo::{Array, ArrayNum, DenseArray};
+use geo::{ArrayInterop as _, ArrayNum, DenseArray};
 use numpy::{PyArray2, PyArrayMethods, PyUntypedArrayMethods};
 use pyo3::{exceptions::PyValueError, prelude::*};
 
@@ -62,7 +62,7 @@ pub fn dense_array_from_ndarray<T: numpy::Element + ArrayNum>(
         ));
     }
 
-    Ok(DenseArray::<T, RasterMetadata>::new_process_nodata(
+    Ok(DenseArray::<T, RasterMetadata>::new_init_nodata(
         meta.clone(),
         ndarray.to_vec()?,
     )?)

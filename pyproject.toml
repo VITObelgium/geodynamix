@@ -32,7 +32,8 @@ channels  = ["conda-forge"]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [tool.pixi.tasks]
-test      = "pytest -s tests/*.py"
+build     = {cmd = "maturin build"}
+test      = {cmd = "pytest -s tests/*.py"}
 dev_wheel = "maturin develop"
 wheel     = "maturin build"
 
@@ -40,6 +41,11 @@ wheel     = "maturin build"
 maturin = ">=1.8.1,<2"
 pytest  = ">=8.3.4,<9"
 pip     = ">=25.0,<26"
+pkgconf = ">=2.3.0,<3"
+cargo-nextest = ">=0.9.92,<0.10"
+pkg-config = ">=0.29.2,<0.30"
+rust = ">=1.89.0,<2"
+rust-src = ">=1.89.0,<2"
 
 [tool.pixi.feature.docs]
 platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
@@ -59,9 +65,14 @@ livedocs = "sphinx-autobuild -M html doc target/pydoc"
 
 [tool.pixi.dependencies]
 numpy = ">=2.2.2,<3"
+libgdal  = ">=3.9,<3.11"
+geos  = ">=3.11.2,<4"
 
 [tool.pixi.environments]
 docs = ["docs"]
+
+[tool.pixi.activation.env]
+GEOS_VERSION = "3.13.0"
 
 [dependency-groups]
 docs = [

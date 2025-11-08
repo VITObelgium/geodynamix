@@ -33,6 +33,15 @@ macro_rules! impl_raster_op {
     }};
 }
 
+macro_rules! impl_raster_op_reversed {
+    ( $op:ident, $lhs_object:ident, $rhs:expr ) => {{
+        let py = $lhs_object.py();
+        let mut lhs = RasterArgument::new($lhs_object);
+        let lhs = lhs.raster_compatible_with(&$rhs, py)?;
+        Ok((&lhs).$op($rhs).into())
+    }};
+}
+
 #[pymethods]
 impl Raster {
     #[new]
@@ -113,6 +122,23 @@ impl Raster {
     pub fn __truediv__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
         impl_raster_op!(div, self.raster, rhs_object)
     }
+
+    pub fn __radd__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op_reversed!(add, rhs_object, &self.raster)
+    }
+
+    pub fn __rsub__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op_reversed!(sub, rhs_object, &self.raster)
+    }
+
+    pub fn __rmul__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op_reversed!(mul, rhs_object, &self.raster)
+    }
+
+    pub fn __rtruediv__(&self, rhs_object: Bound<'_, PyAny>) -> PyResult<Raster> {
+        impl_raster_op_reversed!(div, rhs_object, &self.raster)
+    }
+
     /// # Safety
     /// This function is unsafe because it exposes a raw pointer to the Python buffer protocol.
     pub unsafe fn __getbuffer__(
