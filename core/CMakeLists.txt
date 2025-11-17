@@ -66,7 +66,7 @@ if (GDX_ENABLE_SIMD)
                 set_target_properties(Vc::Vc PROPERTIES
                     INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=SSE2;Vc_NO_STD_FUNCTIONS"
                 )
-            elseif (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
+            elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|arm64|aarch64)$")
                 set_target_properties(Vc::Vc PROPERTIES
                     INTERFACE_COMPILE_DEFINITIONS "Vc_IMPL=Scalar;Vc_NO_STD_FUNCTIONS"
                 )
