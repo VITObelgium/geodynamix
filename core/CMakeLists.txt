@@ -115,7 +115,7 @@ if (GDX_ENABLE_SIMD)
     )
 endif ()
 
-add_library(gdxcore
+add_library(gdxcore STATIC
     ${GDXCORE_PUBLIC_HEADERS}
     raster.cpp
 )
