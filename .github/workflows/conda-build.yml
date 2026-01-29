@@ -18,6 +18,8 @@ jobs:
               with:
                   submodules: true
             - uses: prefix-dev/setup-pixi@v0.9.4
+              with:
+                  frozen: true
             - uses: extractions/setup-just@v3
             - name: Build conda package
               run: just pixi_build
