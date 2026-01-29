@@ -61,15 +61,24 @@ set_target_properties(gdxpy PROPERTIES
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
 
-if(UNIX)
-    set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+# Install to Python site-packages
+# In conda builds, SP_DIR is set to the site-packages directory
+# Otherwise compute it relative to PREFIX
+if(DEFINED ENV{SP_DIR})
+    set(PYTHON_SITE_PACKAGES "$ENV{SP_DIR}")
 else()
-    set(INSTALL_DIR ${CMAKE_INSTALL_LIBDIR})
+    # Fallback: compute site-packages path
+    execute_process(
+        COMMAND "${Python3_EXECUTABLE}" -c "import sysconfig; print(sysconfig.get_path('platlib').replace(sysconfig.get_config_var('prefix'), '').lstrip('/'))"
+        OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_REL
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    set(PYTHON_SITE_PACKAGES "${CMAKE_INSTALL_PREFIX}/${PYTHON_SITE_PACKAGES_REL}")
 endif()
 
 install(TARGETS gdxpy
-    LIBRARY DESTINATION ${INSTALL_DIR}
-    RUNTIME DESTINATION ${INSTALL_DIR}
+    LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}
+    RUNTIME DESTINATION ${PYTHON_SITE_PACKAGES}
 )
 
 add_subdirectory(test)
