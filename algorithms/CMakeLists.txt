@@ -56,7 +56,7 @@ if(TARGET GEOS::geos)
     list(APPEND GDXALGO_PUBLIC_HEADERS include/gdx/algo/polygoncoverage.h)
 endif()
 
-add_library(gdxalgo
+add_library(gdxalgo STATIC
     ${GDXALGO_PUBLIC_HEADERS}
     accuflux.cpp
     reclass.cpp
