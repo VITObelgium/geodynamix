@@ -35,6 +35,13 @@ build_release triplet=VCPKG_DEFAULT_TRIPLET: (configure triplet)
 [windows]
 build triplet=VCPKG_DEFAULT_TRIPLET: (build_release triplet)
 
+[windows]
+test_release triplet=VCPKG_DEFAULT_TRIPLET: build
+    ctest --verbose --preset {{ triplet }}-release --output-on-failure -C Release
+
+[windows]
+test triplet=VCPKG_DEFAULT_TRIPLET: (test_release triplet)
+
 [private]
 build_dist triplet=VCPKG_DEFAULT_TRIPLET $VCPKG_ROOT=vcpkg_root: git_status_clean
     rm -rf ./build/gdx-{{ triplet }}-dist

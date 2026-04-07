@@ -10,17 +10,17 @@ jobs:
             fail-fast: false
             matrix:
                 cfg:
-                    - { os: ubuntu-latest, triplet: x64-linux }
-                    - { os: windows-2022, triplet: x64-windows-static-vs2022 }
-                    - { os: macos-15-intel, triplet: x64-osx }
+                    - { os: windows-2022, triplet: x64-windows-static }
 
         steps:
+            - name: Install just
+              uses: extractions/setup-just@v4
             - name: Clone repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   submodules: true
             - name: Set up Python
-              uses: actions/setup-python@v5
+              uses: actions/setup-python@v6
               id: setup-python
               with:
                   python-version: "3.x"
@@ -31,26 +31,35 @@ jobs:
             - name: Install linux dependencies
               if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
               run: sudo apt-get install nasm openssl ninja-build
+            - name: Setup MSVC environment
+              if: ${{ matrix.cfg.os == 'windows-2022' }}
+              uses: ilammy/msvc-dev-cmd@v1
+              with:
+                  arch: x64
             - name: Install osx dependencies
               if: ${{ matrix.cfg.os == 'macos-latest' }}
               run: brew install nasm ninja
             - name: Cache vcpkg binary
               id: cache-vcpkg-bin
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               with:
                   path: |
                       deps/vcpkg/vcpkg
                       deps/vcpkg/vcpkg.exe
-                  key: ${{ runner.os }}-${{ hashFiles('deps/vcpkg/bootstrap.cmake') }}
+                  key: ${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
             - name: Cache vcpkg packages
               id: cache-vcpkg
-              uses: actions/cache@v4
+              uses: actions/cache@v5
               with:
                   path: |
                       ~/.cache/vcpkg
                       ~/AppData/Local/vcpkg/archives
                   key: ${{ runner.os }}-${{ matrix.cfg.triplet }}-${{ hashFiles('vcpkg.json', '.git/modules/deps/vcpkg/shallow') }}
+            - name: Bootstrap vcpkg
+              run: just bootstrap_vcpkg
             - name: Bootstrap the ports
-              run: python bootstrap.py --triplet ${{ matrix.cfg.triplet }} --clean-after-build
+              run: just bootstrap ${{ matrix.cfg.triplet }}
             - name: Build the code
-              run: python build.py --triplet ${{ matrix.cfg.triplet }} --no-avx2 --python-path '${{ steps.setup-python.outputs.python-path }}' --run-tests
+              run: just build ${{ matrix.cfg.triplet }}
+            - name: Run the tests
+              run: just test ${{ matrix.cfg.triplet }}
