@@ -95,24 +95,30 @@ update:
 updatedeps:
     nix flake update --update-input pkgs-mod
 
-python314 := env_var_or_default('PYTHON314', 'c:\python314\python.exe')
-python313 := env_var_or_default('PYTHON313', 'c:\python313\python.exe')
-python312 := env_var_or_default('PYTHON312', 'c:\python312\python.exe')
+export PYTHON314 := env_var_or_default('PYTHON314', 'C:\Python314')
+export PYTHON313 := env_var_or_default('PYTHON313', 'C:\Python313')
+export PYTHON312 := env_var_or_default('PYTHON312', 'C:\Python312')
 
 [private]
 [windows]
-build_standalone_python python_path build_dir:
-    rm -rf ./build/{{ build_dir }}
-    cmake --preset x64-windows-static-dist -B ./build/{{ build_dir }} -DPython3_EXECUTABLE={{ python_path }}
-    cmake --build ./build/{{ build_dir }}
+_build_standalone_python preset:
+    rm -rf ./build/gdx-{{ preset }}
+    cmake --preset {{ preset }}
+    cmake --build --preset {{ preset }}
 
+[private]
 [windows]
-build_standalone: (build_standalone_python python314 "gdx-standalone-314") (build_standalone_python python313 "gdx-standalone-313") (build_standalone_python python312 "gdx-standalone-312")
+_build_standalone: (_build_standalone_python "standalone-py314") (_build_standalone_python "standalone-py313") (_build_standalone_python "standalone-py312")
     rm -rf standalone
     mkdir -p standalone
     cp ./build/gdx-standalone-314/geodynamix.cp314-win_amd64.pyd ./standalone
     cp ./build/gdx-standalone-313/geodynamix.cp313-win_amd64.pyd ./standalone
     cp ./build/gdx-standalone-312/geodynamix.cp312-win_amd64.pyd ./standalone
+
+# Build standalone .pyd files for Python 3.14, 3.13 and 3.12 (activates Visual Studio environment)
+[windows]
+build_standalone:
+    '{{ justfile_directory() }}/standalone.bat' '{{ justfile_directory() }}'
 
 [windows]
 pixi_build:

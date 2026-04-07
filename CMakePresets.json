@@ -42,8 +42,8 @@
             "binaryDir": "${sourceDir}/build/gdx-ninja"
         },
         {
-            "name": "x64-windows-static-dist",
-            "displayName": "Windows ninja",
+            "name": "x64-windows-static-dist-base",
+            "hidden": true,
             "inherits": [
                 "project-base",
                 "triplet-x64-windows-static",
@@ -53,8 +53,76 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "PACKAGE_VERSION_COMMITHASH": "$env{GIT_COMMIT_HASH}"
-            },
+            }
+        },
+        {
+            "name": "x64-windows-static-dist",
+            "displayName": "Windows ninja",
+            "inherits": "x64-windows-static-dist-base",
             "binaryDir": "${sourceDir}/build/gdx-x64-windows-static-dist"
+        },
+        {
+            "name": "standalone-py314",
+            "displayName": "Standalone Python 3.14",
+            "inherits": "x64-windows-static-dist-base",
+            "binaryDir": "${sourceDir}/build/gdx-standalone-314",
+            "cacheVariables": {
+                "Python3_ROOT_DIR": "$env{PYTHON314}",
+                "Python3_EXECUTABLE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON314}/python.exe"
+                },
+                "_Python3_INCLUDE_DIR": {
+                    "type": "PATH",
+                    "value": "$env{PYTHON314}/include"
+                },
+                "_Python3_LIBRARY_RELEASE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON314}/libs/python314.lib"
+                }
+            }
+        },
+        {
+            "name": "standalone-py313",
+            "displayName": "Standalone Python 3.13",
+            "inherits": "x64-windows-static-dist-base",
+            "binaryDir": "${sourceDir}/build/gdx-standalone-313",
+            "cacheVariables": {
+                "Python3_ROOT_DIR": "$env{PYTHON313}",
+                "Python3_EXECUTABLE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON313}/python.exe"
+                },
+                "_Python3_INCLUDE_DIR": {
+                    "type": "PATH",
+                    "value": "$env{PYTHON313}/include"
+                },
+                "_Python3_LIBRARY_RELEASE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON313}/libs/python313.lib"
+                }
+            }
+        },
+        {
+            "name": "standalone-py312",
+            "displayName": "Standalone Python 3.12",
+            "inherits": "x64-windows-static-dist-base",
+            "binaryDir": "${sourceDir}/build/gdx-standalone-312",
+            "cacheVariables": {
+                "Python3_ROOT_DIR": "$env{PYTHON312}",
+                "Python3_EXECUTABLE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON312}/python.exe"
+                },
+                "_Python3_INCLUDE_DIR": {
+                    "type": "PATH",
+                    "value": "$env{PYTHON312}/include"
+                },
+                "_Python3_LIBRARY_RELEASE": {
+                    "type": "FILEPATH",
+                    "value": "$env{PYTHON312}/libs/python312.lib"
+                }
+            }
         },
         {
             "name": "x64-windows-static-vs",
@@ -87,6 +155,24 @@
             "configurePreset": "x64-windows-static-dist",
             "displayName": "Windows x64 Dist",
             "description": "Dist build"
+        },
+        {
+            "name": "standalone-py314",
+            "configurePreset": "standalone-py314",
+            "displayName": "Standalone Python 3.14",
+            "description": "Standalone build for Python 3.14"
+        },
+        {
+            "name": "standalone-py313",
+            "configurePreset": "standalone-py313",
+            "displayName": "Standalone Python 3.13",
+            "description": "Standalone build for Python 3.13"
+        },
+        {
+            "name": "standalone-py312",
+            "configurePreset": "standalone-py312",
+            "displayName": "Standalone Python 3.12",
+            "description": "Standalone build for Python 3.12"
         },
         {
             "name": "nix-debug",
