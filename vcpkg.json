@@ -11,6 +11,10 @@
         "date",
         "geos",
         {
+            "name": "proj",
+            "features": ["embed-data"]
+        },
+        {
             "name": "gdal",
             "default-features": false,
             "features": [
@@ -32,15 +36,10 @@
     "vcpkg-configuration": {
         "default-registry": {
             "kind": "git",
-            "baseline": "6f29f12e82a8293156836ad81cc9bf5af41fe836",
+            "baseline": "c3867e714dd3a51c272826eea77267876517ed99",
             "repository": "https://github.com/microsoft/vcpkg"
         },
-        "registries": [
-            {
-                "kind": "artifact",
-                "location": "https://github.com/microsoft/vcpkg-ce-catalog/archive/refs/heads/main.zip",
-                "name": "microsoft"
-            }
-        ]
+        "overlay-ports": ["./deps/infra/vcpkg_overlay/ports"],
+        "overlay-triplets": ["./deps/infra/vcpkg_overlay/triplets"]
     }
 }

@@ -11,6 +11,7 @@
                 "GDX_PYTHON_BINDINGS": "ON",
                 "GDX_ENABLE_BENCHMARKS": "ON",
                 "GDX_ENABLE_SIMD": "ON",
+                "GDX_ENABLE_GEOMETRY": "ON",
                 "BUILD_TESTING": "ON"
             },
             "environment": {
