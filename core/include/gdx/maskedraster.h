@@ -906,9 +906,9 @@ private:
         }
 
         auto pred       = BinaryPredicate<T>();
-        const auto size = result.size();
+        const int32_t size = result.size();
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size; ++i) {
+        for (int32_t i = 0; i < size; ++i) {
             result[i] = pred(_data(i), static_cast<T>(value));
         }
         return result;
