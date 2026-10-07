@@ -29,13 +29,13 @@ if(WIN32)
 endif()
 
 target_include_directories(gdxpy
-    PRIVATE ${PYTHON_INCLUDE_DIRS}
+    PRIVATE ${Python3_INCLUDE_DIRS}
 )
 
 source_group("Python files" FILES ${PYTHON_TESTS})
 
-message(STATUS "Using python from ${PYTHON_INCLUDE_DIRS}")
-message(STATUS "Using python library ${PYTHON_LIBRARIES}")
+message(STATUS "Using python headers from ${Python3_INCLUDE_DIRS}")
+message(STATUS "Using python library ${Python3_LIBRARIES}")
 
 target_link_libraries(gdxpy PRIVATE
     gdxcore

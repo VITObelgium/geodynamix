@@ -25,9 +25,11 @@ jobs:
               with:
                   python-version: "3.x"
             - name: Install pip dependencies
+              env:
+                  PYTHON_EXECUTABLE: ${{ steps.setup-python.outputs.python-path }}
               run: |
-                  python3 -m pip install --upgrade pip
-                  pip3 install numpy
+                  & $env:PYTHON_EXECUTABLE -m pip install --upgrade pip
+                  & $env:PYTHON_EXECUTABLE -m pip install numpy
             - name: Install linux dependencies
               if: ${{ matrix.cfg.os == 'ubuntu-latest' }}
               run: sudo apt-get install nasm openssl ninja-build
@@ -59,6 +61,12 @@ jobs:
               run: just bootstrap_vcpkg
             - name: Bootstrap the ports
               run: just bootstrap ${{ matrix.cfg.triplet }}
+            - name: Configure with setup-python
+              env:
+                  PYTHON_EXECUTABLE: ${{ steps.setup-python.outputs.python-path }}
+              run: |
+                  $pythonRoot = Split-Path -Parent $env:PYTHON_EXECUTABLE
+                  cmake --fresh --preset ${{ matrix.cfg.triplet }} "-DPython3_EXECUTABLE=$env:PYTHON_EXECUTABLE" "-DPython3_ROOT_DIR=$pythonRoot"
             - name: Build the code
               run: just build ${{ matrix.cfg.triplet }}
             - name: Run the tests

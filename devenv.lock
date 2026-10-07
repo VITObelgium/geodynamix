@@ -20,11 +20,11 @@
     "infra-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1791362278,
-        "narHash": "sha256-4PreSDoM00Qp6dwU8Zc6UgZSD5W94t91D4fnY0QtanU=",
+        "lastModified": 1791372822,
+        "narHash": "sha256-8d6EMOUmdkRHW7HLDSjt2Hd/lu8ZUwgYZrVmHX5EXWk=",
         "owner": "VITObelgium",
         "repo": "cpp-infra",
-        "rev": "c667c24747e09ce0ef8aa4c8fc136680239b3352",
+        "rev": "5805f10831fa1fbc8a74e008b8ba7bb2a1f97c60",
         "type": "github"
       },
       "original": {
@@ -55,11 +55,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1789590383,
-        "narHash": "sha256-WNEyKAYpOVXv9x6s05qZRU5TXkL4792nEG9ZfZJk/3E=",
+        "lastModified": 1791379873,
+        "narHash": "sha256-MQcj8cU6ILlXWFue9qgXJgTJLocMd/Qo/wm1xPtHQB8=",
         "owner": "VITO-RMA",
         "repo": "nix-pkgs",
-        "rev": "81a7afcb39d2ff6f43db5df06240b954a7321cec",
+        "rev": "32c48d63dba581108dfaa2c39895c222c4a5a257",
         "type": "github"
       },
       "original": {
