@@ -6,6 +6,7 @@ namespace gdx {
 
 namespace py = pybind11;
 using namespace py::literals;
+using namespace inf;
 
 const std::type_info& dtypeToRasterType(py::dtype type)
 {
@@ -43,9 +44,9 @@ py::dtype rasterTypeToDtype(const std::type_info& type)
 fs::path handle_path(py::object arg)
 {
     if (py::isinstance<py::str>(arg)) {
-        return fs::u8path(std::string(py::str(arg)));
+        return file::u8path(std::string(py::str(arg)));
     } else {
-        return fs::u8path(std::string(py::str(arg.attr("__str__")())));
+        return file::u8path(std::string(py::str(arg.attr("__str__")())));
     }
 }
 }
