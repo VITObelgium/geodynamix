@@ -50,4 +50,47 @@ TEST_CASE("PolygonCoverage")
         CHECK_MESSAGE(totalCoverage == Approx(1.0), "Coverages for ", coverage.name, " do not add up to 1");
     }
 }
+
+TEST_CASE("PolygonCoverage.reprojectsInputPolygons")
+{
+    GeoMetadata outputExtent(3, 3, 150000.0, 150000.0, 100.0, 0.0);
+    outputExtent.set_projection_from_epsg(crs::epsg::BelgianLambert72);
+
+    auto driver = gdal::VectorDriver::create(gdal::VectorType::Memory);
+    auto ds     = driver.create_dataset("polygons");
+    gdal::SpatialReference sourceProjection(crs::epsg::WGS84);
+    auto layer = ds.create_layer("polygons", sourceProjection, gdal::Geometry::Type::Polygon);
+
+    OGRLinearRing ring;
+    for (const auto& point : {Point<double>(150120.0, 150120.0), Point<double>(150180.0, 150120.0),
+                              Point<double>(150180.0, 150180.0), Point<double>(150120.0, 150180.0),
+                              Point<double>(150120.0, 150120.0)}) {
+        auto wgs84Point = gdal::convert_point_projected(crs::epsg::BelgianLambert72, crs::epsg::WGS84, point);
+        ring.addPoint(wgs84Point.x, wgs84Point.y);
+    }
+    OGRPolygon polygon;
+    polygon.addRing(&ring);
+    gdal::Feature feature(layer.layer_definition());
+    feature.set_geometry(gdal::PolygonCRef(&polygon));
+    layer.create_feature(feature);
+
+    GeoMetadata unrelatedExtent(3, 3, 0.0, 0.0, 1.0, 0.0);
+    unrelatedExtent.set_projection_from_epsg(crs::epsg::WGS84);
+    CHECK(create_polygon_coverages(unrelatedExtent, ds, BorderHandling::None, 1.0, {}, {}, {}, nullptr).empty());
+
+    const auto coverages = create_polygon_coverages(outputExtent, ds, BorderHandling::None, 1.0, {}, {}, {}, nullptr);
+    auto* spatialFilter  = layer.get()->GetSpatialFilter();
+    REQUIRE(spatialFilter != nullptr);
+    OGREnvelope filterEnvelope, polygonEnvelope;
+    spatialFilter->getEnvelope(&filterEnvelope);
+    polygon.getEnvelope(&polygonEnvelope);
+    CHECK(filterEnvelope.MinX <= polygonEnvelope.MinX);
+    CHECK(filterEnvelope.MaxX >= polygonEnvelope.MaxX);
+    CHECK(filterEnvelope.MinY <= polygonEnvelope.MinY);
+    CHECK(filterEnvelope.MaxY >= polygonEnvelope.MaxY);
+    REQUIRE(coverages.size() == 1);
+    REQUIRE(coverages.front().cells.size() == 1);
+    CHECK(coverages.front().cells.front().computeGridCell == Cell(1, 1));
+    CHECK(coverages.front().cells.front().cellCoverage == Approx(0.36).epsilon(0.001));
+}
 }

@@ -5,8 +5,11 @@
 #include "infra/geometry.h"
 
 #include <algorithm>
+#include <cmath>
+#include <optional>
 
 #ifdef GDX_HAVE_GEOS
+#include <geos/geom/Envelope.h>
 #include <geos/geom/Geometry.h>
 #include <geos/geom/prep/PreparedGeometryFactory.h>
 #endif
@@ -21,6 +24,25 @@
 namespace gdx {
 
 using namespace inf;
+
+static std::optional<Rect<double>> transform_filter_bounds(const Rect<double>& bounds, gdal::CoordinateTransformer& transformer)
+{
+    OGREnvelope transformed;
+    // Densify the boundary to account for non-linear projection changes along its edges.
+    if (!transformer.get()->TransformBounds(bounds.topLeft.x, bounds.bottomRight.y, bounds.bottomRight.x, bounds.topLeft.y,
+                                            &transformed.MinX, &transformed.MinY, &transformed.MaxX, &transformed.MaxY, 21)) {
+        return std::nullopt;
+    }
+
+    // Invalid or antimeridian-wrapping bounds cannot be used as one rectangular filter.
+    if (!std::isfinite(transformed.MinX) || !std::isfinite(transformed.MinY) ||
+        !std::isfinite(transformed.MaxX) || !std::isfinite(transformed.MaxY) ||
+        transformed.MinX > transformed.MaxX || transformed.MinY > transformed.MaxY) {
+        return std::nullopt;
+    }
+
+    return Rect<double>(Point<double>(transformed.MinX, transformed.MaxY), Point<double>(transformed.MaxX, transformed.MinY));
+}
 
 #ifdef GDX_HAVE_GEOS
 
@@ -50,20 +72,6 @@ static GeoMetadata create_geometry_extent(const geos::geom::Geometry& geom, cons
     geometryExtent.rows = (bottomRightCell.r - topLeftCell.r) + 1;
 
     return geometryExtent;
-}
-
-static inf::GeoMetadata create_geometry_extent(const geos::geom::Geometry& geom, const inf::GeoMetadata& gridExtent, const gdal::SpatialReference& sourceProjection)
-{
-    gdal::SpatialReference destProj(gridExtent.projection);
-
-    if (sourceProjection.epsg_cs() != destProj.epsg_cs()) {
-        auto outputGeometry = geom.clone();
-        geom::CoordinateWarpFilter warpFilter(sourceProjection.export_to_wkt().c_str(), gridExtent.projection.c_str());
-        outputGeometry->apply_rw(warpFilter);
-        return create_geometry_extent(*outputGeometry, gridExtent);
-    } else {
-        return create_geometry_extent(geom, gridExtent);
-    }
 }
 
 static std::vector<PolygonCellCoverage::CellInfo> create_cell_coverages(const GeoMetadata& extent, const GeoMetadata& polygonExtent, const geos::geom::Geometry& geom)
@@ -101,34 +109,19 @@ static std::vector<PolygonCellCoverage::CellInfo> create_cell_coverages(const Ge
 }
 
 static PolygonCellCoverage create_polygon_coverage(uint64_t polygonId,
-                                                   const geos::geom::Geometry& geom,
-                                                   const gdal::SpatialReference& geometryProjection,
+                                                   const geos::geom::Geometry& geometry,
                                                    const GeoMetadata& outputExtent)
 {
     PolygonCellCoverage cov;
-
-    const geos::geom::Geometry* geometry = &geom;
-    geos::geom::Geometry::Ptr warpedGeometry;
-
-    if (geometryProjection.epsg_cs() != outputExtent.projected_epsg()) {
-        // clone the country geometry and warp it to the output grid projection
-        warpedGeometry = geom.clone();
-        geom::CoordinateWarpFilter warpFilter(outputExtent.projection.c_str(), outputExtent.projection.c_str());
-        warpedGeometry->apply_rw(warpFilter);
-        geometry = warpedGeometry.get();
-    }
-
     cov.id                  = polygonId;
-    cov.outputSubgridExtent = create_geometry_extent(*geometry, outputExtent, geometryProjection);
-    cov.cells               = create_cell_coverages(outputExtent, cov.outputSubgridExtent, *geometry);
-
+    cov.outputSubgridExtent = create_geometry_extent(geometry, outputExtent);
+    cov.cells               = create_cell_coverages(outputExtent, cov.outputSubgridExtent, geometry);
     return cov;
 }
 
 #else
 static PolygonCellCoverage create_polygon_coverage(uint64_t /*polygonId*/,
                                                    const geos::geom::Geometry& /*geom*/,
-                                                   const gdal::SpatialReference& /*geometryProjection*/,
                                                    const GeoMetadata& /*outputExtent*/)
 {
     throw RuntimeError("GeoDynamiX was not compiled with geometry support");
@@ -233,16 +226,28 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
         }
 
         assert(!outputExtent.projection.empty());
-        if (!layer.projection().has_value()) {
+        auto sourceProjection = layer.projection();
+        if (!sourceProjection) {
             throw RuntimeError("Invalid input vector: No projection information available");
         }
 
-        if (outputExtent.projected_epsg() != layer.projection()->epsg_cs()) {
-            throw RuntimeError("Projection mismatch between input vector and metadata grid EPSG:{} <-> EPSG:{}", outputExtent.projected_epsg().value(), layer.projection()->epsg_cs().value());
+        gdal::SpatialReference targetProjection(outputExtent.projection);
+        const bool reproject = !sourceProjection->is_same(targetProjection);
+        const auto bbox      = outputExtent.bounding_box();
+        const geos::geom::Envelope gridEnvelope(bbox.topLeft.x, bbox.bottomRight.x, bbox.bottomRight.y, bbox.topLeft.y);
+        std::unique_ptr<geom::CoordinateWarpFilter> warpFilter;
+        if (reproject) {
+            gdal::CoordinateTransformer filterTransformer(targetProjection.clone(), sourceProjection->clone());
+            if (auto inputBounds = transform_filter_bounds(bbox, filterTransformer)) {
+                // If the output bounds grid can be transformed to a valid input bounds, use that as a spatial filter on the input layer to avoid reading unnecessary features.
+                layer.set_spatial_filter(inputBounds->topLeft, inputBounds->bottomRight);
+            } else {
+                layer.clear_spatial_filter();
+            }
+            warpFilter = std::make_unique<geom::CoordinateWarpFilter>(sourceProjection->export_to_wkt().c_str(), outputExtent.projection.c_str());
+        } else {
+            layer.set_spatial_filter(bbox.topLeft, bbox.bottomRight);
         }
-
-        const auto bbox = outputExtent.bounding_box();
-        layer.set_spatial_filter(bbox.topLeft, bbox.bottomRight);
         if (!attributeFilter.empty()) {
             layer.set_attribute_filter(attributeFilter);
         }
@@ -250,7 +255,15 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
         for (auto& feature : layer) {
             double value     = valueColumn == -1 ? std::get<double>(burnValue) : feature.field_as<double>(valueColumn);
             std::string name = nameColumn == -1 ? std::string() : feature.field_as<std::string>(nameColumn);
-            geometries.emplace_back(feature.id(), value, name, geom::gdal_to_geos(feature.geometry()));
+            auto geometry    = geom::gdal_to_geos(feature.geometry());
+            if (warpFilter) {
+                // Transform the input geometry before filtering against the output grid.
+                geometry->apply_rw(*warpFilter);
+                if (!geometry->getEnvelopeInternal()->intersects(gridEnvelope)) {
+                    continue;
+                }
+            }
+            geometries.emplace_back(feature.id(), value, name, std::move(geometry));
         }
     }
 
@@ -264,14 +277,10 @@ std::vector<PolygonCellCoverage> create_polygon_coverages(const inf::GeoMetadata
             return std::get<3>(lhs)->getNumPoints() > std::get<3>(rhs)->getNumPoints();
         });
 
-        // export to string and import in every loop instance, accessing the spatial reference
-        // from multiple threads is not thread safe
-        auto projection = gdal::SpatialReference(outputExtent.projection).export_to_wkt();
-
         std::mutex mut;
         ProgressInfo progress(geometries.size(), progressCb);
         std::for_each(PAR_POLICY geometries.begin(), geometries.end(), [&](const std::tuple<int64_t, double, std::string, geos::geom::Geometry::Ptr>& idGeom) {
-            auto cov  = create_polygon_coverage(std::get<0>(idGeom), *std::get<3>(idGeom), gdal::SpatialReference(projection), outputExtent);
+            auto cov  = create_polygon_coverage(std::get<0>(idGeom), *std::get<3>(idGeom), outputExtent);
             cov.value = std::get<1>(idGeom);
             cov.name  = std::get<2>(idGeom);
             progress.tick();
