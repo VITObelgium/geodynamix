@@ -128,9 +128,9 @@ RasterType<uint8_t> isClose(const RasterType<T>& lhs, const RasterType<T>& rhs, 
     RasterType<uint8_t> result(lhs.metadata());
 
     auto isEqual        = cpu::float_equal_to<T>(relTolerance, absTolerance);
-    const auto dataSize = lhs.size();
+    const auto dataSize = lhs.ssize();
 #pragma omp parallel for
-    for (std::size_t i = 0; i < dataSize; ++i) {
+    for (std::ptrdiff_t i = 0; i < dataSize; ++i) {
         if (lhs.is_nodata(i) || rhs.is_nodata(i)) {
             result[i] = lhs.is_nodata(i) == rhs.is_nodata(i) ? 1 : 0;
         } else {

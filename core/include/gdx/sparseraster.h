@@ -725,9 +725,9 @@ private:
         }
 
         auto pred       = BinaryPredicate<T>(_meta.nodata, std::optional<double>());
-        const auto size = result.size();
+        const auto size = result.ssize();
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size; ++i) {
+        for (std::ptrdiff_t i = 0; i < size; ++i) {
             result[i] = pred(_data(i), static_cast<T>(value));
         }
         return result;
@@ -757,9 +757,9 @@ private:
         }
 
         auto pred       = BinaryPredicate<WidestType>(_meta.nodata, other.metadata().nodata);
-        const auto size = result.size();
+        const auto size = result.ssize();
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size; ++i) {
+        for (std::ptrdiff_t i = 0; i < size; ++i) {
             result[i] = pred(static_cast<WidestType>(_data(i)), static_cast<WidestType>(other[i]));
         }
         return result;
@@ -797,7 +797,7 @@ private:
         }
 
 #pragma omp parallel for
-        for (std::size_t i = 0; i < size(); ++i) {
+        for (std::ptrdiff_t i = 0; i < ssize(); ++i) {
             if (is_nodata(i) || other.is_nodata(i)) {
                 result[i] = nodata;
             } else {

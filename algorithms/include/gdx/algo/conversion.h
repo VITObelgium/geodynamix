@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 
 namespace gdx {
 
@@ -46,13 +47,14 @@ RasterType<TDest> cast(const RasterType<TSource>& srcData)
     }
 
     RasterType<TDest> dstData(resultMeta);
+    const auto dataSize = srcData.ssize();
 
     if constexpr (!srcHasNaN && dstHasNaN) {
         if (srcData.metadata().nodata) {
             auto nodata = *srcData.metadata().nodata;
             // nodata values will be replaced with nan
 #pragma omp parallel for
-            for (std::size_t i = 0; i < srcData.size(); ++i) {
+            for (std::ptrdiff_t i = 0; i < dataSize; ++i) {
                 if (srcData[i] == nodata) {
                     dstData[i] = std::numeric_limits<TDest>::quiet_NaN();
                 } else {
@@ -67,7 +69,7 @@ RasterType<TDest> cast(const RasterType<TSource>& srcData)
             auto nodata = static_cast<TDest>(*resultMeta.nodata);
             // nan values need to be replaced with the nodata value
 #pragma omp parallel for
-            for (std::size_t i = 0; i < srcData.size(); ++i) {
+            for (std::ptrdiff_t i = 0; i < dataSize; ++i) {
                 if (std::isnan(srcData[i]) || srcData[i] == srcData.metadata().nodata) {
                     dstData[i] = nodata;
                 } else {
@@ -81,7 +83,7 @@ RasterType<TDest> cast(const RasterType<TSource>& srcData)
 
     // No nodata conversions, regular copy
 #pragma omp parallel for
-    for (std::size_t i = 0; i < srcData.size(); ++i) {
+    for (std::ptrdiff_t i = 0; i < dataSize; ++i) {
         dstData[i] = static_cast<TDest>(srcData[i]);
     }
 

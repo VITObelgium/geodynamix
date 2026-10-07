@@ -906,9 +906,9 @@ private:
         }
 
         auto pred       = BinaryPredicate<T>();
-        const int32_t size = result.size();
+        const auto size = result.ssize();
 #pragma omp parallel for
-        for (int32_t i = 0; i < size; ++i) {
+        for (std::ptrdiff_t i = 0; i < size; ++i) {
             result[i] = pred(_data(i), static_cast<T>(value));
         }
         return result;
@@ -937,10 +937,10 @@ private:
             result.set_nodata(std::numeric_limits<uint8_t>::max());
         }
 
-        auto pred          = BinaryPredicate<WidestType>();
-        const int32_t size = static_cast<int32_t>(result.size());
+        auto pred       = BinaryPredicate<WidestType>();
+        const auto size = result.ssize();
 #pragma omp parallel for
-        for (int32_t i = 0; i < size; ++i) {
+        for (std::ptrdiff_t i = 0; i < size; ++i) {
             result[i] = pred(static_cast<WidestType>(_data(i)), static_cast<WidestType>(other[i]));
         }
         return result;
