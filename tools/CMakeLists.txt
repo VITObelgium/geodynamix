@@ -1,4 +1,4 @@
-find_package(Lyra REQUIRED)
+find_package(Lyra NAMES Lyra lyra CONFIG REQUIRED)
 
 set(TOOLS_LIST gdxcmp gdxconv)
 

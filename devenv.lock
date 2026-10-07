@@ -1,0 +1,86 @@
+{
+  "nodes": {
+    "devenv": {
+      "locked": {
+        "dir": "src/modules",
+        "lastModified": 1790701375,
+        "narHash": "sha256-0FpLHIRDYiyo3EMTnMQSobZQknZaa3JuWo6vmMCK76o=",
+        "owner": "cachix",
+        "repo": "devenv",
+        "rev": "fe20b5cba7ab5e93ae73f956a8d3efc50e1753f4",
+        "type": "github"
+      },
+      "original": {
+        "dir": "src/modules",
+        "owner": "cachix",
+        "repo": "devenv",
+        "type": "github"
+      }
+    },
+    "infra-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791362278,
+        "narHash": "sha256-4PreSDoM00Qp6dwU8Zc6UgZSD5W94t91D4fnY0QtanU=",
+        "owner": "VITObelgium",
+        "repo": "cpp-infra",
+        "rev": "c667c24747e09ce0ef8aa4c8fc136680239b3352",
+        "type": "github"
+      },
+      "original": {
+        "owner": "VITObelgium",
+        "ref": "master",
+        "repo": "cpp-infra",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1786201459,
+        "narHash": "sha256-CiOTEjmwAmG2AWnaIno9YaCJJmpca2FXPhMAsnrolCg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "8b8c811c7c2541c30382c5de7ed26be055569c60",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-26.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "pkgs-mod": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1789590383,
+        "narHash": "sha256-WNEyKAYpOVXv9x6s05qZRU5TXkL4792nEG9ZfZJk/3E=",
+        "owner": "VITO-RMA",
+        "repo": "nix-pkgs",
+        "rev": "81a7afcb39d2ff6f43db5df06240b954a7321cec",
+        "type": "github"
+      },
+      "original": {
+        "owner": "VITO-RMA",
+        "ref": "main",
+        "repo": "nix-pkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "devenv": "devenv",
+        "infra-src": "infra-src",
+        "nixpkgs": [
+          "pkgs-mod",
+          "nixpkgs"
+        ],
+        "pkgs-mod": "pkgs-mod"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

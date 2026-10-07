@@ -22,7 +22,7 @@ add_executable(gdxalgotest
     normalisetest.cpp
     $<$<BOOL:${GDX_ENABLE_GEOMETRY}>:polygoncoveragetest.cpp>
     propdisttest.cpp
-    rasterizetest.cpp
+    $<$<BOOL:${GDX_ENABLE_GEOMETRY}>:rasterizetest.cpp>
     rasterizelineantialiasedtest.cpp
     reclasstest.cpp
     suminbuffertest.cpp

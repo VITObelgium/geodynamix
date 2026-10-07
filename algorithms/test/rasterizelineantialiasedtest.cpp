@@ -77,8 +77,9 @@ TEST_CASE("RasterizeLineAntiAliased.reprojectsLines")
     gdal::SpatialReference targetProjection(crs::epsg::BelgianLambert72);
     auto sourceLayer = source.create_layer("lines", sourceProjection, gdal::Geometry::Type::Unknown);
     auto targetLayer = target.create_layer("lines", targetProjection, gdal::Geometry::Type::Unknown);
-    sourceLayer.create_field(gdal::FieldDefinition::create<double>("value"));
-    targetLayer.create_field(gdal::FieldDefinition::create<double>("value"));
+    auto field = gdal::FieldDefinition::create<double>("value");
+    sourceLayer.create_field(field);
+    targetLayer.create_field(field);
 
     OGRLineString sourceLine1, targetLine1, sourceLine2, targetLine2;
     auto addPoint = [&](OGRLineString& sourceLine, OGRLineString& targetLine, double x, double y) {

@@ -1,5 +1,5 @@
 {
-    "$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+    "$schema": "https://raw.githubusercontent.com/Kitware/CMake/v3.31.10/Help/manual/presets/schema.json",
     "version": 8,
     "include": ["deps/infra/vcpkg_overlay/CMakePresets.json"],
     "configurePresets": [
@@ -20,14 +20,22 @@
         },
         {
             "name": "nix",
-            "binaryDir": "${sourceDir}/build/nix",
+            "binaryDir": "${sourceDir}/build/nix-static",
             "generator": "Ninja Multi-Config",
             "cacheVariables": {
-                "BUILD_TESTING": "ON",
-                "CMAKE_EXE_LINKER_FLAGcdS": "-fuse-ld=gold -static-libstdc++ -static-libgcc"
+                "GDX_ENABLE_TESTS": "ON",
+                "GDX_ENABLE_TEST_UTILS": "ON",
+                "GDX_ENABLE_SIMD": "ON",
+                "GDX_USE_LIBCXX": "ON",
+                "CMAKE_PREFIX_PATH": "$env{GDX_STATIC_DEPS}",
+                "CMAKE_C_COMPILER": "$env{GDX_STATIC_C_COMPILER}",
+                "CMAKE_CXX_COMPILER": "$env{GDX_STATIC_CXX_COMPILER}",
+                "CMAKE_C_COMPILER_LAUNCHER": "sccache",
+                "CMAKE_CXX_COMPILER_LAUNCHER": "sccache"
             },
             "environment": {
-                "CMAKE_CONFIGURATION_TYPES": "Debug;Release"
+                "CMAKE_CONFIGURATION_TYPES": "Debug;Release",
+                "PKG_CONFIG_LIBDIR": "$env{GDX_STATIC_DEPS}/lib/pkgconfig:$env{GDX_STATIC_DEPS}/share/pkgconfig"
             }
         },
         {

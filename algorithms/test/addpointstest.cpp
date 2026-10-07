@@ -36,7 +36,8 @@ TEST_CASE("AddPoints.reprojectsPoints")
     auto ds     = driver.create_dataset("points");
     gdal::SpatialReference sourceProjection(crs::epsg::WGS84);
     auto layer = ds.create_layer("points", sourceProjection, gdal::Geometry::Type::Point);
-    layer.create_field(gdal::FieldDefinition::create<double>("value"));
+    auto field = gdal::FieldDefinition::create<double>("value");
+    layer.create_field(field);
 
     gdal::Feature feature(layer.layer_definition());
     OGRPoint point(wgs84Point.x, wgs84Point.y);

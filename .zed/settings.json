@@ -1,0 +1,15 @@
+{
+    "languages": {
+        "C++": {
+            "format_on_save": "on",
+            "formatter": "language_server",
+        },
+    },
+    "lsp": {
+        "clangd": {
+            "binary": {
+                "arguments": ["--compile-commands-dir=build/nix"],
+            },
+        },
+    },
+}

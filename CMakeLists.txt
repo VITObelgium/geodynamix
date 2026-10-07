@@ -25,6 +25,7 @@ option(GDX_ENABLE_BENCHMARKS "Build the micro benchmarks" OFF)
 option(GDX_ENABLE_GEOMETRY "Build against geos for geometry processing" OFF)
 option(GDX_PYTHON_BINDINGS "Build python bindings" OFF)
 option(GDX_INSOURCE_DEPS "Use submodules for internal dependencies" ON)
+option(GDX_USE_LIBCXX "Build with libc++ instead of libstdc++" OFF)
 option(GDX_INSTALL_DEVELOPMENT_FILES "Install the gdx development files (headers/libs)" ${GDX_IS_TOPLEVEL})
 
 if(GDX_IS_TOPLEVEL)
@@ -153,6 +154,11 @@ endif()
 
 if(GDX_IS_TOPLEVEL)
     if(GDX_INSOURCE_DEPS)
+        if(GDX_USE_LIBCXX AND NOT TARGET stdc++fs)
+            # Infra links stdc++fs for Linux Clang; libc++ provides filesystem itself.
+            add_library(stdc++fs INTERFACE IMPORTED GLOBAL)
+        endif()
+
         # gdx is the toplevel project so include the infra dependency
         set(INFRA_LOGGING ON)
         set(INFRA_GDAL ON)

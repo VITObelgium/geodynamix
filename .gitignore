@@ -22,3 +22,14 @@ compile_commands.json
 .DS_Store
 vcpkg_installed
 standalone
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

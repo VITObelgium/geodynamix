@@ -85,11 +85,11 @@ test: test_release
 
 [unix]
 run_debug: build_debug
-    ./build/nix/bin/Debug/gdx
+    ./build/nix-static/Debug/gdx
 
 [unix]
 run_release: build_release
-    ./build/nix/bin/Release/gdx
+    ./build/nix-static/Release/gdx
 
 [unix]
 run: run_release

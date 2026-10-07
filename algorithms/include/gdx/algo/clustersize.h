@@ -4,7 +4,6 @@
 #include "gdx/rasterchecks.h"
 
 #include <cassert>
-#include <limits>
 #include <vector>
 
 namespace gdx {
@@ -28,7 +27,6 @@ RasterType<int32_t> cluster_size(const RasterType<T>& ras, ClusterDiagonals diag
     RasterType<uint8_t> mark(ras.metadata(), s_markTodo);
     std::vector<Cell> clusterCells;
     FiLo<Cell> border(rows, cols);
-    uint32_t clusterCount = 0;
 
     for (int32_t r = 0; r < rows; ++r) {
         for (int32_t c = 0; c < cols; ++c) {
@@ -40,7 +38,6 @@ RasterType<int32_t> cluster_size(const RasterType<T>& ras, ClusterDiagonals diag
             if (ras(r, c) == 0) {
                 result(r, c) = 0;
             } else if (ras(r, c) > 0 && mark(r, c) == s_markTodo) {
-                ++clusterCount;
                 int32_t sum = 0;
                 clusterCells.clear();
                 border.clear();
@@ -96,7 +93,6 @@ RasterType<TResult> cluster_sum(const RasterType<TCluster>& ras, const RasterTyp
     RasterType<uint8_t> mark(ras.metadata(), s_markTodo);
     std::vector<Cell> clusterCells;
     FiLo<Cell> border(rows, cols);
-    uint32_t clusterCount = 0;
 
     for (int32_t r = 0; r < rows; ++r) {
         for (int32_t c = 0; c < cols; ++c) {
@@ -108,8 +104,6 @@ RasterType<TResult> cluster_sum(const RasterType<TCluster>& ras, const RasterTyp
             if (ras(r, c) == 0) {
                 result(r, c) = 0;
             } else if (ras(r, c) > 0 && mark(r, c) == s_markTodo) {
-                ++clusterCount;
-
                 clusterCells.clear();
                 border.clear();
                 const auto clusterValue = ras(r, c);

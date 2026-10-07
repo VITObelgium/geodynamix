@@ -1,0 +1,10 @@
+inputs:
+  nixpkgs:
+    follows: pkgs-mod/nixpkgs
+
+  pkgs-mod:
+    url: github:VITO-RMA/nix-pkgs/main
+
+  infra-src:
+    url: github:VITObelgium/cpp-infra/master
+    flake: false
