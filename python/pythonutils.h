@@ -8,13 +8,15 @@
 
 namespace gdx {
 
-const std::type_info& dtypeToRasterType(pybind11::dtype type);
+const std::type_info& dtypeToRasterType(const pybind11::dtype& type);
+const std::type_info& dtypeToRasterType(const pybind11::object& type);
+const std::type_info& dtypeToRasterType(const pybind11::array& array);
 pybind11::dtype rasterTypeToDtype(const std::type_info& type);
 
 template <typename Callable>
 auto visitArray(const pybind11::array& arr, Callable&& visitor)
 {
-    auto& type = dtypeToRasterType(arr.dtype());
+    const auto& type = dtypeToRasterType(arr);
     if (type == typeid(uint8_t)) return visitor(arr.cast<pybind11::array_t<uint8_t>>());
     if (type == typeid(int16_t)) return visitor(arr.cast<pybind11::array_t<int16_t>>());
     if (type == typeid(uint16_t)) return visitor(arr.cast<pybind11::array_t<uint16_t>>());

@@ -271,7 +271,7 @@ void write_raster(Raster& raster, const std::string& filepath, py::object colorM
 
 void write_raster(py::object dataType, Raster& raster, const std::string& filepath, py::object colorMap)
 {
-    auto& dtype = dtypeToRasterType(py::dtype::from_args(dataType));
+    const auto& dtype = dtypeToRasterType(dataType);
 
     if (colorMap.is_none()) {
         raster.write(file::u8path(filepath), dtype);
@@ -302,7 +302,7 @@ Raster createFromNdArray(py::array arrayData, const gdx::RasterMetadata& meta)
     }
 
     // undo the type erasure
-    auto& type = dtypeToRasterType(arrayData.dtype());
+    const auto& type = dtypeToRasterType(arrayData);
     if (type == typeid(bool)) return createFromNdArray<uint8_t>(arrayData, meta);
     if (type == typeid(uint8_t)) return createFromNdArray<uint8_t>(arrayData, meta);
     if (type == typeid(int16_t)) return createFromNdArray<int16_t>(arrayData, meta);

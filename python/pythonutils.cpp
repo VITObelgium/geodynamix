@@ -8,7 +8,7 @@ namespace py = pybind11;
 using namespace py::literals;
 using namespace inf;
 
-const std::type_info& dtypeToRasterType(py::dtype type)
+const std::type_info& dtypeToRasterType(const py::dtype& type)
 {
     auto typeStr = static_cast<std::string>(py::str(type));
 
@@ -26,6 +26,16 @@ const std::type_info& dtypeToRasterType(py::dtype type)
     if (typeStr == "float64") return typeid(double);
 
     throw InvalidArgument("Unsupported numpy data type {}", typeStr);
+}
+
+const std::type_info& dtypeToRasterType(const py::object& type)
+{
+    return dtypeToRasterType(py::dtype::from_args(type));
+}
+
+const std::type_info& dtypeToRasterType(const py::array& array)
+{
+    return dtypeToRasterType(array.dtype());
 }
 
 py::dtype rasterTypeToDtype(const std::type_info& type)
