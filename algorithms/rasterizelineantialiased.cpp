@@ -2,9 +2,11 @@
 #include "gdx/log.h"
 #include "gdx/rastermetadata.h"
 #include "infra/gdal.h"
+#include "infra/gdalspatialreference.h"
 
 #include <cassert>
 #include <cmath>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -52,7 +54,7 @@ static TReal computeLength(const std::vector<Point<TReal>>& endPoints)
     TReal result = 0;
     for (int i = 1; i < int(endPoints.size()); i++) {
         result += computeLength(endPoints[i - 1].x, endPoints[i - 1].y,
-            endPoints[i].x, endPoints[i].y);
+                                endPoints[i].x, endPoints[i].y);
     }
     return result;
 }
@@ -68,19 +70,23 @@ static TReal computeLength(const std::vector<std::vector<Point<TReal>>>& multi_l
 }
 
 template <typename TReal>
-void process_points_from_line(inf::gdal::LineCRef line, std::vector<Point<TReal>>& endPoints)
+void process_points_from_line(inf::gdal::LineCRef line, std::vector<Point<TReal>>& endPoints, const inf::gdal::CoordinateTransformer* transformer)
 {
     endPoints.clear();
     for (auto iter = begin(line); iter != end(line); ++iter) {
-        TReal x = static_cast<TReal>(iter->x), y = static_cast<TReal>(iter->y);
-        endPoints.emplace_back(x, y);
+        Point<double> point(iter->x, iter->y);
+        if (transformer) {
+            point = transformer->transform(point);
+        }
+        endPoints.emplace_back(static_cast<TReal>(point.x), static_cast<TReal>(point.y));
     }
 }
 
 template <typename TReal>
 static std::vector<std::pair<std::vector<std::vector<Point<TReal>>>, float>> extractLinesFromVectorLayer(
     inf::gdal::Layer linesLayer,
-    const std::string& fieldname)
+    const std::string& fieldname,
+    const inf::gdal::CoordinateTransformer* transformer)
 {
     std::vector<std::pair<std::vector<std::vector<Point<TReal>>>, float>> result;
     std::vector<std::vector<Point<TReal>>> endPoints;
@@ -97,14 +103,14 @@ static std::vector<std::pair<std::vector<std::vector<Point<TReal>>>, float>> ext
         switch (geometry.type()) {
         case inf::gdal::Geometry::Type::Line:
             endPoints.resize(1);
-            process_points_from_line(geometry.as<inf::gdal::LineCRef>(), endPoints[0]);
+            process_points_from_line(geometry.as<inf::gdal::LineCRef>(), endPoints[0], transformer);
             result.push_back(std::pair(endPoints, value));
             break;
         case inf::gdal::Geometry::Type::MultiLine: {
             auto multiLine = geometry.as<inf::gdal::MultiLineCRef>();
             endPoints.resize(multiLine.size());
             for (int i = 0; i < multiLine.size(); ++i) {
-                process_points_from_line(multiLine.line_at(i), endPoints[i]);
+                process_points_from_line(multiLine.line_at(i), endPoints[i], transformer);
             }
             result.push_back(std::pair(endPoints, value));
             break;
@@ -259,7 +265,7 @@ void rasterize_segments_anti_aliased_impl(
         const auto& p = endPoints[multi_line];
         for (int i = 1; i < int(p.size()); i++) {
             rasterize_segment_anti_aliased_impl<TReal>(p[i - 1].x, p[i - 1].y,
-                p[i].x, p[i].y, meta, locations);
+                                                       p[i].x, p[i].y, meta, locations);
         }
     }
     if (normalise_brightness) {
@@ -308,6 +314,21 @@ void details::rasterize_lines_anti_aliased(
     std::vector<std::vector<float>>& raster // anti-aliased line rasterization only makes sense for float rasters
 )
 {
+    std::unique_ptr<inf::gdal::CoordinateTransformer> transformer;
+    auto sourceProjection = linesLayer.projection();
+    if (!sourceProjection) {
+        Log::warn("rasterize_lines_anti_aliased: input line layer has no projection information; assuming source and output projections are the same");
+    }
+    if (meta.projection.empty()) {
+        Log::warn("rasterize_lines_anti_aliased: output raster has no projection information; assuming source and output projections are the same");
+    }
+    if (sourceProjection && !meta.projection.empty()) {
+        inf::gdal::SpatialReference targetProjection(meta.projection);
+        if (!sourceProjection->is_same(targetProjection)) {
+            transformer = std::make_unique<inf::gdal::CoordinateTransformer>(std::move(*sourceProjection), std::move(targetProjection));
+        }
+    }
+
     bool weissCompatibilityTest = true;
     // The Weiss compatibility tests were done in April 2019, to test if "weiss 2.0 with gdx-algo's" has the same outcome as Weiss 1.0.
     // It turned out that Weiss 1.0 anti-aliasing rasterisation lost some precision in its workflow (double --> float --> double),
@@ -317,11 +338,11 @@ void details::rasterize_lines_anti_aliased(
     // To have the same results, the same loss of of precision was recreated by using the template<float> below.
     if (weissCompatibilityTest) {
         // TODO : remove the 'then' part code when Weiss tests are done.
-        auto lines = extractLinesFromVectorLayer<float>(linesLayer, fieldName);
+        auto lines = extractLinesFromVectorLayer<float>(linesLayer, fieldName, transformer.get());
         gdx::rasterize_lines_anti_aliased(lines, normalise_brightness, multiply_by_length, meta, raster);
     } else {
         // TODO : always use 'else' part code when Weiss tests are done.
-        auto lines = extractLinesFromVectorLayer<double>(linesLayer, fieldName);
+        auto lines = extractLinesFromVectorLayer<double>(linesLayer, fieldName, transformer.get());
         gdx::rasterize_lines_anti_aliased(lines, normalise_brightness, multiply_by_length, meta, raster);
     }
 }
