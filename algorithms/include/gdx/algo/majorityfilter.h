@@ -11,14 +11,13 @@ namespace gdx {
 
 template <template <typename> typename RasterType, typename T>
 std::optional<T> compute_majority(const Cell cell, const RasterType<T>& oldValue, int32_t radius, int32_t radius2, const RasterMetadata& meta,
-    std::map<T, int32_t>& count)
+                                  std::map<T, int32_t>& count)
 {
     std::optional<T> result;
     count.clear();
 
     const int r2 = radius2;
     int dr, dc, d2;
-    int nodataCount = 0;
     for (int rr = cell.r - radius; rr <= cell.r + radius; ++rr) {
         for (int cc = cell.c - radius; cc <= cell.c + radius; ++cc) {
             if (!meta.is_on_map(rr, cc)) {
@@ -29,9 +28,7 @@ std::optional<T> compute_majority(const Cell cell, const RasterType<T>& oldValue
             dc = cc - cell.c;
             d2 = dr * dr + dc * dc;
             if (d2 <= r2) {
-                if (oldValue.is_nodata(rr, cc)) {
-                    ++nodataCount;
-                } else {
+                if (!oldValue.is_nodata(rr, cc)) {
                     ++(count[oldValue(rr, cc)]);
                 }
             }
