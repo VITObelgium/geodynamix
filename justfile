@@ -16,9 +16,9 @@ build_vs: configure_vs
     cmake --build ./build/gdx-vs --config Release
 
 [windows]
-bootstrap triplet=VCPKG_DEFAULT_TRIPLET $VCPKG_ROOT=vcpkg_root:
-    - mkdir -p '{{ join(justfile_directory(), "build", "vcpkgs") }}'
-    '{{ vcpkg_root }}/vcpkg' install --allow-unsupported --triplet {{ triplet }} --x-install-root=./build/vcpkgs/{{ triplet }}
+bootstrap triplet=VCPKG_DEFAULT_TRIPLET $VCPKG_ROOT=join(justfile_directory(), "build", "vcpkg"):
+    cmake -E make_directory "{{ join(justfile_directory(), "build", "vcpkgs") }}"
+    "{{ join(justfile_directory(), "build", "vcpkg", "vcpkg.exe") }}" install --allow-unsupported --triplet {{ triplet }} --x-install-root=./build/vcpkgs/{{ triplet }}
 
 [windows]
 configure triplet=VCPKG_DEFAULT_TRIPLET $VCPKG_ROOT=vcpkg_root:
