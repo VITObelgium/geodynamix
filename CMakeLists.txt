@@ -185,7 +185,13 @@ add_subdirectory(core)
 add_subdirectory(algorithms)
 
 if(GDX_PYTHON_BINDINGS)
-    find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+    if(VCPKG_TOOLCHAIN AND Python3_EXECUTABLE)
+        # The vcpkg python3 wrapper forces its own headers and library even when
+        # an external interpreter was selected (e.g. setup-python in CI).
+        _find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+    else()
+        find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+    endif()
     message(STATUS "Python interpreter: ${Python3_EXECUTABLE} (${Python3_VERSION})")
     add_subdirectory(python)
     add_subdirectory(test)
