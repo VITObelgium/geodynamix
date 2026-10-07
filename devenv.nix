@@ -57,7 +57,8 @@ let
       autoconf-archive
       automake
       libtool
-      python313
+      (python314.withPackages (ps: [ ps.numpy ]))
+      python314Packages.pybind11
       trompeloeil
       nlohmann_json
       nixd

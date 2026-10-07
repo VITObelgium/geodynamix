@@ -26,6 +26,7 @@
                 "GDX_ENABLE_TESTS": "ON",
                 "GDX_ENABLE_TEST_UTILS": "ON",
                 "GDX_ENABLE_SIMD": "ON",
+                "GDX_PYTHON_BINDINGS": "ON",
                 "GDX_USE_LIBCXX": "ON",
                 "CMAKE_PREFIX_PATH": "$env{GDX_STATIC_DEPS}",
                 "CMAKE_C_COMPILER": "$env{GDX_STATIC_C_COMPILER}",
